@@ -11,7 +11,7 @@ Website for a decoration & floristry business, built on the agent-driven, skill-
 | | |
 |---|---|
 | **Current iteration** | 1 — repository scaffold + plan + planning skills installed |
-| **Next iteration** | 2 — references & brand assets → interview-mode PRD → grill → real PRD → master plan → build |
+| **Next iteration** | 2 — references → interview-mode PRD → grill → real PRD → master plan → reshape skills → incremental build (visual-gated) → Vercel launch |
 | **Local path** | `/Users/gabor.seboek/Documents/Projects/Private/fiorevera` |
 | **Remote** | `https://github.com/sebokgabor84/fiorevera` |
 | **Template source** | `/Users/gabor.seboek/Documents/Projects/Private/Learning/GaborPortfolio` |
@@ -34,10 +34,13 @@ The goal is to build Fiore Vera on the **GaborPortfolio base** — same proven t
 3. **Gather references & brand assets** — collect the inspiration example pages we want to draw from, plus brand tokens (font style, logo, favicon), and audit the **legacy origin site [www.fiorevera.hu](https://www.fiorevera.hu)** as the starting baseline. These feed both the PRD and the `design-system-expert` reshape. Store them under a `references/` area in the repo.
 4. **Draft the PRD — interview mode** (NOT the `to-prd` skill yet) — the agent interviews directly, one question at a time, to resolve the open questions and shape an initial PRD draft.
 5. **Iterate & write the real PRD** — stress-test the draft with `grill-me`, then commit it to a real PRD document. (`to-prd` is deferred to a later iteration, once a publish/issue-tracker target exists.)
-6. **Document the master plan** — freeze the PRD into a single execution contract (`MASTER-PLAN.md`): a numbered, point-by-point checklist the agent follows **verbatim** during the build. Every build action must trace to a numbered item; nothing gets built that isn't on the list. This is the anti-drift gate. Each item links back to its PRD user story / decision.
+6. **Document the master plan** — freeze the PRD into a single execution contract (`MASTER-PLAN.md`): a numbered, point-by-point checklist the agent follows **verbatim** during the build. Every build action must trace to a numbered item; nothing gets built that isn't on the list. This is the anti-drift gate. Each item links back to its PRD user story / decision. *(Relationship to `BACKLOG.md`: the master plan is the **frozen, closed scope** for this build; `BACKLOG.md` — per AGENT.md — captures **emergent / out-of-scope** ideas found mid-build. New ideas go to the backlog, never silently into the master plan.)*
 7. **Source & optimize content** — gather her real photography + copy; convert to `webp` ≤ 200 KB into `public/assets/` (per `qa-specialist` rules). A decoration site **is** its imagery — a hard build blocker, not an afterthought.
-8. **Reshape the skills** for the decoration domain (see table below), guided by the master plan. **All 8 are kept by design** — see Ecosystem Vision and Honest Critique #4.
-9. **Quick win → ecosystem** — ship the iPhone-lockscreen QR (her digital visit card → fiorevera.hu) first via `lockscreen-qr-generator`; the Mac wallpaper (company representation) and the full showcase site follow as the ecosystem builds out.
+8. **Reshape the skills** for the decoration domain (see table below), guided by the master plan — **`design-system-expert` first**, since the palette / typography / component system drives everything built in step 9. All 8 kept by design (see Ecosystem Vision / Honest Critique #4).
+9. **Build the site — incremental slices** — build **one vertical slice at a time** (a single page or section), each tracing to a `MASTER-PLAN.md` item. Per-slice loop: build → `lint` + unit → **visual verification** (run the dev server, view it in a real browser / screenshot, eyeball against the references) → commit → next slice. **No slice is "done" until it has been seen** — the `qa-specialist` DoD checks lint/test/vitals but *not* whether it looks right, so the visual gate is mandatory. This step — not the planning — is where drift kills agentic builds.
+10. **Launch / cutover** — deploy to **Vercel**, point the `fiorevera.hu` domain at the new site, retire the legacy page. Definition of *shipped* = new site live on the domain + legacy retired.
+
+> **Parallel track — ship now, independent of the build:** the **iPhone-lockscreen QR** (digital visit card → fiorevera.hu) needs only the URL (known) + `lockscreen-qr-generator`, so it can ship immediately without waiting on steps 3–10. The **Mac wallpaper** (`desktop-background-generator`) is similarly standalone. Both are ecosystem pillars (see Ecosystem Vision), not gated behind the site build.
 
 ### Skills to reshape (iteration 2)
 
@@ -51,7 +54,7 @@ The `.agent/skills/` folder currently holds the **GaborPortfolio versions verbat
 | `i18n-guardian` | Multilingual HU / EN / DE (HU primary), like the portfolio; re-key all copy |
 | `qa-specialist` | Keep DoD pipeline; re-baseline vitals/E2E for new pages |
 | `skill-creator` | Keep — meta skill |
-| `lockscreen-qr-generator` | iPhone lockscreen QR — her digital visit card → fiorevera.hu (step 9) |
+| `lockscreen-qr-generator` | iPhone lockscreen QR — her digital visit card → fiorevera.hu (parallel track — ship now) |
 | `desktop-background-generator` | **Keep** — Mac wallpaper / company representation (ecosystem vision) |
 
 ---
@@ -70,12 +73,13 @@ This is why all 8 skills are retained: `lockscreen-qr-generator` and `desktop-ba
 
 ## Honest Critique
 
-Per AGENT.md, every plan must challenge its own assumptions. The four risks raised at v1 are below — all are now resolved (each with the decision taken); remaining items are execution tasks, not open risks.
+Per AGENT.md, every plan must challenge its own assumptions. The risks below were raised across reviews — all are now resolved (each with the decision taken); remaining items are execution tasks, not open risks.
 
 1. ✅ **Architecture mismatch.** GaborPortfolio is a single-person *showcase* (projects, KPIs, "Mission Control" carousel); a decoration business is a *marketing site* (gallery, services, about, contact). The stack + QA pipeline transfer cleanly; the IA and data contracts (`projects.ts`, `kpis.ts`, Mission Control) do not. **Resolved (accepted, known risk):** keep the GaborPortfolio base and extend it with new content blocks + multiple pages rather than rebuilding from scratch. The IA divergence is managed during the build.
 2. ✅ **PRD sequencing.** `to-prd` explicitly does not interview — it synthesizes known context, so running it against unresolved questions yields a hallucinated PRD. **Resolved:** iteration-1 PRD is drafted in the agent's **interview mode** (not `to-prd`), iterated with `grill-me`, then written to a real PRD. `to-prd` deferred.
 3. ✅ **Imagery, references & hosting are first-class.** A decoration site lives on its photography and visual references; it also needs a deploy target. **Resolved:** added a references & brand-assets step (incl. legacy-site audit + seed inspiration list) and a content-sourcing step; hosting is **Vercel** (setup pending as a build task), domain to take over `fiorevera.hu` when ready.
 4. ✅ **Skill scope.** My recommendation was to prune the 8 skills for a small site — **overruled, correctly.** The skill set is intentional: the goal is the full digital + physical ecosystem above, where `desktop-background-generator` (Mac wallpaper) and `lockscreen-qr-generator` (iPhone visit card) are core pillars, not the QR quick win alone.
+5. ✅ **Execution cadence, not just planning.** The plan was strong on planning but vague on the build itself — and for agentic dev, the build is where drift actually happens. **Resolved:** added an explicit incremental-build step (step 9 — vertical slices, each gated by a mandatory **visual verification** the `qa-specialist` DoD doesn't cover) + a launch/cutover step (10), pulled the QR quick win into an independent parallel track, and clarified `MASTER-PLAN.md` (frozen scope) vs `BACKLOG.md` (emergent tasks).
 
 ---
 
