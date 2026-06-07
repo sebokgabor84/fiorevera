@@ -32,8 +32,9 @@ The goal is to rebuild the GaborPortfolio framework reshaped for the decoration 
    - ⚠️ `to-prd` expects a project issue tracker + label vocabulary to publish into. fiorevera has none yet — in iteration 2, either wire it to GitHub Issues on this repo or have it emit the PRD as a local markdown file.
 3. **Write the PRD** with `to-prd` — define pages, content, and what a decoration business needs (gallery/portfolio, services, about, contact, etc.).
 4. **Grill the PRD** with `grill-me` — challenge assumptions, catch gaps before building.
-5. **Reshape the 8 skills** for the decoration domain (see table below).
-6. **QR-code quick win** — generate an iPhone-lockscreen QR pointing to the wife's current live website (via the `lockscreen-qr-generator` skill).
+5. **Document the master plan** — freeze the grilled, finalized PRD into a single execution contract (`MASTER-PLAN.md`): a numbered, point-by-point checklist the agent follows **verbatim** during the build. Every build action must trace to a numbered item; nothing gets built that isn't on the list. This is the anti-drift gate — it stops the agent from improvising or wandering off-scope mid-execution. Each item links back to its PRD user story / decision.
+6. **Reshape the 8 skills** for the decoration domain (see table below), guided by the master plan.
+7. **QR-code quick win** — generate an iPhone-lockscreen QR pointing to the wife's current live website (via the `lockscreen-qr-generator` skill).
 
 ### Skills to reshape (iteration 2)
 
@@ -47,7 +48,7 @@ The `.agent/skills/` folder currently holds the **GaborPortfolio versions verbat
 | `i18n-guardian` | Confirm locale set (HU primary? + EN/DE); re-key all copy |
 | `qa-specialist` | Keep DoD pipeline; re-baseline vitals/E2E for new pages |
 | `skill-creator` | Keep — meta skill |
-| `lockscreen-qr-generator` | Repurpose for the QR quick-win (step 6) |
+| `lockscreen-qr-generator` | Repurpose for the QR quick-win (step 7) |
 | `desktop-background-generator` | Evaluate relevance; likely de-prioritised |
 
 ---
