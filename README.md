@@ -70,11 +70,11 @@ This is why all 8 skills are retained: `lockscreen-qr-generator` and `desktop-ba
 
 ## Honest Critique
 
-Per AGENT.md, every plan must challenge its own assumptions. The four risks raised at v1 are below — most are now resolved; only hosting remains open.
+Per AGENT.md, every plan must challenge its own assumptions. The four risks raised at v1 are below — all are now resolved (each with the decision taken); remaining items are execution tasks, not open risks.
 
 1. ✅ **Architecture mismatch.** GaborPortfolio is a single-person *showcase* (projects, KPIs, "Mission Control" carousel); a decoration business is a *marketing site* (gallery, services, about, contact). The stack + QA pipeline transfer cleanly; the IA and data contracts (`projects.ts`, `kpis.ts`, Mission Control) do not. **Resolved (accepted, known risk):** keep the GaborPortfolio base and extend it with new content blocks + multiple pages rather than rebuilding from scratch. The IA divergence is managed during the build.
 2. ✅ **PRD sequencing.** `to-prd` explicitly does not interview — it synthesizes known context, so running it against unresolved questions yields a hallucinated PRD. **Resolved:** iteration-1 PRD is drafted in the agent's **interview mode** (not `to-prd`), iterated with `grill-me`, then written to a real PRD. `to-prd` deferred.
-3. ⬜ **Imagery, references & hosting are first-class.** A decoration site lives on its photography and visual references; it also needs a deploy target. **Mostly resolved:** added a references & brand-assets step (incl. legacy-site audit + seed inspiration list) and a content-sourcing step. **Still open: hosting/domain** (see Open Questions).
+3. ✅ **Imagery, references & hosting are first-class.** A decoration site lives on its photography and visual references; it also needs a deploy target. **Resolved:** added a references & brand-assets step (incl. legacy-site audit + seed inspiration list) and a content-sourcing step; hosting is **Vercel** (setup pending as a build task), domain to take over `fiorevera.hu` when ready.
 4. ✅ **Skill scope.** My recommendation was to prune the 8 skills for a small site — **overruled, correctly.** The skill set is intentional: the goal is the full digital + physical ecosystem above, where `desktop-background-generator` (Mac wallpaper) and `lockscreen-qr-generator` (iPhone visit card) are core pillars, not the QR quick win alone.
 
 ---
@@ -87,7 +87,7 @@ Per AGENT.md, every plan must challenge its own assumptions. The four risks rais
 - [ ] **Brand palette & typography** — drives the `design-system-expert` reshape; partly derivable from the legacy site + chosen references (step 3).
 - [/] **Inspiration references** — seed list (more to come; treated as basic starting points): [akerteszlanya.hu](https://www.akerteszlanya.hu/), [naturalweddingdecor.hu](https://naturalweddingdecor.hu/). Expanded + audited in step 3.
 - [ ] **Page list** — confirm via the PRD (gallery, services, about, contact, …); multiple pages expected.
-- [ ] **Hosting & domain** — where does the *new* site deploy (GitHub Pages / Netlify / Vercel)? Does it take over the `fiorevera.hu` domain once ready?
+- [x] **Hosting** — **Vercel** *(decided; not yet set up — setup is an iteration-2 task)*. Domain: take over `fiorevera.hu` once the new site is ready (timing TBD).
 - [ ] **Content / photography** — does she have a usable photo set, or must it be shot/sourced first? (gates step 7)
 
 ---
