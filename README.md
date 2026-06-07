@@ -10,8 +10,8 @@ Website for a decoration & floristry business, built on the agent-driven, skill-
 
 | | |
 |---|---|
-| **Current iteration** | 1 — repository scaffold + plan (this commit) |
-| **Next iteration** | 2 — refine the plan, then reshape skills + build content |
+| **Current iteration** | 1 — repository scaffold + plan + planning skills installed |
+| **Next iteration** | 2 — write & grill the PRD, then reshape skills + build content |
 | **Local path** | `/Users/gabor.seboek/Documents/Projects/Private/fiorevera` |
 | **Remote** | `https://github.com/sebokgabor84/fiorevera` |
 | **Template source** | `/Users/gabor.seboek/Documents/Projects/Private/Learning/GaborPortfolio` |
@@ -25,9 +25,11 @@ The goal is to rebuild the GaborPortfolio framework reshaped for the decoration 
 ### Steps
 
 1. **Repository setup** — new `fiorevera` repo, GaborPortfolio used as the structural template. *(done — iteration 1)*
-2. **Install planning skills** (global, via [mattpocock/skills](https://github.com/mattpocock/skills)):
-   - `npx skills add mattpocock/skills --skill=grill-me -y -g` — stress-test the plan, surface weak spots.
-   - `npx skills add mattpocock/skills --skill=to-prd -y -g` — turn the business concept into a proper PRD.
+2. **Install planning skills** from [mattpocock/skills](https://github.com/mattpocock/skills): `grill-me` (stress-test the plan) and `to-prd` (turn the concept into a PRD). *(done — iteration 1)*
+   - Global install (`-g`) is **not supported** for these (PromptScript skills), so they were installed locally.
+   - The CLI's `--skill=` filter is ignored — it pulls the whole catalog — so the 26 extras were pruned.
+   - Both skills were then **consolidated into `.agent/skills/`** to match this repo's convention; the CLI's `.agents/` folder and `skills-lock.json` were removed. We are **not** using `npx skills` going forward — update these prompt files by hand.
+   - ⚠️ `to-prd` expects a project issue tracker + label vocabulary to publish into. fiorevera has none yet — in iteration 2, either wire it to GitHub Issues on this repo or have it emit the PRD as a local markdown file.
 3. **Write the PRD** with `to-prd` — define pages, content, and what a decoration business needs (gallery/portfolio, services, about, contact, etc.).
 4. **Grill the PRD** with `grill-me` — challenge assumptions, catch gaps before building.
 5. **Reshape the 8 skills** for the decoration domain (see table below).
@@ -66,7 +68,7 @@ The `.agent/skills/` folder currently holds the **GaborPortfolio versions verbat
 fiorevera/
 ├── .agent/
 │   ├── rules/            # RTK token-efficiency rules (from template)
-│   └── skills/           # 8 skills — GaborPortfolio versions, to be reshaped
+│   └── skills/           # 8 portfolio skills (to reshape) + grill-me & to-prd (planning)
 ├── public/assets/        # (empty — assets added in iteration 2)
 ├── scripts/              # (empty — optimize-images.js etc. added in iteration 2)
 ├── src/

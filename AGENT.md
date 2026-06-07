@@ -47,6 +47,8 @@ At the start of every session, silently scan for drift and inconsistency. If you
 | new skill, refactor rules, legacy prompt, create agent file | `skill-creator` |
 | lock screen, wallpaper, QR code, mobile background | `lockscreen-qr-generator` |
 | desktop wallpaper, animated background, video background | `desktop-background-generator` |
+| grill me, stress-test a plan, get grilled on a design, challenge assumptions | `grill-me` |
+| write a PRD, turn this into a PRD, product requirements doc | `to-prd` |
 
 ### 🚨 Missing Skill Fallback
 If no skill matches the user intent: STOP, do not guess, suggest creating/refactoring a skill via `skill-creator`, and wait for approval.
