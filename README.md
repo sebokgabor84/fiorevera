@@ -48,7 +48,7 @@ The `.agent/skills/` folder currently holds the **GaborPortfolio versions verbat
 | `design-system-expert` | Steampunk dark mode → elegant / natural / floral aesthetic (palette + typography TBD) |
 | `seo-expert` | Re-target keywords to decoration / floristry / events; local SEO |
 | `accessibility-expert` | Keep — domain-agnostic; re-verify against new components |
-| `i18n-guardian` | Confirm locale set (HU primary? + EN/DE); re-key all copy |
+| `i18n-guardian` | Multilingual HU / EN / DE (HU primary), like the portfolio; re-key all copy |
 | `qa-specialist` | Keep DoD pipeline; re-baseline vitals/E2E for new pages |
 | `skill-creator` | Keep — meta skill |
 | `lockscreen-qr-generator` | iPhone lockscreen QR — her digital visit card → fiorevera.hu (step 9) |
@@ -83,7 +83,7 @@ Per AGENT.md, every plan must challenge its own assumptions. Top risks, ordered 
 
 - [x] **Business name** — **Fiore Vera**. *(confirmed)*
 - [x] **Current live website URL** — [www.fiorevera.hu](https://www.fiorevera.hu) — legacy origin; QR target & baseline. *(confirmed)*
-- [ ] **Primary locale(s)** — `.hu` suggests Hungarian primary; confirm whether EN/DE are also needed (decides whether `i18n-guardian` stays multi-locale).
+- [x] **Locales** — **multilingual HU / EN / DE**, like GaborPortfolio (HU primary). `i18n-guardian` stays multi-locale. *(confirmed)*
 - [ ] **Brand palette & typography** — drives the `design-system-expert` reshape; partly derivable from the legacy site + chosen references (step 3).
 - [ ] **Inspiration references** — which example sites/pages to draw from? (collected in step 3)
 - [ ] **Page list** — confirm via the PRD (gallery, services, about, contact, …); multiple pages expected.
