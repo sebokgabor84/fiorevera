@@ -11,16 +11,17 @@ Website for a decoration & floristry business, built on the agent-driven, skill-
 | | |
 |---|---|
 | **Current iteration** | 1 — repository scaffold + plan + planning skills installed |
-| **Next iteration** | 2 — grill open questions → PRD → master plan → source content → build |
+| **Next iteration** | 2 — references & brand assets → interview-mode PRD → grill → real PRD → master plan → build |
 | **Local path** | `/Users/gabor.seboek/Documents/Projects/Private/fiorevera` |
 | **Remote** | `https://github.com/sebokgabor84/fiorevera` |
 | **Template source** | `/Users/gabor.seboek/Documents/Projects/Private/Learning/GaborPortfolio` |
+| **Business / legacy site** | **Fiore Vera** — legacy origin: [www.fiorevera.hu](https://www.fiorevera.hu) (baseline to improve on; QR target) |
 
 ---
 
 ## The Plan
 
-The goal is to rebuild the GaborPortfolio framework reshaped for the decoration business — same proven tech stack, QA pipeline, and skill-driven agent workflow, but reskinned and re-content-ed for the new domain.
+The goal is to build Fiore Vera on the **GaborPortfolio base** — same proven tech stack, QA pipeline, and skill-driven agent workflow — extended with new content blocks and multiple pages for the decoration domain. The bigger picture is a **digital + physical brand ecosystem** (see Ecosystem Vision), not just a website.
 
 ### Steps
 
@@ -30,12 +31,13 @@ The goal is to rebuild the GaborPortfolio framework reshaped for the decoration 
    - The CLI's `--skill=` filter is ignored — it pulls the whole catalog — so the 26 extras were pruned.
    - Both skills were then **consolidated into `.agent/skills/`** to match this repo's convention; the CLI's `.agents/` folder and `skills-lock.json` were removed. We are **not** using `npx skills` going forward — update these prompt files by hand.
    - ⚠️ `to-prd` expects a project issue tracker + label vocabulary to publish into. fiorevera has none yet — in iteration 2, either wire it to GitHub Issues on this repo or have it emit the PRD as a local markdown file.
-3. **Resolve the open questions** with `grill-me` — interview, one question at a time, to settle business name, current URL, locale scope, page list, brand palette, and hosting target. `grill-me` walks the decision tree until there is shared understanding. This must come **before** the PRD (see Honest Critique #2).
-4. **Synthesize the PRD** with `to-prd` — turn the resolved understanding into a PRD. `to-prd` does **not** interview; it synthesizes what is already known — which is exactly why step 3 comes first.
-5. **Document the master plan** — freeze the PRD into a single execution contract (`MASTER-PLAN.md`): a numbered, point-by-point checklist the agent follows **verbatim** during the build. Every build action must trace to a numbered item; nothing gets built that isn't on the list. This is the anti-drift gate. Each item links back to its PRD user story / decision.
-6. **Source & optimize content** — gather her real photography + copy; convert to `webp` ≤ 200 KB into `public/assets/` (per `qa-specialist` rules). A decoration site **is** its imagery — a hard build blocker, not an afterthought.
-7. **Reshape / prune the skills** for the decoration domain (see table below), guided by the master plan. Drop any skill that doesn't earn its place at this site's scale (see Honest Critique #4).
-8. **QR-code quick win** — iPhone-lockscreen QR to her current live site via `lockscreen-qr-generator`. Independent of the rest — can ship as soon as the URL (step 3) is known.
+3. **Gather references & brand assets** — collect the inspiration example pages we want to draw from, plus brand tokens (font style, logo, favicon), and audit the **legacy origin site [www.fiorevera.hu](https://www.fiorevera.hu)** as the starting baseline. These feed both the PRD and the `design-system-expert` reshape. Store them under a `references/` area in the repo.
+4. **Draft the PRD — interview mode** (NOT the `to-prd` skill yet) — the agent interviews directly, one question at a time, to resolve the open questions and shape an initial PRD draft.
+5. **Iterate & write the real PRD** — stress-test the draft with `grill-me`, then commit it to a real PRD document. (`to-prd` is deferred to a later iteration, once a publish/issue-tracker target exists.)
+6. **Document the master plan** — freeze the PRD into a single execution contract (`MASTER-PLAN.md`): a numbered, point-by-point checklist the agent follows **verbatim** during the build. Every build action must trace to a numbered item; nothing gets built that isn't on the list. This is the anti-drift gate. Each item links back to its PRD user story / decision.
+7. **Source & optimize content** — gather her real photography + copy; convert to `webp` ≤ 200 KB into `public/assets/` (per `qa-specialist` rules). A decoration site **is** its imagery — a hard build blocker, not an afterthought.
+8. **Reshape the skills** for the decoration domain (see table below), guided by the master plan. **All 8 are kept by design** — see Ecosystem Vision and Honest Critique #4.
+9. **Quick win → ecosystem** — ship the iPhone-lockscreen QR (her digital visit card → fiorevera.hu) first via `lockscreen-qr-generator`; the Mac wallpaper (company representation) and the full showcase site follow as the ecosystem builds out.
 
 ### Skills to reshape (iteration 2)
 
@@ -49,31 +51,44 @@ The `.agent/skills/` folder currently holds the **GaborPortfolio versions verbat
 | `i18n-guardian` | Confirm locale set (HU primary? + EN/DE); re-key all copy |
 | `qa-specialist` | Keep DoD pipeline; re-baseline vitals/E2E for new pages |
 | `skill-creator` | Keep — meta skill |
-| `lockscreen-qr-generator` | Repurpose for the QR quick-win (step 8) |
-| `desktop-background-generator` | Evaluate relevance; likely dropped (see Honest Critique #4) |
+| `lockscreen-qr-generator` | iPhone lockscreen QR — her digital visit card → fiorevera.hu (step 9) |
+| `desktop-background-generator` | **Keep** — Mac wallpaper / company representation (ecosystem vision) |
+
+---
+
+## Ecosystem Vision
+
+The website is one surface of a unified **digital + physical brand** for the floristry & decoration business:
+
+- **Website** — the showcase / portfolio of her work (the core build), replacing the legacy [www.fiorevera.hu](https://www.fiorevera.hu).
+- **iPhone lockscreen QR** — her phone becomes a digital visit card: people scan it in person and land on the site.
+- **Mac wallpaper** — company representation on her working machine, part of a consistent brand presence.
+
+This is why all 8 skills are retained: `lockscreen-qr-generator` and `desktop-background-generator` aren't portfolio leftovers — they are pillars of the ecosystem.
 
 ---
 
 ## Honest Critique
 
-Per AGENT.md, every plan must challenge its own assumptions. Top risks in this plan, ordered by impact:
+Per AGENT.md, every plan must challenge its own assumptions. Top risks, ordered by impact, each with the decision taken:
 
-1. **Architecture mismatch — reuse the stack, rebuild the IA.** GaborPortfolio is a single-person *showcase* (projects, KPIs, "Mission Control" carousel). A decoration business is a *small-business marketing site* (gallery, services, about, contact/booking). The tech stack + QA pipeline transfer cleanly; the information architecture and data contracts (`projects.ts`, `kpis.ts`, Mission Control) do **not**. Treat `src/data` and `src/pages` as a **rebuild**, not a reskin — don't force floral content into a KPI carousel.
-2. **`grill-me` must precede `to-prd`.** `to-prd` explicitly does not interview — it synthesizes known context. Running it while the open questions are unresolved yields a hallucinated PRD (violates zero-hallucination). Hence the reordered steps 3→4.
-3. **Imagery and hosting are first-class, not afterthoughts.** A decoration site lives on its photography (step 6) and needs a named deploy target (open questions). Both were absent from the first draft and are real build blockers.
-4. **Scope: prune skills to fit a ~5-page site.** 8 domain skills is portfolio-scale over-engineering. `desktop-background-generator` and the Mission Control asset generators add nothing here; `i18n-guardian` collapses if HU-only. Keep only what earns its place — decide once locale + page count are fixed.
+1. **Architecture mismatch.** GaborPortfolio is a single-person *showcase* (projects, KPIs, "Mission Control" carousel); a decoration business is a *marketing site* (gallery, services, about, contact). The stack + QA pipeline transfer cleanly; the IA and data contracts (`projects.ts`, `kpis.ts`, Mission Control) do not. **Decision (accepted, known risk):** keep the GaborPortfolio base and extend it with new content blocks + multiple pages rather than rebuilding from scratch. The IA divergence is managed during the build.
+2. **PRD sequencing.** `to-prd` explicitly does not interview — it synthesizes known context, so running it against unresolved questions yields a hallucinated PRD. **Decision:** iteration-1 PRD is drafted in the agent's **interview mode** (not `to-prd`), iterated with `grill-me`, then written to a real PRD. `to-prd` deferred.
+3. **Imagery, references & hosting are first-class.** A decoration site lives on its photography and visual references; it also needs a deploy target. **Decision:** added a references & brand-assets step (incl. legacy-site audit) + a content-sourcing step. Hosting/domain remains an open question.
+4. **Skill scope.** My recommendation was to prune the 8 skills for a small site — **overruled, correctly.** The skill set is intentional: the goal is the full digital + physical ecosystem above, where `desktop-background-generator` (Mac wallpaper) and `lockscreen-qr-generator` (iPhone visit card) are core pillars, not the QR quick win alone.
 
 ---
 
 ## Open Questions (resolve at start of iteration 2)
 
-- [ ] **Business name** — is it literally "Fiore Vera"? (inferred from the repo name)
-- [ ] **Current live website URL** — required for the QR-code quick win.
-- [ ] **Primary locale(s)** — HU only, or HU/EN/DE like the portfolio? (decides whether `i18n-guardian` stays)
-- [ ] **Brand palette & typography** — drives the `design-system-expert` reshape.
-- [ ] **Page list** — confirm via the PRD (gallery, services, about, contact, …).
-- [ ] **Hosting & domain** — where does the *new* site deploy (GitHub Pages / Netlify / Vercel), under what domain? The QR (step 8) points at the *current* site; the goal is to replace it.
-- [ ] **Content / photography** — does she have a usable photo set, or must it be shot/sourced first? (gates step 6)
+- [x] **Business name** — **Fiore Vera**. *(confirmed)*
+- [x] **Current live website URL** — [www.fiorevera.hu](https://www.fiorevera.hu) — legacy origin; QR target & baseline. *(confirmed)*
+- [ ] **Primary locale(s)** — `.hu` suggests Hungarian primary; confirm whether EN/DE are also needed (decides whether `i18n-guardian` stays multi-locale).
+- [ ] **Brand palette & typography** — drives the `design-system-expert` reshape; partly derivable from the legacy site + chosen references (step 3).
+- [ ] **Inspiration references** — which example sites/pages to draw from? (collected in step 3)
+- [ ] **Page list** — confirm via the PRD (gallery, services, about, contact, …); multiple pages expected.
+- [ ] **Hosting & domain** — where does the *new* site deploy (GitHub Pages / Netlify / Vercel)? Does it take over the `fiorevera.hu` domain once ready?
+- [ ] **Content / photography** — does she have a usable photo set, or must it be shot/sourced first? (gates step 7)
 
 ---
 
