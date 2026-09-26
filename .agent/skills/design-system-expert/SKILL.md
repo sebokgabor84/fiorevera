@@ -1,19 +1,23 @@
 ---
 name: design-system-expert
-description: Handles UI/UX design changes, ensures fluid typography, prevents text overflow, enforces the Steampunk design system, manages AI image/asset generation, and ensures professional craftsmanship in code and content.
+description: >-
+  Handles UI/UX design changes, ensures fluid typography, prevents text overflow,
+  enforces Fiore Vera's romantic rustic-elegant design system (linen background,
+  soft sage, muted blush, warm gold, Cormorant Garamond, Inter), manages AI image/asset
+  generation, and ensures professional craftsmanship in code and content.
 ---
 
-# Design System Expert Skill
+# Design System Expert Skill — Fiore Vera Domain
 
-Enforces GaborPortfolio's CSS architecture and visual identity — fluid layouts, the Steampunk aesthetic, and AI asset generation standards. This is a showcase project; quality must impress.
+Enforces Fiore Vera's visual identity — fluid layouts, romantic rustic-elegant aesthetic, organic floral styling, and high-fidelity image asset standards.
 
 *(Note: Color contrast ratios for accessibility → `accessibility-expert`. SEO `alt` and CLS attributes → `seo-expert`.)*
 
 ## When to use this skill
-- Fixing mWeb (mobile) layout or horizontal scroll issues
-- Modifying padding, margins, Flexbox, or Grid layouts
-- Generating or replacing any image/video asset
-- Enforcing the Steampunk component UI design
+- Fixing mobile layout or horizontal scroll issues
+- Modifying padding, margins, Flexbox, or CSS Grid layouts
+- Generating or replacing any floral/decoration image or lockscreen asset
+- Enforcing the Fiore Vera brand UI design (colors, typography, components)
 
 ## How to use it
 
@@ -26,30 +30,32 @@ Enforces GaborPortfolio's CSS architecture and visual identity — fluid layouts
 | **Modern layout** | CSS Grid + Flexbox with `gap`. Always `flex-wrap: wrap` or `flex-direction` change for small screens. Every container: `max-width: 100%` + `box-sizing: border-box`. |
 | **Safety Layer** | Group all layout-breaking fixes into a named "Safety Layer" in the CSS. |
 | **CSS Variables** | All theme values (colors, spacing, font scales) use Custom Properties — no magic numbers. |
-| **No Tailwind** | Vanilla CSS Modules or Inline Styles mapped to variables only. |
-| **Icons** | Always SVG — aim for non-pixelated rendering. |
-| **Zero-Selector 60fps** | Avoid React re-renders for animations. Use `useRef` for DOM elements and `rAF` (requestAnimationFrame) for updates. Update `style.setProperty` directly. |
-| **Performance Loop** | Use `IntersectionObserver` to stop/start animation loops when components are off-screen to save CPU/battery. |
-| **Cinematic HUD** | Use hardware-accelerated fixed backdrops (`body::before`) instead of `background-attachment: fixed`. Centralize background swaps via CSS variables. |
-| **Glassmorphism** | Content panels should use `.glass-panel` or `.glass-panel-subtle` utility classes with `backdrop-filter: blur()`. |
+| **Vanilla CSS** | Vanilla CSS Modules or Inline Styles mapped to variables. |
+| **Icons** | Always SVG — high precision, non-pixelated. |
+| **Glassmorphism** | Warm glass effect using `.glass-panel` (`rgba(255, 253, 250, 0.85)` + `backdrop-filter: blur(12px)` + soft border). |
 
-### 2. Steampunk Design System
+### 2. Fiore Vera Design System
 
-**Aesthetic**: "Fancy Steampunk Futuristic Elegant Dark Mode" — Polished Copper, Brushed Gold, Carbon Fiber, Mahogany, Glowing Vacuum Tubes.
+**Aesthetic**: "Romantic, Rustic-Elegant, Warm & Organic" — Warm Linen, Soft Sage Leaves, Muted Blush Peonies, Warm Antique Gold, Subtle Grain Textures.
 
-| Token | Value |
-|---|---|
-| `--color-bg-dark` | `#121010` |
-| `--color-copper` | `#b87333` — **Large text / decorative borders only** (contrast ~4.48:1) |
-| `--color-gold` | `#d4af37` |
-| `--color-text-main` | `#e0dacc` |
-| `--glass-bg` | `rgba(18, 16, 16, 0.75)` (standard) |
-| `--glass-blur` | `blur(12px)` (cinematic standard) |
-| `--glass-border` | `1px solid rgba(184, 115, 51, 0.2)` |
+| Token | CSS Variable | Value | Purpose |
+|---|---|---|---|
+| **Background Linen** | `--color-bg-linen` | `#faf7f2` | Primary page background (warm off-white/linen) |
+| **Card / Surface** | `--color-surface` | `#ffffff` | Elevated card & section surface |
+| **Primary Text** | `--color-text-main` | `#2c2825` | Deep charcoal/espresso for body text |
+| **Muted Text** | `--color-text-muted` | `#6b635b` | Secondary labels & captions |
+| **Soft Sage Accent** | `--color-sage` | `#7a8b7b` | Primary botanical accent / subtle highlights |
+| **Muted Blush** | `--color-blush` | `#e8c5c8` | Soft romantic floral accent |
+| **Warm Gold** | `--color-gold` | `#d4af37` | Premium decorative accent & borders |
+| **Glass Backdrop** | `--glass-bg` | `rgba(250, 247, 242, 0.85)` | Airy header & glass panels |
+| **Glass Border** | `--glass-border` | `1px solid rgba(212, 175, 55, 0.25)` | Gold-tinted border |
 
-**Typography**: Headings → `Courier New` (mechanical feel). Body → `system-ui`. Fluid scales with `clamp()`.
+**Typography**:
+- **Headings & Titles**: `Cormorant Garamond`, `Playfair Display`, or fallback `serif` (elegant, high-contrast serif).
+- **Body & Controls**: `Inter`, `Lato`, or fallback `sans-serif` (clean, highly legible).
+- **Fluid Scales**: All headings scaled dynamically with `clamp()`.
 
-**Touch targets**: Internal `padding` inside interactive elements to satisfy the 48×48px rule *(handshake: `accessibility-expert`)*.
+**Touch targets**: Minimum 48×48px interactive target area *(handshake: `accessibility-expert`)*.
 
 ### 3. Asset Generation Rules
 

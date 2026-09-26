@@ -1,0 +1,14 @@
+{
+  "version": "1.0",
+  "description": "Fiore Vera Harness Engineering Hooks",
+  "hooks": {
+    "session_start": [
+      {
+        "name": "auto_boot_sequence",
+        "action": "read_file",
+        "path": ".agent/last-session-handover.md",
+        "description": "Automatically load last session handover and AGENTS.md boot sequence state."
+      }
+    ]
+  }
+}

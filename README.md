@@ -34,7 +34,7 @@ The goal is to build Fiore Vera on the **GaborPortfolio base** — same proven t
 3. **Gather references & brand assets** — collect the inspiration example pages we want to draw from, plus brand tokens (font style, logo, favicon), and audit the **legacy origin site [www.fiorevera.hu](https://www.fiorevera.hu)** as the starting baseline. These feed both the PRD and the `design-system-expert` reshape. Store them under a `references/` area in the repo.
 4. **Draft the PRD — interview mode** (NOT the `to-prd` skill yet) — the agent interviews directly, one question at a time, to resolve the open questions and shape an initial PRD draft.
 5. **Iterate & write the real PRD** — stress-test the draft with `grill-me`, then commit it to a real PRD document. (`to-prd` is deferred to a later iteration, once a publish/issue-tracker target exists.)
-6. **Document the master plan** — freeze the PRD into a single execution contract (`MASTER-PLAN.md`): a numbered, point-by-point checklist the agent follows **verbatim** during the build. Every build action must trace to a numbered item; nothing gets built that isn't on the list. This is the anti-drift gate. Each item links back to its PRD user story / decision. *(Relationship to `BACKLOG.md`: the master plan is the **frozen, closed scope** for this build; `BACKLOG.md` — per AGENT.md — captures **emergent / out-of-scope** ideas found mid-build. New ideas go to the backlog, never silently into the master plan.)*
+6. **Document the master plan** — freeze the PRD into a single execution contract (`MASTER-PLAN.md`): a numbered, point-by-point checklist the agent follows **verbatim** during the build. Every build action must trace to a numbered item; nothing gets built that isn't on the list. This is the anti-drift gate. Each item links back to its PRD user story / decision. *(Relationship to `BACKLOG.md`: the master plan is the **frozen, closed scope** for this build; `BACKLOG.md` — per AGENTS.md — captures **emergent / out-of-scope** ideas found mid-build. New ideas go to the backlog, never silently into the master plan.)*
 7. **Source & optimize content** — gather her real photography + copy; convert to `webp` ≤ 200 KB into `public/assets/` (per `qa-specialist` rules). A decoration site **is** its imagery — a hard build blocker, not an afterthought.
 8. **Reshape the skills** for the decoration domain (see table below), guided by the master plan — **`design-system-expert` first**, since the palette / typography / component system drives everything built in step 9. All 8 kept by design (see Ecosystem Vision / Honest Critique #4).
 9. **Build the site — incremental slices** — build **one vertical slice at a time** (a single page or section), each tracing to a `MASTER-PLAN.md` item. Per-slice loop: build → `lint` + unit → **visual verification** (run the dev server, view it in a real browser / screenshot, eyeball against the references) → commit → next slice. **No slice is "done" until it has been seen** — the `qa-specialist` DoD checks lint/test/vitals but *not* whether it looks right, so the visual gate is mandatory. This step — not the planning — is where drift kills agentic builds.
@@ -73,7 +73,7 @@ This is why all 8 skills are retained: `lockscreen-qr-generator` and `desktop-ba
 
 ## Honest Critique
 
-Per AGENT.md, every plan must challenge its own assumptions. The risks below were raised across reviews — all are now resolved (each with the decision taken); remaining items are execution tasks, not open risks.
+Per AGENTS.md, every plan must challenge its own assumptions. The risks below were raised across reviews — all are now resolved (each with the decision taken); remaining items are execution tasks, not open risks.
 
 1. ✅ **Architecture mismatch.** GaborPortfolio is a single-person *showcase* (projects, KPIs, "Mission Control" carousel); a decoration business is a *marketing site* (gallery, services, about, contact). The stack + QA pipeline transfer cleanly; the IA and data contracts (`projects.ts`, `kpis.ts`, Mission Control) do not. **Resolved (accepted, known risk):** keep the GaborPortfolio base and extend it with new content blocks + multiple pages rather than rebuilding from scratch. The IA divergence is managed during the build.
 2. ✅ **PRD sequencing.** `to-prd` explicitly does not interview — it synthesizes known context, so running it against unresolved questions yields a hallucinated PRD. **Resolved:** iteration-1 PRD is drafted in the agent's **interview mode** (not `to-prd`), iterated with `grill-me`, then written to a real PRD. `to-prd` deferred.
@@ -111,7 +111,7 @@ fiorevera/
 │   ├── i18n/locales/     # (empty — en/de/hu json added in iteration 2)
 │   └── pages/            # (empty)
 ├── tests/e2e/            # (empty)
-├── AGENT.md              # agent router (identity adapted; skill routing inherited)
+├── AGENTS.md              # agent router (identity adapted; skill routing inherited)
 ├── index.html           # adapted shell (Fiore Vera placeholders)
 ├── package.json          # name=fiorevera; deps/scripts from template
 └── [tsconfig*, vite, eslint, prettier, playwright, .gitignore, .env.example]
