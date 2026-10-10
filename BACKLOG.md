@@ -7,13 +7,13 @@
 
 ## 🟢 Open / Next Up
 
-- [ ] **[ASSETS]** Generate iPhone QR Lockscreen wallpaper with `fiorevera.hu` target URL — `.agent/skills/lockscreen-qr-generator/SKILL.md` _(added: 2026-09-26)_
 - [ ] **[PRD]** Draft PRD via `/grill-me` session to freeze MASTER-PLAN.md — `MASTER-PLAN.md` _(added: 2026-09-26)_
 
 ---
 
 ## 📦 Completed
 
+- [x] **[ASSETS]** Generate iPhone QR Lockscreen wallpaper for `fiorevera.hu` — `public/assets/lockscreen/fiore-vera-lockscreen-final.png` _(completed: 2026-10-10)_
 - [x] **[DESIGN]** Reshape `design-system-expert` skill for floral/event decoration domain — `.agent/skills/design-system-expert/SKILL.md` _(completed: 2026-09-26)_
 - [x] **[HARNESS]** Consolidate `AGENT.md` into `AGENTS.md` per Vibe Coding standards — `AGENTS.md` _(completed: 2026-09-26)_
 - [x] **[HARNESS]** Create `.agent/hooks.json` for session-start boot injection — `.agent/hooks.json` _(completed: 2026-09-26)_
