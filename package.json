@@ -12,7 +12,8 @@
     "test:e2e": "playwright test",
     "test:vitals": "playwright test tests/e2e/vitals.spec.ts",
     "preview": "vite preview",
-    "optimize:assets": "node scripts/optimize-images.js"
+    "optimize:assets": "node scripts/optimize-images.js",
+    "lockscreen": "npx tsx scripts/generate-lockscreen.ts"
   },
   "dependencies": {
     "i18next": "^25.7.4",
@@ -33,6 +34,7 @@
     "@testing-library/user-event": "^14.6.1",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.10.1",
+    "@types/qrcode": "^1.5.6",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
@@ -45,7 +47,9 @@
     "globals": "^16.5.0",
     "jsdom": "^27.4.0",
     "prettier": "^3.7.4",
+    "qrcode": "^1.5.4",
     "sharp": "^0.34.5",
+    "tsx": "^4.23.15",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
     "vite": "^7.2.4",
