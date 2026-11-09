@@ -45,12 +45,11 @@
 :global(body.menu-open) .toast {
   display: none;
 }
-/* Narrow screens: the CTA also grows to fill the row. */
-@media (max-width: 39.99rem) {
-  .actions > :first-child {
-    flex: 1 1 auto;
-    justify-content: center;
-  }
+/* Same at every width (owner decision 2026-11-09): the CTA grows to fill the row, the × sits
+   flush right — no breakpoint-dependent variants of this component. */
+.actions > :first-child {
+  flex: 1 1 auto;
+  justify-content: center;
 }
 @media (min-width: 40rem) {
   .toast {

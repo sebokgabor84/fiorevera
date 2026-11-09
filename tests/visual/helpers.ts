@@ -35,9 +35,15 @@ export const SNAPSHOT_HEIGHT = 1500;
  * Deterministic page state: toast pre-dismissed, animations and smooth scroll off, fonts ready,
  * every lazy image decoded (scroll-through), then back to the top.
  */
-export const openStable = async (page: Page, path: string, width: number, height = 900): Promise<void> => {
+export const openStable = async (
+  page: Page,
+  path: string,
+  width: number,
+  height = 900,
+  { keepToast = false }: { keepToast?: boolean } = {}
+): Promise<void> => {
   await page.setViewportSize({ width, height });
-  await page.addInitScript(() => localStorage.setItem('fv-lang-toast-dismissed', '1'));
+  if (!keepToast) await page.addInitScript(() => localStorage.setItem('fv-lang-toast-dismissed', '1'));
   await page.goto(path);
   await page.addStyleTag({
     content: 'html{scroll-behavior:auto!important}*,*::before,*::after{animation:none!important;transition:none!important}',

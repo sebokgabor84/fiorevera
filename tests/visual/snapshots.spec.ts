@@ -28,6 +28,18 @@ test.describe('header strip across desktop widths', () => {
   }
 });
 
+test.describe('language toast (German browser on the HU home)', () => {
+  test.use({ locale: 'de-DE' });
+  for (const width of SNAPSHOT_WIDTHS) {
+    test(`toast @ ${width}`, async ({ page }) => {
+      await openStable(page, PAGES[0].path, width, 812, { keepToast: true });
+      const toast = page.getByTestId('language-toast');
+      await expect(toast).toBeVisible();
+      await expect(toast).toHaveScreenshot(`toast-${width}.png`);
+    });
+  }
+});
+
 test.describe('interactive states', () => {
   test('mobile menu open @ 375', async ({ page }) => {
     await openStable(page, PAGES[0].path, 375, 812);
