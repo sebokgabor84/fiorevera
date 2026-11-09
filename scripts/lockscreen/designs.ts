@@ -59,8 +59,8 @@ interface Rect {
   height: number;
 }
 
-/** Crop of the painted wreath inside wreath-source.jpg (768×1376). */
-const WREATH_CROP: Rect = { left: 40, top: 368, width: 700, height: 667 };
+/** Region of wreath-source.jpg (700×667, already cropped to the painted wreath). */
+const WREATH_CROP: Rect = { left: 0, top: 0, width: 700, height: 667 };
 /** The thin ornamental frame painted inside the wreath, in crop coordinates. */
 const WREATH_BAND: Rect = { left: 153, top: 140, width: 377, height: 370 };
 
