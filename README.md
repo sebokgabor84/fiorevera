@@ -10,12 +10,13 @@ Website for a decoration & floristry business, built on the agent-driven, skill-
 
 | | |
 |---|---|
-| **Current iteration** | 1 — repository scaffold + plan + planning skills installed |
-| **Next iteration** | 2 — references → interview-mode PRD → grill → real PRD → master plan → reshape skills → incremental build (visual-gated) → Vercel launch |
+| **Current iteration** | 2a — PRD confirmed (`docs/PRD.md`) + `MASTER-PLAN.md` frozen (34 numbered items); QR lockscreen shipped (parallel track) |
+| **Next iteration** | 2b/2c — `MASTER-PLAN.md` Phase 0: archive legacy site → image pipeline → reshape remaining skills; then Phase 1 app shell → Phase 2 pages (visual-gated) → launch |
 | **Local path** | `/Users/gabor.seboek/Documents/Projects/Private/fiorevera` |
 | **Remote** | `https://github.com/sebokgabor84/fiorevera` |
 | **Template source** | `/Users/gabor.seboek/Documents/Projects/Private/Learning/GaborPortfolio` |
-| **Business / legacy site** | **Fiore Vera** — legacy origin: [www.fiorevera.hu](https://www.fiorevera.hu) (baseline to improve on; QR target) |
+| **Business / legacy site** | **Fiore Vera** — legacy origin: [www.fiorevera.hu](https://www.fiorevera.hu) (Webnode; baseline to improve on; QR target) |
+| **PRD / scope** | [`docs/PRD.md`](docs/PRD.md) (decisions D-1…D-17, stories US-1…US-12) → frozen in [`MASTER-PLAN.md`](MASTER-PLAN.md) |
 
 ---
 
@@ -32,10 +33,10 @@ The goal is to build Fiore Vera on the **GaborPortfolio base** — same proven t
    - Both skills were then **consolidated into `.agent/skills/`** to match this repo's convention; the CLI's `.agents/` folder and `skills-lock.json` were removed. We are **not** using `npx skills` going forward — update these prompt files by hand.
    - ⚠️ `to-prd` expects a project issue tracker + label vocabulary to publish into. fiorevera has none yet — in iteration 2, either wire it to GitHub Issues on this repo or have it emit the PRD as a local markdown file.
 3. **Gather references & brand assets** — collect the inspiration example pages we want to draw from, plus brand tokens (font style, logo, favicon), and audit the **legacy origin site [www.fiorevera.hu](https://www.fiorevera.hu)** as the starting baseline. These feed both the PRD and the `design-system-expert` reshape. Store them under a `references/` area in the repo.
-4. **Draft the PRD — interview mode** (NOT the `to-prd` skill yet) — the agent interviews directly, one question at a time, to resolve the open questions and shape an initial PRD draft.
-5. **Iterate & write the real PRD** — stress-test the draft with `grill-me`, then commit it to a real PRD document. (`to-prd` is deferred to a later iteration, once a publish/issue-tracker target exists.)
-6. **Document the master plan** — freeze the PRD into a single execution contract (`MASTER-PLAN.md`): a numbered, point-by-point checklist the agent follows **verbatim** during the build. Every build action must trace to a numbered item; nothing gets built that isn't on the list. This is the anti-drift gate. Each item links back to its PRD user story / decision. *(Relationship to `BACKLOG.md`: the master plan is the **frozen, closed scope** for this build; `BACKLOG.md` — per AGENTS.md — captures **emergent / out-of-scope** ideas found mid-build. New ideas go to the backlog, never silently into the master plan.)*
-7. **Source & optimize content** — gather her real photography + copy; convert to `webp` ≤ 200 KB into `public/assets/` (per `qa-specialist` rules). A decoration site **is** its imagery — a hard build blocker, not an afterthought.
+4. **Draft the PRD — interview mode** (NOT the `to-prd` skill yet) — the agent interviews directly, one question at a time, to resolve the open questions and shape an initial PRD draft. *(done — 2026-11-09, 13 branches resolved; legacy site audited first)*
+5. **Iterate & write the real PRD** — stress-test the draft with `grill-me`, then commit it to a real PRD document. (`to-prd` is deferred to a later iteration, once a publish/issue-tracker target exists.) *(done — [`docs/PRD.md`](docs/PRD.md))*
+6. **Document the master plan** — freeze the PRD into a single execution contract (`MASTER-PLAN.md`): a numbered, point-by-point checklist the agent follows **verbatim** during the build. Every build action must trace to a numbered item; nothing gets built that isn't on the list. This is the anti-drift gate. Each item links back to its PRD user story / decision. *(done — [`MASTER-PLAN.md`](MASTER-PLAN.md), 34 items in 5 phases)* *(Relationship to `BACKLOG.md`: the master plan is the **frozen, closed scope** for this build; `BACKLOG.md` — per AGENTS.md — captures **emergent / out-of-scope** ideas found mid-build. New ideas go to the backlog, never silently into the master plan.)*
+7. **Source & optimize content** — **decided (PRD D-5):** reuse the legacy CDN photos only (169 images, ≤ 1920 px), archived first by `scripts/archive-legacy.ts`, then converted to `webp` ≤ 200 KB into `public/assets/`. Copy: legacy HU rewritten + natively translated, Vera signs off (D-12). The build blocker is now copy sign-off, not photos.
 8. **Reshape the skills** for the decoration domain (see table below), guided by the master plan — **`design-system-expert` first**, since the palette / typography / component system drives everything built in step 9. All 8 kept by design (see Ecosystem Vision / Honest Critique #4).
 9. **Build the site — incremental slices** — build **one vertical slice at a time** (a single page or section), each tracing to a `MASTER-PLAN.md` item. Per-slice loop: build → `lint` + unit → **visual verification** (run the dev server, view it in a real browser / screenshot, eyeball against the references) → commit → next slice. **No slice is "done" until it has been seen** — the `qa-specialist` DoD checks lint/test/vitals but *not* whether it looks right, so the visual gate is mandatory. This step — not the planning — is where drift kills agentic builds.
 10. **Launch / cutover** — deploy to **Vercel**, point the `fiorevera.hu` domain at the new site, retire the legacy page. Definition of *shipped* = new site live on the domain + legacy retired.
@@ -88,11 +89,16 @@ Per AGENTS.md, every plan must challenge its own assumptions. The risks below we
 - [x] **Business name** — **Fiore Vera**. *(confirmed)*
 - [x] **Current live website URL** — [www.fiorevera.hu](https://www.fiorevera.hu) — legacy origin; QR target & baseline. *(confirmed)*
 - [x] **Locales** — **multilingual HU / EN / DE**, like GaborPortfolio (HU primary). `i18n-guardian` stays multi-locale. *(confirmed)*
-- [ ] **Brand palette & typography** — drives the `design-system-expert` reshape; partly derivable from the legacy site + chosen references (step 3).
+- [x] **Brand palette & typography** — locked in `design-system-expert` (linen / sage / blush / gold; Cormorant Garamond + Inter). *(confirmed 2026-09-26)*
 - [/] **Inspiration references** — seed list (more to come; treated as basic starting points): [akerteszlanya.hu](https://www.akerteszlanya.hu/), [naturalweddingdecor.hu](https://naturalweddingdecor.hu/). Expanded + audited in step 3.
-- [ ] **Page list** — confirm via the PRD (gallery, services, about, contact, …); multiple pages expected.
+- [x] **Page list** — **7 pages**: Home, Services, Gallery, Prop Rental, About, Contact, Privacy. Flower Garden **paused** (garden on hold through the dry summers, planned to return; 301 → About, revertible). Routes for HU/DE/EN in PRD D-3. *(confirmed 2026-11-09)*
 - [x] **Hosting** — **Vercel** *(decided; not yet set up — setup is an iteration-2 task)*. Domain: take over `fiorevera.hu` once the new site is ready (timing TBD).
-- [ ] **Content / photography** — does she have a usable photo set, or must it be shot/sourced first? (gates step 7)
+- [x] **Content / photography** — reuse the legacy site's ~169 professional wedding photos from the Webnode CDN as a replaceable first set; asset structure built for swapping (PRD D-5, risk R-2). *(confirmed 2026-11-09)*
+- [x] **Rendering** — prerender every route to static HTML at build time to protect current rankings (PRD D-18). *(confirmed 2026-11-09)*
+- [x] **Services** — 3 pillars: full wedding decoration, wedding floristry (seasonal, sourced), prop rental with HUF catalog (PRD D-8). *(confirmed 2026-11-09)*
+- [x] **Contact flow** — Web3Forms/Formspree form + direct links; cookieless Vercel Analytics, no consent banner (PRD D-9, D-10). *(confirmed 2026-11-09)*
+- [x] **Locale behaviour** — no auto-redirect; language-suggestion toast under the switcher (PRD D-4). *(confirmed 2026-11-09)*
+- [ ] **DNS / registrar access** for `fiorevera.hu` — who holds the login? (PRD R-7; needed at MASTER-PLAN 4.3)
 
 ---
 
