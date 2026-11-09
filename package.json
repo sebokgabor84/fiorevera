@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:form": "tsx scripts/fake-form-provider.ts --dev",
+    "form:fake": "tsx scripts/fake-form-provider.ts",
     "build": "tsx scripts/generate-sitemap.ts && tsc -b && vite build && vite build --ssr src/entry-server.tsx --outDir dist-ssr && tsx scripts/prerender.ts",
     "lint": "eslint .",
     "format": "prettier --write .",
