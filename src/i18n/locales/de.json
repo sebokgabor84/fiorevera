@@ -219,7 +219,7 @@
     "hero": {
       "eyebrow": "Referenzen",
       "title": "Hochzeiten, die ich dekorieren durfte",
-      "intro": "Jede Hochzeit ist anders – ein anderer Ort, ein anderes Paar, eine andere Geschichte. Hier findet ihr meine Arbeiten der letzten Jahre: Klickt oder tippt auf ein Album und blättert durch die Bilder."
+      "intro": "Jede Hochzeit ist anders – ein anderer Ort, ein anderes Paar, eine andere Geschichte. Hier findet ihr meine Arbeiten der letzten Jahre: Blättert mit den Pfeilen oder per Wischen durch die Bilder."
     },
     "albumAlt": "Hochzeitsdekoration – {{title}}, {{venue}}, Bild {{n}}",
     "albumAltNoVenue": "Hochzeitsdekoration – {{title}}, Bild {{n}}",
@@ -233,13 +233,11 @@
       "AT": "Österreich"
     },
     "carousel": {
-      "open": "Album öffnen: {{title}}",
       "label": "Bilder: {{title}}",
       "prev": "Vorheriges Bild",
       "next": "Nächstes Bild",
-      "close": "Zurück zum Titelbild",
       "status": "Bild {{n}} von {{total}}",
-      "hint": "Mit den Pfeiltasten blättern, mit Esc schließen"
+      "hint": "Mit den Pfeiltasten oder durch Wischen blättern"
     },
     "cta": {
       "title": "Soll eure Hochzeit auch hier erscheinen?",
@@ -256,7 +254,7 @@
       "title": "So funktioniert es",
       "steps": {
         "choose": "Wählt aus meinem Mietangebot.",
-        "reserve": "Reserviert die Artikel per E-Mail für den großen Tag – je früher, desto sicherer.",
+        "reserve": "Reserviert die Artikel per E-Mail für den großen Tag – je früher, desto sicherer. Oder ruft einfach an und wir besprechen alles 🙂 {{phone}}",
         "pickup": "Abholung persönlich in Zalakaros zu einem vereinbarten Termin.",
         "ask": "Bei Fragen könnt ihr mich auch gerne anrufen."
       }

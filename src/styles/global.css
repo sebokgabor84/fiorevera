@@ -267,3 +267,10 @@ blockquote {
   word-break: break-word;
   hyphens: auto;
 }
+
+/* Mobile menu open: lock page scroll only while the panel can actually be shown (< 70rem). */
+@media (max-width: 69.99rem) {
+  body.menu-open {
+    overflow: hidden;
+  }
+}

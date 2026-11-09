@@ -1,20 +1,36 @@
+/*
+ * The header always carries its own frosted-linen surface (design-system glass panel).
+ * Over a photo hero the raw image spans black reeds to white linen, so no text colour or
+ * text-shadow can guarantee WCAG 1.4.3; an 85 % linen surface keeps #2c2825 text ≥ 10:1
+ * in the worst case. Scrolling only adds the gold hairline and a deeper shadow.
+ */
 .header {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: transparent;
-  border-bottom: 1px solid transparent;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.08);
+  box-shadow: 0 2px 12px rgba(44, 40, 37, 0.04);
   transition:
-    background var(--dur-base) var(--ease-out),
     border-color var(--dur-base) var(--ease-out),
     box-shadow var(--dur-base) var(--ease-out);
 }
-.scrolled {
+/*
+ * The glass lives on a pseudo-element, not on .header itself: `backdrop-filter` makes an
+ * element the containing block for fixed descendants, which would trap the mobile menu
+ * panel inside the header box and let page content paint over it.
+ */
+.header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
   background: var(--glass-bg);
   -webkit-backdrop-filter: var(--glass-blur);
   backdrop-filter: var(--glass-blur);
+}
+.scrolled {
   border-bottom: var(--glass-border);
-  box-shadow: 0 6px 24px rgba(44, 40, 37, 0.05);
+  box-shadow: 0 6px 24px rgba(44, 40, 37, 0.08);
 }
 .bar {
   display: flex;

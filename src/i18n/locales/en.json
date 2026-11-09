@@ -219,7 +219,7 @@
     "hero": {
       "eyebrow": "Portfolio",
       "title": "Weddings I had the pleasure of decorating",
-      "intro": "Every wedding is different – a different venue, a different couple, a different story. Here is my work from the past years: click or tap an album and browse the pictures."
+      "intro": "Every wedding is different – a different venue, a different couple, a different story. Here is my work from the past years: browse the pictures with the arrows or by swiping."
     },
     "albumAlt": "Wedding decoration – {{title}}, {{venue}}, photo {{n}}",
     "albumAltNoVenue": "Wedding decoration – {{title}}, photo {{n}}",
@@ -233,13 +233,11 @@
       "AT": "Austria"
     },
     "carousel": {
-      "open": "Open album: {{title}}",
       "label": "Photos: {{title}}",
       "prev": "Previous photo",
       "next": "Next photo",
-      "close": "Back to the cover",
       "status": "Photo {{n}} of {{total}}",
-      "hint": "Use the arrow keys to browse, Esc to close"
+      "hint": "Use the arrow keys or swipe to browse"
     },
     "cta": {
       "title": "Would you like your wedding here too?",
@@ -256,7 +254,7 @@
       "title": "How it works",
       "steps": {
         "choose": "Choose from my rental items.",
-        "reserve": "Reserve them by email for your big day – the earlier, the safer.",
+        "reserve": "Reserve them by email for your big day – the earlier, the safer. Or just call me and we will sort it out 🙂 {{phone}}",
         "pickup": "Collect them in person in Zalakaros at an agreed time.",
         "ask": "Any questions? Feel free to call."
       }

@@ -12,25 +12,45 @@ test.describe('gallery (PRD D-6/D-7)', () => {
     expect(await page.locator('main section[id]').count()).toBe(15);
     for (const a of albums) await expect(page.locator(`#${a.id}`)).toBeAttached();
     expect(imageRequests.length, 'all gallery images requested on load').toBeLessThan(169 / 4);
+    // Slides mount once a section is near the viewport: first album has all its slides, the last only its cover.
+    await expect(page.locator(`#${albums[0].id} ul img`)).toHaveCount(albums[0].coverIndex >= 0 ? await page.locator(`#${albums[0].id} ul li`).count() : 0);
+    expect(await page.locator(`#${albums[14].id} ul img`).count()).toBe(1);
   });
 
-  test('tap/click turns the cover into a carousel with arrows, status and Escape', async ({ page }) => {
+  test('every album is a carousel with always-visible arrows; arrows and keys navigate', async ({ page }) => {
     await page.goto('/munkaim/');
     const first = page.locator(`#${albums[0].id}`);
-    await first.getByRole('button').first().click();
     const region = first.getByRole('region');
     await expect(region).toBeVisible();
     await expect(region).toHaveAttribute('aria-roledescription', 'carousel');
+    const prev = region.getByRole('button').nth(0);
+    const next = region.getByRole('button').nth(1);
+    await expect(prev).toBeVisible();
+    await expect(next).toBeVisible();
+    // Controls sit above the images: the point at the arrow's centre hits the button itself.
+    await next.scrollIntoViewIfNeeded();
+    const box = await next.boundingBox();
+    expect(box).not.toBeNull();
+    const hit = await page.evaluate(
+      ([x, y]) => document.elementFromPoint(x, y)?.closest('button')?.getAttribute('aria-label') ?? null,
+      [box!.x + box!.width / 2, box!.y + box!.height / 2]
+    );
+    expect(hit).toBe(await next.getAttribute('aria-label'));
+
     const status = region.locator('[aria-live="polite"]');
-    await expect(status).toContainText(`${albums[0].coverIndex + 1}.`);
-    await region.getByRole('button').nth(1).click(); // next
-    await expect(status).toContainText(`${albums[0].coverIndex + 2}.`);
+    await expect(status).toContainText('1.');
+    const size = async () => {
+      const b = await region.boundingBox();
+      return b && { width: b.width, height: b.height };
+    };
+    const sizeBefore = await size();
+    await next.click();
+    await expect(status).toContainText('2.');
     await region.locator('ul').focus();
     await page.keyboard.press('ArrowLeft');
-    await expect(status).toContainText(`${albums[0].coverIndex + 1}.`);
-    await page.keyboard.press('Escape');
-    await expect(first.getByRole('region')).toHaveCount(0);
-    await expect(first.getByRole('button').first()).toBeFocused();
+    await expect(status).toContainText('1.');
+    // No jumping content: the carousel box keeps its size while slides change.
+    expect(await size()).toEqual(sizeBefore);
   });
 
   test('deep link to an album anchor scrolls it into view', async ({ page }) => {

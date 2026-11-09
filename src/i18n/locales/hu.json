@@ -219,7 +219,7 @@
     "hero": {
       "eyebrow": "Munkáim",
       "title": "Esküvők, amiket díszíthettem",
-      "intro": "Minden esküvő más – más helyszín, más pár, más történet. Itt találod az elmúlt évek munkáit: kattints vagy koppints egy albumra, és lapozz bele a képekbe."
+      "intro": "Minden esküvő más – más helyszín, más pár, más történet. Itt találod az elmúlt évek munkáit: lapozz a nyilakkal vagy húzással, és nézd végig a képeket."
     },
     "albumAlt": "Esküvői dekoráció – {{title}}, {{venue}}, {{n}}. kép",
     "albumAltNoVenue": "Esküvői dekoráció – {{title}}, {{n}}. kép",
@@ -233,13 +233,11 @@
       "AT": "Ausztria"
     },
     "carousel": {
-      "open": "Album megnyitása: {{title}}",
       "label": "Képek: {{title}}",
       "prev": "Előző kép",
       "next": "Következő kép",
-      "close": "Vissza a borítóképhez",
       "status": "{{n}}. kép, összesen {{total}}",
-      "hint": "Nyilakkal lapozhatsz, Esc-kel bezárhatod"
+      "hint": "Nyilakkal vagy húzással lapozhatsz"
     },
     "cta": {
       "title": "Szeretnéd, hogy a ti esküvőtök is ide kerüljön?",
@@ -256,7 +254,7 @@
       "title": "Hogyan működik?",
       "steps": {
         "choose": "Válasszatok a bérelhető kellékeim közül.",
-        "reserve": "Foglaljátok le őket e-mailben a Nagy Napra – minél korábban, annál biztosabb.",
+        "reserve": "Foglaljátok le őket e-mailben a Nagy Napra – minél korábban, annál biztosabb. Vagy csak hívj fel, és megbeszéljük 🙂 {{phone}}",
         "pickup": "Személyes átvétel Zalakaroson, előre egyeztetett időpontban.",
         "ask": "Bármilyen kérdés merül fel, keressetek nyugodtan telefonon is."
       }

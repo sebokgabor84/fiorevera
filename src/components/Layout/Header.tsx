@@ -36,10 +36,11 @@ export const Header = () => {
     if (!open) return;
     const first = panelRef.current?.querySelector<HTMLElement>(FOCUSABLE);
     first?.focus();
-    const { overflow } = document.body.style;
-    document.body.style.overflow = 'hidden';
+    // Scroll lock via a class scoped to the mobile breakpoint in global.css, so a resize to
+    // desktop or a hot reload while the menu is open can never leave the page unscrollable.
+    document.body.classList.add('menu-open');
     return () => {
-      document.body.style.overflow = overflow;
+      document.body.classList.remove('menu-open');
     };
   }, [open]);
 

@@ -25,7 +25,7 @@ export const RentalPage = () => {
           <h2 style={{ fontSize: 'var(--fs-xl)' }}>{t('rental.howTo.title')}</h2>
           <ol className={rentalStyles.howTo}>
             {HOW_TO.map((k) => (
-              <li key={k}>{t(`rental.howTo.steps.${k}`)}</li>
+              <li key={k}>{t(`rental.howTo.steps.${k}`, { phone: contact.phoneDisplay })}</li>
             ))}
           </ol>
           {locale !== 'hu' && <p className={rentalStyles.note}>{t('rental.currencyNote')}</p>}
