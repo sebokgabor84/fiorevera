@@ -2,7 +2,8 @@ import { useId, useState, type FormEvent } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { contact } from '../../data/contact';
 import { useLocale } from '../../i18n/localeContext';
-import { submitInquiry } from '../../lib/submitInquiry';
+import { buildMailto } from '../../lib/inquiryMailto';
+import { inquirySubject, submitInquiry, type InquiryPayload } from '../../lib/submitInquiry';
 import { LocalizedLink } from '../Common/LocalizedLink';
 import styles from './inquiry-form.module.css';
 
@@ -21,6 +22,8 @@ export const InquiryForm = () => {
   const id = useId();
   const [status, setStatus] = useState<Status>('idle');
   const [errors, setErrors] = useState<Errors>({});
+  /** The payload of the last failed submission — feeds the prefilled mailto fallback. */
+  const [failed, setFailed] = useState<InquiryPayload | null>(null);
 
   const validate = (data: FormData): Errors => {
     const e: Errors = {};
@@ -50,7 +53,7 @@ export const InquiryForm = () => {
       return;
     }
     setStatus('sending');
-    const result = await submitInquiry({
+    const payload: InquiryPayload = {
       name: String(data.get('name') ?? ''),
       email: String(data.get('email') ?? ''),
       phone: String(data.get('phone') ?? ''),
@@ -59,11 +62,14 @@ export const InquiryForm = () => {
       message: String(data.get('message') ?? ''),
       website: String(data.get('website') ?? ''),
       locale,
-    });
+    };
+    const result = await submitInquiry(payload);
     if (result.ok) {
+      setFailed(null);
       setStatus('success');
       form.reset();
     } else {
+      setFailed(payload);
       setStatus('error');
     }
   };
@@ -150,11 +156,24 @@ export const InquiryForm = () => {
         {errorEl('consent')}
       </div>
 
-      {status === 'error' && (
-        <p className={styles.formError} role="alert">
-          {t('contact.form.error')}{' '}
-          <a href={`mailto:${contact.email}`}>{contact.email}</a>
-        </p>
+      {status === 'error' && failed && (
+        <div className={styles.formError} role="alert">
+          <p className={styles.formErrorText}>{t('contact.form.error')}</p>
+          {/* Provider down / offline / rate-limited → hand the typed inquiry to the visitor's own mail app. */}
+          <a
+            className={`btn btn--ghost ${styles.mailFallback}`}
+            href={buildMailto(contact.email, inquirySubject(failed.name), [
+              { label: t('contact.form.name'), value: failed.name },
+              { label: t('contact.form.email'), value: failed.email },
+              { label: t('contact.form.phone'), value: failed.phone },
+              { label: t('contact.form.date'), value: failed.date },
+              { label: t('contact.form.venue'), value: failed.venue },
+              { label: t('contact.form.message'), value: failed.message },
+            ])}
+          >
+            {t('contact.form.mailFallback')}
+          </a>
+        </div>
       )}
 
       <button type="submit" className="btn btn--primary" disabled={status === 'sending'}>

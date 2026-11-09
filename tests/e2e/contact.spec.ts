@@ -2,6 +2,16 @@ import { test, expect } from '@playwright/test';
 import { T, hu } from './locales';
 import { LOCALES, ROUTES } from '../../src/data/routes';
 
+/**
+ * Every host the app may post to: the fake host playwright.config.ts injects into its managed dev server,
+ * plus the real providers, in case the dev server under test was started with a real VITE_FORM_ENDPOINT
+ * (e.g. from .env.local). Mocking all of them keeps these tests offline and never hits a real inbox.
+ */
+const PROVIDER_HOSTS = ['**/mock-form-endpoint.test/**', '**/api.web3forms.com/**', '**/formspree.io/**'];
+const mockProvider = async (page: import('@playwright/test').Page, handler: Parameters<typeof page.route>[1]) => {
+  for (const host of PROVIDER_HOSTS) await page.route(host, handler);
+};
+
 
 const fill = async (page: import('@playwright/test').Page, locale: keyof typeof T) => {
   const f = T[locale].contact.form;
@@ -26,7 +36,7 @@ test.describe('contact form (PRD D-9, US-10)', () => {
 
   for (const locale of LOCALES) {
     test(`${locale}: success path with a mocked provider`, async ({ page }) => {
-      await page.route('**/mock-form-endpoint.test/**', (route) =>
+      await mockProvider(page, (route) =>
         route.fulfill({ status: 200, contentType: 'application/json', body: '{"success":true}' })
       );
       await page.goto(ROUTES.contact[locale]);
@@ -41,13 +51,16 @@ test.describe('contact form (PRD D-9, US-10)', () => {
 
   test('failure path shows the error with the email fallback', async ({ page }) => {
     // Provider unreachable (no endpoint, or the mocked host aborted) → inline error + mailto fallback.
-    await page.route('**/mock-form-endpoint.test/**', (route) => route.abort('failed'));
+    await mockProvider(page, (route) => route.abort('failed'));
     await page.goto('/kapcsolat/');
     await fill(page, 'hu');
     await page.getByRole('button', { name: hu.contact.form.submit }).click();
     const err = page.getByRole('alert').filter({ hasText: hu.contact.form.error });
     await expect(err).toBeVisible();
-    await expect(err.locator('a[href^="mailto:"]')).toBeVisible();
+    const fallback = err.locator('a[href^="mailto:"]');
+    await expect(fallback).toBeVisible();
+    // The fallback carries the typed inquiry (subject + body), so nothing has to be retyped in the mail app.
+    await expect(fallback).toHaveAttribute('href', /\?subject=.+&body=.*Zalakaros/);
     await expect(page.getByTestId('inquiry-form')).toBeVisible();
   });
 });

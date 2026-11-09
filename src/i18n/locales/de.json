@@ -376,6 +376,7 @@
       "sending": "Wird gesendet …",
       "success": "Danke für eure Nachricht! Ich melde mich bald über die angegebenen Kontaktdaten.",
       "error": "Die Nachricht konnte nicht gesendet werden. Bitte versucht es noch einmal oder schreibt mir direkt per E-Mail.",
+      "mailFallback": "Im E-Mail-Programm öffnen",
       "errors": {
         "required": "Dieses Feld ist erforderlich.",
         "email": "Bitte gib eine gültige E-Mail-Adresse an.",

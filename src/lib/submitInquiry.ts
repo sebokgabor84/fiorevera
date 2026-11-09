@@ -18,6 +18,9 @@ export interface InquiryPayload {
 
 export type InquiryResult = { ok: true } | { ok: false; reason: 'spam' | 'config' | 'network' | 'rejected' };
 
+/** Subject line of the delivered mail — shared with the mailto fallback so both paths look the same in the inbox. */
+export const inquirySubject = (name: string): string => `Árajánlatkérés – fiorevera.hu (${name})`;
+
 export const submitInquiry = async (payload: InquiryPayload, fetchImpl: typeof fetch = fetch): Promise<InquiryResult> => {
   if (payload.website) return { ok: true }; // silently drop bots
   const endpoint = import.meta.env.VITE_FORM_ENDPOINT as string | undefined;
@@ -31,7 +34,7 @@ export const submitInquiry = async (payload: InquiryPayload, fetchImpl: typeof f
     venue: payload.venue,
     message: payload.message,
     locale: payload.locale,
-    subject: `Árajánlatkérés – fiorevera.hu (${payload.name})`,
+    subject: inquirySubject(payload.name),
   };
   if (accessKey) body.access_key = accessKey;
   try {

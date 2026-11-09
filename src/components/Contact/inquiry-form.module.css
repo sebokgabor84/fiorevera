@@ -79,6 +79,15 @@
   background: rgba(155, 59, 59, 0.08);
   color: var(--color-error);
 }
+.formErrorText {
+  margin: 0 0 var(--space-3);
+}
+/* Long label in HU/DE — let it wrap inside the error box on narrow phones instead of overflowing. */
+.formError .mailFallback {
+  max-width: 100%;
+  white-space: normal;
+  text-align: center;
+}
 .success {
   border-color: var(--color-sage);
 }

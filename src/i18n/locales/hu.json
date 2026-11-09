@@ -376,6 +376,7 @@
       "sending": "Küldés…",
       "success": "Köszönöm az üzenetet! Hamarosan jelentkezem a megadott elérhetőségen.",
       "error": "Az üzenetet nem sikerült elküldeni. Kérlek, próbáld újra, vagy írj közvetlenül e-mailben.",
+      "mailFallback": "Megnyitás a levelezőprogramban",
       "errors": {
         "required": "Ez a mező kötelező.",
         "email": "Kérlek, érvényes e-mail címet adj meg.",
