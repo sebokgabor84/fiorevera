@@ -17,7 +17,12 @@
     "lockscreen:variants": "npx tsx scripts/generate-lockscreen-variants.ts",
     "archive:legacy": "tsx scripts/archive-legacy.ts",
     "validate:i18n": "tsx scripts/validate-i18n.ts",
-    "sitemap": "tsx scripts/generate-sitemap.ts"
+    "sitemap": "tsx scripts/generate-sitemap.ts",
+    "test:visual": "playwright test -c playwright.visual.config.ts",
+    "test:visual:update": "node scripts/visual-approve.mjs",
+    "prepush": "npm run lint && npm test -- --run && npm run build && npm run test:visual",
+    "prepare": "git config core.hooksPath .githooks",
+    "visual:review": "playwright test -c playwright.visual.config.ts --reporter=html; playwright show-report playwright-report-visual"
   },
   "dependencies": {
     "i18next": "^25.7.4",

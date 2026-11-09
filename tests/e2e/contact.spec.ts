@@ -14,6 +14,9 @@ const fill = async (page: import('@playwright/test').Page, locale: keyof typeof 
 };
 
 test.describe('contact form (PRD D-9, US-10)', () => {
+  // The language toast is covered by locale.spec; here it would only sit over the submit button on phones.
+  test.beforeEach(({ page }) => page.addInitScript(() => localStorage.setItem('fv-lang-toast-dismissed', '1')));
+
   test('shows field errors and focuses the first invalid field', async ({ page }) => {
     await page.goto('/kapcsolat/');
     await page.getByRole('button', { name: hu.contact.form.submit }).click();

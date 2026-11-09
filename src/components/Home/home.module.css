@@ -107,7 +107,8 @@
 .reasonIndex {
   font-family: var(--font-heading);
   font-size: var(--fs-xl);
-  color: var(--color-gold);
+  /* sage-deep, not gold: gold on white is 2.1:1 (QA M7); sage-deep is AA on linen/white */
+  color: var(--color-sage-deep);
   display: block;
   margin-bottom: var(--space-2);
 }
@@ -269,7 +270,6 @@
 }
 
 @media (min-width: 48rem) {
-  .reasons,
   .cards {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -281,5 +281,12 @@
   }
   .about {
     grid-template-columns: 2fr 3fr;
+  }
+}
+
+/* Reason cards go three-up only when each column is wide enough to avoid hyphen-heavy text (QA M12). */
+@media (min-width: 64rem) {
+  .reasons {
+    grid-template-columns: repeat(3, 1fr);
   }
 }

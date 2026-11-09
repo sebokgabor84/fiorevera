@@ -33,6 +33,7 @@ describe('image pipeline output (MASTER-PLAN 0.2)', () => {
       expect(a.width).toBeGreaterThan(0);
       expect(a.height).toBeGreaterThan(0);
       expect(statSync(path.resolve('public', a.src.slice(1))).size).toBeGreaterThan(0);
+      expect(statSync(path.resolve('public', a.srcMedium.slice(1))).size).toBeGreaterThan(0);
       expect(statSync(path.resolve('public', a.srcSmall.slice(1))).size).toBeGreaterThan(0);
     }
   });

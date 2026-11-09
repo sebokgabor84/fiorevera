@@ -54,6 +54,11 @@
 .track::-webkit-scrollbar {
   display: none;
 }
+/* The carousel clips overflow, so the global 3px outline (+3px offset) would be invisible (QA M11). */
+.track:focus-visible {
+  outline-offset: -4px;
+  border-radius: var(--radius-lg);
+}
 .slide {
   flex: 0 0 100%;
   scroll-snap-align: start;

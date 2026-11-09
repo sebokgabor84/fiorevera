@@ -47,7 +47,6 @@
     "openMenu": "Menü megnyitása",
     "closeMenu": "Menü bezárása",
     "menu": "Menü",
-    "logoLabel": "Fiore Vera – kezdőlap",
     "quote": "Kérj árajánlatot"
   },
   "lang": {
@@ -55,8 +54,7 @@
     "hu": "Magyar",
     "de": "Deutsch",
     "en": "English",
-    "switchTo": "Váltás erre a nyelvre: {{lang}}",
-    "current": "Jelenlegi nyelv: {{lang}}"
+    "current": "jelenlegi nyelv"
   },
   "toast": {
     "body": "Ez az oldal magyarul is elérhető.",
@@ -72,7 +70,9 @@
     "readMore": "Tovább",
     "backToTop": "Vissza az oldal tetejére",
     "openInMaps": "Megnyitás térképen",
-    "newTab": "(új lapon nyílik)"
+    "newTab": "(új lapon nyílik)",
+    "skipToContent": "Ugrás a tartalomra",
+    "noscript": "Az oldal teljes működéséhez engedélyezd a JavaScriptet a böngésződben."
   },
   "home": {
     "hero": {
@@ -242,7 +242,8 @@
     "cta": {
       "title": "Szeretnéd, hogy a ti esküvőtök is ide kerüljön?",
       "button": "Kérj árajánlatot"
-    }
+    },
+    "and": "és"
   },
   "rental": {
     "hero": {
@@ -418,7 +419,8 @@
     "pagesTitle": "Oldalak",
     "languagesTitle": "Nyelvek",
     "rights": "Minden jog fenntartva.",
-    "areas": "Szolgáltatási terület: {{areas}}"
+    "areas": "Szolgáltatási terület: {{areas}}",
+    "socialLabel": "Közösségi média"
   },
   "testimonials": {
     "nagy-orsolya": "Nagyon szépen köszönjük az elképesztően csodálatos, lelkiismeretes, kedves, segítőkész, gyönyörű, precíz, személyre szabott és alázatos munkátokat!! Bátran ajánljuk mindenkinek.",

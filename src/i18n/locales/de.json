@@ -47,7 +47,6 @@
     "openMenu": "Menü öffnen",
     "closeMenu": "Menü schließen",
     "menu": "Menü",
-    "logoLabel": "Fiore Vera – Startseite",
     "quote": "Angebot anfragen"
   },
   "lang": {
@@ -55,8 +54,7 @@
     "hu": "Magyar",
     "de": "Deutsch",
     "en": "English",
-    "switchTo": "Sprache wechseln zu {{lang}}",
-    "current": "Aktuelle Sprache: {{lang}}"
+    "current": "aktuelle Sprache"
   },
   "toast": {
     "body": "Diese Seite gibt es auch auf Deutsch.",
@@ -72,7 +70,9 @@
     "readMore": "Mehr",
     "backToTop": "Zurück nach oben",
     "openInMaps": "In Karten öffnen",
-    "newTab": "(öffnet in neuem Tab)"
+    "newTab": "(öffnet in neuem Tab)",
+    "skipToContent": "Zum Inhalt springen",
+    "noscript": "Für die volle Funktion der Seite aktiviert bitte JavaScript in eurem Browser."
   },
   "home": {
     "hero": {
@@ -242,7 +242,8 @@
     "cta": {
       "title": "Soll eure Hochzeit auch hier erscheinen?",
       "button": "Angebot anfragen"
-    }
+    },
+    "and": "und"
   },
   "rental": {
     "hero": {
@@ -418,7 +419,8 @@
     "pagesTitle": "Seiten",
     "languagesTitle": "Sprachen",
     "rights": "Alle Rechte vorbehalten.",
-    "areas": "Einsatzgebiet: {{areas}}"
+    "areas": "Einsatzgebiet: {{areas}}",
+    "socialLabel": "Soziale Medien"
   },
   "testimonials": {
     "nagy-orsolya": "Wir danken euch ganz herzlich für eure unglaublich wundervolle, gewissenhafte, freundliche, hilfsbereite, schöne, präzise, maßgeschneiderte und bescheidene Arbeit! Wir empfehlen euch uneingeschränkt weiter.",

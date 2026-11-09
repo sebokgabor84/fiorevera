@@ -6,33 +6,31 @@ import type { Album } from './types';
  * Covers are a first pass chosen from the archive contact sheet — Vera re-picks (MASTER-PLAN 1.3).
  */
 export const albums: Album[] = [
-  { id: 'klaudia-thomas', couple: 'Klaudia és Thomas', venue: { name: 'Hannersberg', town: null, country: 'AT' }, coverIndex: 1 },
-  { id: 'reka-arpi', couple: 'Réka és Árpi', venue: { name: 'István Fogadó', town: 'Sormás', country: 'HU' }, coverIndex: 3 },
-  { id: 'szilvi-lala', couple: 'Szilvi és Lala', venue: { name: 'István Fogadó', town: 'Sormás', country: 'HU' }, coverIndex: 0 },
-  { id: 'fanni-sanyi', couple: 'Fanni és Sanyi', venue: { name: 'Mocz tanya', town: 'Somogyszob', country: 'HU' }, coverIndex: 1 },
-  { id: 'heni-krisztian', couple: 'Heni és Krisztián', venue: { name: 'The Houses of History', town: 'Tihany', country: 'HU' }, coverIndex: 3 },
-  { id: 'annamari-feri', couple: 'Annamari és Feri', venue: { name: null, town: 'Teskánd', country: 'HU' }, coverIndex: 2 },
+  { id: 'klaudia-thomas', partners: ['Klaudia', 'Thomas'], venue: { name: 'Hannersberg', town: null, country: 'AT' }, coverIndex: 1 },
+  { id: 'reka-arpi', partners: ['Réka', 'Árpi'], venue: { name: 'István Fogadó', town: 'Sormás', country: 'HU' }, coverIndex: 3 },
+  { id: 'szilvi-lala', partners: ['Szilvi', 'Lala'], venue: { name: 'István Fogadó', town: 'Sormás', country: 'HU' }, coverIndex: 0 },
+  { id: 'fanni-sanyi', partners: ['Fanni', 'Sanyi'], venue: { name: 'Mocz tanya', town: 'Somogyszob', country: 'HU' }, coverIndex: 1 },
+  { id: 'heni-krisztian', partners: ['Heni', 'Krisztián'], venue: { name: 'The Houses of History', town: 'Tihany', country: 'HU' }, coverIndex: 3 },
+  { id: 'annamari-feri', partners: ['Annamari', 'Feri'], venue: { name: null, town: 'Teskánd', country: 'HU' }, coverIndex: 2 },
   {
     id: 'eskuvo-classic-magazin-fotozas',
-    couple: 'Esküvő Classic Magazin',
     titleKey: 'gallery.albumTitles.eskuvo-classic-magazin-fotozas',
     venue: { name: 'Almafa Rendezvényház', town: 'Kőszegfalva', country: 'HU' },
     coverIndex: 1,
   },
-  { id: 'orsi-anti', couple: 'Orsi és Anti', venue: { name: 'Öko-tó, Boni Hotel', town: 'Zalakaros', country: 'HU' }, coverIndex: 1 },
-  { id: 'dori-misi', couple: 'Dóri és Misi', venue: { name: 'Berényi Fogadó', town: 'Nagyrécse', country: 'HU' }, coverIndex: 4 },
-  { id: 'adri-gabor', couple: 'Adri és Gábor', venue: { name: 'Batthyány Wellnesskastély', town: 'Zalacsány', country: 'HU' }, coverIndex: 2 },
+  { id: 'orsi-anti', partners: ['Orsi', 'Anti'], venue: { name: 'Öko-tó, Boni Hotel', town: 'Zalakaros', country: 'HU' }, coverIndex: 1 },
+  { id: 'dori-misi', partners: ['Dóri', 'Misi'], venue: { name: 'Berényi Fogadó', town: 'Nagyrécse', country: 'HU' }, coverIndex: 4 },
+  { id: 'adri-gabor', partners: ['Adri', 'Gábor'], venue: { name: 'Batthyány Wellnesskastély', town: 'Zalacsány', country: 'HU' }, coverIndex: 2 },
   {
     id: 'teli-fotozas-2022',
-    couple: 'Téli fotózás 2022',
     titleKey: 'gallery.albumTitles.teli-fotozas-2022',
     venue: { name: 'Csónakázó-tó', town: 'Nagykanizsa', country: 'HU' },
     coverIndex: 2,
   },
-  { id: 'csilla-andras-1', couple: 'Csilla és András', venue: { name: 'Kehida Kapuja', town: 'Kehidakustány', country: 'HU' }, coverIndex: 2 },
-  { id: 'csilla-andras-2', couple: 'Csilla és András', venue: { name: null, town: 'Pat', country: 'HU' }, coverIndex: 2 },
-  { id: 'klaudia-roland', couple: 'Klaudia és Roland', venue: { name: 'Vándor Vigadó', town: 'Zalaegerszeg', country: 'HU' }, coverIndex: 1 },
-  { id: 'andrea-pal', couple: 'Andrea és Pál', venue: { name: 'Medgyaszay-ház', town: 'Nagykanizsa', country: 'HU' }, coverIndex: 2 },
+  { id: 'csilla-andras-1', partners: ['Csilla', 'András'], venue: { name: 'Kehida Kapuja', town: 'Kehidakustány', country: 'HU' }, coverIndex: 2 },
+  { id: 'csilla-andras-2', partners: ['Csilla', 'András'], venue: { name: null, town: 'Pat', country: 'HU' }, coverIndex: 2 },
+  { id: 'klaudia-roland', partners: ['Klaudia', 'Roland'], venue: { name: 'Vándor Vigadó', town: 'Zalaegerszeg', country: 'HU' }, coverIndex: 1 },
+  { id: 'andrea-pal', partners: ['Andrea', 'Pál'], venue: { name: 'Medgyaszay-ház', town: 'Nagykanizsa', country: 'HU' }, coverIndex: 2 },
 ];
 
 /** Album ids shown as the homepage gallery teaser (D-13 §4). */

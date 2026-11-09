@@ -114,7 +114,7 @@ ol {
 /* ---------- Utilities ---------- */
 .container {
   width: 100%;
-  max-width: var(--content-max);
+  max-width: min(100%, var(--content-max));
   margin-inline: auto;
   padding-inline: var(--gutter);
 }
@@ -248,10 +248,11 @@ ol {
 }
 
 /* ---------- Safety Layer (design-system-expert) ---------- */
+/* Never list .container here: an equal-specificity `max-width: 100%` after the utility
+   overrode `--content-max` on every page (QA 2026-11-09, M1). */
 body,
 main,
-section,
-.container {
+section {
   max-width: 100%;
 }
 h1,
@@ -265,7 +266,20 @@ figcaption,
 blockquote {
   overflow-wrap: anywhere;
   word-break: break-word;
-  hyphens: auto;
+}
+/* Hyphenation only where lines are genuinely short: body text on narrow screens, never headings. */
+@media (max-width: 48rem) {
+  p,
+  li,
+  figcaption,
+  blockquote {
+    hyphens: auto;
+  }
+}
+
+/* Language toast shown (bottom-anchored): keep the page end reachable above it. */
+body.toast-visible {
+  padding-bottom: 7rem;
 }
 
 /* Mobile menu open: lock page scroll only while the panel can actually be shown (< 70rem). */

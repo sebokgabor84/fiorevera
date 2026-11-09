@@ -15,7 +15,9 @@ describe('server render of every route (PRD D-18, MASTER-PLAN 1.2/1.9)', () => {
       expect(html).toContain(`<link rel="canonical" href="https://www.fiorevera.hu${path}"/>`);
       for (const l of LOCALES) expect(html).toMatch(new RegExp(`hreflang="${l}" href="https://www.fiorevera.hu${ROUTES[page][l]}"`, "i"));
       expect(html).toMatch(/hreflang="x-default"/i);
-      expect(html).toContain('"@type":"LocalBusiness"');
+      expect(html).toContain('"@type":["Florist","LocalBusiness"]');
+      // One stable business entity: url is the locale home, never the current page (QA M3).
+      expect(html).toContain(`"url":"https://www.fiorevera.hu${localePrefix(locale)}/"`);
       expect(html).toContain('id="main-content"');
     });
   }

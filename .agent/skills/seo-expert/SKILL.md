@@ -1,242 +1,131 @@
 ---
 name: seo-expert
-description: Enforces Technical SEO, Lighthouse Performance optimization, SPA/CSR dynamic meta injection, and per-route structured data. Supports both SPA (Client-Side Rendering) and SSG architectures. Use this skill when configuring meta tags, optimizing loading speed (LCP/CLS), structured data, hreflang maps, or adding/changing routes. Also use when auditing or fixing base HTML (favicon, heading hierarchy, lang attribute, manifest, robots.txt, sitemap).
+description: >-
+  Technical SEO for the prerendered Fiore Vera site (HU/DE/EN, static HTML per
+  route on Vercel): per-route head contract in SeoHead, hreflang + canonical,
+  LocalBusiness/ImageGallery JSON-LD, the 404 rule, sitemap/robots, legacy URL
+  preservation and the two 301s, image loading, Lighthouse runs against
+  `vite preview`. Use when touching `src/data/routes.ts`, `SeoHead.tsx`,
+  `scripts/prerender.ts`, `scripts/generate-sitemap.ts`, `vercel.json`, meta
+  copy in `meta.*` keys, or when auditing LCP/CLS/SEO scores.
 ---
 
-# SEO & Lighthouse Performance Expert Skill
+# SEO Expert — Fiore Vera
 
-Rendering strategy, Lighthouse scores, and technical SEO. Project-agnostic — specifics live in config variables.
+Keeping the legacy rankings is a hard requirement (PRD D-18, Goal 4, US-9). Every route is
+prerendered to `dist/<route>/index.html`, so the head must be correct **without JavaScript**.
 
-*(WCAG → `accessibility-expert`. i18n keys → `i18n-guardian`. Image format → `design-system-expert`.)*
+*(WCAG → `accessibility-expert`. Locale keys and leaks → `i18n-guardian`. Image art direction → `design-system-expert`.)*
 
-## Config Variables
-Projects MUST define: `{DOMAIN}`, `{LOCALES}` (array), `{DEFAULT_LOCALE}`, `{ROUTES}` (array), `{PERSON_SCHEMA}` (JSON-LD).
+## When to use
+- Adding or changing a route, slug or redirect (`src/data/routes.ts`, `vercel.json`)
+- Editing `src/components/Seo/SeoHead.tsx`, `scripts/prerender.ts`, `scripts/generate-sitemap.ts`, `public/robots.txt`
+- Writing or reviewing `meta.<page>.title|description` in `src/i18n/locales/*.json`
+- Adding JSON-LD to a page, changing images above the fold, chasing Lighthouse numbers (MASTER-PLAN 3.3, 4.4)
 
-## When to use this skill
-- Adding/modifying routes or pages
-- Editing `<head>` elements (meta, OG, Twitter Cards, hreflang)
-- Optimizing Lighthouse (LCP, CLS, font preloading)
-- Auditing or fixing favicon, heading structure, lang attribute, manifest, robots.txt
-- Writing SEO-focused tests
+## Architecture facts (read before editing)
 
----
-
-## How to use it
-
-### 1. Rendering Mode — Choose One
-
-#### A) SPA / CSR — `react-router-dom` with `BrowserRouter` (Current Active Strategy)
-- Per-route SEO is injected via `useEffect` in a `<SeoHead />` component (see Section 2).
-- There is **no static HTML per route** — Googlebot must execute JS to read SEO tags.
-- Use `preconnect`, font preload, and `fetchpriority` in the static `index.html`.
-- "SSR Verify" does not apply — use the SPA Crawl Check in Section 5 instead.
-
-#### B) SSG — React Router v7 Framework Mode (Optional)
-- Use `@react-router/dev` Vite plugin with file-based `routes/` directory.
-- `react-router.config.ts`: list all `{ROUTES}` in `prerender()`. Set `ssr: false` for static hosting.
-- Build: `"build": "react-router build"`. Output: static HTML per route in `build/client/`.
-
----
-
-### 2. Per-Route SEO — `<SeoHead />` Component
-
-Every route renders `<SeoHead />` with `PageSeoProps`:
-
-| Prop | Rule |
+| Fact | Where |
 |---|---|
-| `title` | ≤ 60 chars, **unique per route** |
-| `description` | ≤ 155 chars, **unique per route** |
-| `canonicalUrl` | `{DOMAIN}` + route path, must match actual deployed domain exactly |
-| `ogImage` | Absolute URL to route-specific or fallback image |
-| `locale` | Current i18n locale code (e.g. `en`, `{LOCALE}`) |
-| `jsonLd` | `Person` (home), `CollectionPage` (listings), etc. |
+| **One route source**: `ROUTES`, `REDIRECTS`, `SITE_URL = https://www.fiorevera.hu`, `allRoutes()` (21 = 7 pages × 3 locales), `alternatesFor(page)` (hu/de/en + `x-default` → HU) | `src/data/routes.ts` |
+| HU at root, DE keeps the Webnode slugs (`/de/dienstleistungen/`, `/de/referenzen/`, `/de/verleih/`, `/de/uebermich/`, `/de/kontakt/`, `/de/datenschutz/`), EN is new (`/en/portfolio/`, not "references") | PRD D-3 |
+| `SeoHead` is **plain JSX** — React 19 hoists `<title>/<meta>/<link>/<script type=ld+json>` into `<head>`; no `useEffect`, no `document` | `src/components/Seo/SeoHead.tsx` |
+| Prerender moves the hoistables into `<head>`, swaps `<html lang>`, localizes `<p data-noscript>`, writes one **empty-root `dist/404.html`** with `noindex` | `scripts/prerender.ts` |
+| `trailingSlash: true`, `cleanUrls: false`, no rewrites, two 301s (with and without trailing slash), security headers + CSP | `vercel.json` |
+| Service areas per locale feed `areaServed` and the footer (D-11) | `src/data/serviceAreas.ts` |
 
-Injects via `useEffect`: `document.title`, `<meta>`, `<link canonical>`, hreflang alternates, JSON-LD.
+## 1. Per-route head contract
 
-**SPA: also update `<html lang>` per locale switch:**
-```ts
-useEffect(() => {
-  document.documentElement.lang = locale;
-}, [locale]);
-```
-This is critical — `<html lang="en">` must not be hardcoded when multiple locales exist.
+Exact tag list per page type: `resources/head-contract.md`. Rules:
 
-> 🚨 **Critical Cross-Language Leakage Rule:**
-> NEVER hardcode language-specific strings into `<SeoHead>` components (`title="My Page"`). You MUST use dynamic i18n locale keys (`title={t('seo.home_title')}`). If the `hreflang` / `<html lang>` declares a specific target route but the DOM `<head>` nodes output static strings from a different locale, search indexers will heavily penalize the site with 'Soft 404s' or duplicate content. Always extract structural SEO strings to your locale dictionary files (e.g. `en.json`, `locales/*.json`).
-
----
-
-### 3. Base HTML — Full Checklist
-
-Every project's `index.html` (or `root.tsx` Layout for SSG) **must** contain all of the following. Claude must check each item when touching `<head>`.
-
-#### 3a. Document
-```html
-<html lang="{DEFAULT_LOCALE}">   <!-- Must match actual language; update dynamically for SPA multilingual -->
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-```
-
-#### 3b. Favicon — full stack (all four tags required)
-```html
-<!-- 1. SVG — modern browsers (scalable, dark mode via CSS) -->
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-
-<!-- 2. PNG fallback — legacy browsers, social scrapers, Slack/Teams unfurls -->
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-
-<!-- 3. Apple touch icon — must be PNG, 180×180, no transparency -->
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-
-<!-- 4. Web App Manifest — required for Android homescreen + PWA signals -->
-<link rel="manifest" href="/site.webmanifest" />
-```
-
-> ⚠️ **WebP favicons are NOT valid.** Safari rejects them. ICO is legacy-only. Use SVG + PNG.
-
-`site.webmanifest` minimum content:
-```json
-{
-  "name": "{SITE_NAME}",
-  "short_name": "{SHORT_NAME}",
-  "icons": [
-    { "src": "/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/android-chrome-512x512.png", "sizes": "512x512", "type": "image/png" }
-  ],
-  "theme_color": "{BRAND_COLOR}",
-  "background_color": "{BG_COLOR}",
-  "display": "standalone"
-}
-```
-
-#### 3c. Theme & platform
-```html
-<meta name="theme-color" content="{BRAND_COLOR}" />
-<meta name="msapplication-TileColor" content="{BRAND_COLOR}" />
-```
-
-#### 3d. Primary SEO meta
-```html
-<title>{PAGE_TITLE}</title>                            <!-- ≤ 60 chars, unique per route -->
-<meta name="description" content="{DESCRIPTION}" />   <!-- ≤ 155 chars, unique per route -->
-<meta name="robots" content="index, follow" />
-<meta name="author" content="{AUTHOR}" />
-<link rel="canonical" href="{DOMAIN}{ROUTE_PATH}" />  <!-- Must match deployed domain exactly -->
-```
-
-#### 3e. Open Graph + Twitter
-```html
-<meta property="og:type" content="website" />
-<meta property="og:url" content="{DOMAIN}{ROUTE_PATH}" />
-<meta property="og:title" content="{OG_TITLE}" />
-<meta property="og:description" content="{OG_DESCRIPTION}" />
-<meta property="og:image" content="{ABSOLUTE_OG_IMAGE_URL}" />
-<meta property="og:locale" content="{LOCALE_CODE}" />   <!-- e.g. en_US, de_DE, etc -->
-
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="{OG_TITLE}" />
-<meta name="twitter:description" content="{OG_DESCRIPTION}" />
-<meta name="twitter:image" content="{ABSOLUTE_OG_IMAGE_URL}" />
-```
-
-#### 3f. Performance
-```html
-<!-- Preconnect for any external origin used on page load -->
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-
-<!-- Preload the primary web font (LCP impact) -->
-<link rel="preload" as="font" type="font/woff2" href="{FONT_URL}" crossorigin />
-```
-
-#### 3g. Accessibility & fallback
-```html
-<!-- Skip link (visually hidden until focused) -->
-<a href="#main-content" class="skip-link">Skip to main content</a>
-
-<!-- Noscript fallback — required for React SPA -->
-<noscript>
-  <div>This site requires JavaScript. Please enable it in your browser settings.</div>
-</noscript>
-```
-
----
-
-### 4. Heading Hierarchy — Rules
-
-| Rule | Detail |
-|---|---|
-| **One H1 per route** | Every page/route must have exactly one `<h1>`. This is the primary crawl signal. |
-| **H1 must render in initial viewport** | Particularly important for SPA/CSR — if H1 is below the fold, it still counts, but above-fold is preferred. |
-| **No H1 in `index.html`** | The static shell has no H1 — H1 lives in each route component. |
-| **No skipping levels** | H1 → H2 → H3. Never jump from H1 to H3. |
-| **No heading for styling** | Never use `<h2>` etc. for visual size — use CSS. |
-| **Section pages need their own H1** | If `/featured-projects` has no `<h1>`, Google has no primary signal for that URL. Add one even if visually it looks like a section title. |
-
----
-
-### 5. Technical SEO
-
-| Area | Rule |
-|---|---|
-| **hreflang** | Each route × locale → `<link rel="alternate" hreflang="{L}" href="{DOMAIN}/{L}{R}">`. Plus `x-default`. Must be injected client-side in SPA. |
-| **JSON-LD** | Route-specific. Home → `Person`. Listing → `CollectionPage` + `ItemList`. |
-| **robots.txt** | Must exist at `{DOMAIN}/robots.txt`. Point to sitemap. Disallow `/assets/` if applicable. |
-| **sitemap.xml** | Cover all `{ROUTES}` × `{LOCALES}`. Auto-generate at build time. Reference in robots.txt. |
-| **Canonical domain** | `{DOMAIN}` must be the **exact** deployed domain (protocol + host). Never mix `gaborseboek.com` with `sebokgabor.com` — canonical mismatch is treated as duplicate content. |
-| **`<html lang>`** | Must match the current active locale. Hardcoding `lang="en"` on a multilingual SPA is an accessibility and SEO error. |
-
-**Minimum `robots.txt`:**
-```
-User-agent: *
-Allow: /
-Sitemap: {DOMAIN}/sitemap.xml
-```
-
----
-
-### 6. Lighthouse (Target: 100/100)
-...
----
-
-### 7. Shift-Left SEO Testing (Mandatory)
-
-Every route/page component MUST have a unit test verifying that it correctly initializes the `SeoHead` component with localized data. This prevents silent regression of meta tags into hardcoded English.
-
-**Example Test Pattern:**
-```ts
-it('renders SeoHead with localized home metadata', () => {
-  render(<HomePage />);
-  // We check that SeoHead is called with the correct i18n key result
-  // Note: Mocking i18next or checking the DOM in a unit test depends on implementation
-  expect(document.title).toMatch(/Gabor Seboek/);
-});
-```
-
----
-
-### 8. Technical SEO Summary Table
-
-| Layer | Mechanism | Assertion |
+| Element | Rule | Gate |
 |---|---|---|
-| TypeScript | `PageSeoProps` interface | Compile-time guarantee of required SEO props per route |
-| Unit (Vitest) | `<SeoHead />` isolation test | Valid DOM output from `PageSeoProps` |
-| E2E (Playwright) | `page.goto()` per route, **after JS execution** | Unique `<title>`, `<meta description>`, `<h1>`, hreflang, canonical |
-| **SPA Crawl Check** | `page.goto()` then `page.locator('h1').count()` | Asserts exactly one H1 per route |
-| **Favicon Check** | `page.goto('/favicon.svg')` + `page.goto('/apple-touch-icon.png')` | Both return 200 (not 404) |
-| **robots.txt Check** | `request.get('{DOMAIN}/robots.txt')` | Contains `Sitemap:` directive |
+| `<title>` | from `meta.<page>.title`, **≤ 60 chars**, unique per route, in the page locale | `tests/unit/i18n.test.ts` ("keeps SEO titles ≤ 60…") |
+| `meta description` | `meta.<page>.description`, **70–160 chars**, unique | same test (≤ 160); the lower bound is a review check |
+| `<html lang>` | the route locale (prerender) + `Layout` effect on client navigation | `navigation.spec.ts` |
+| canonical | self-referencing `absoluteUrl(pathFor(page, locale))`; **absent on the 404** | `render.test.tsx`, `seo.spec.ts` |
+| hreflang | `alternatesFor(page)`: `hu`, `de`, `en` + `x-default` → the HU URL; every alternate lists the same set → reciprocal by construction | `render.test.tsx`, `seo.spec.ts` |
+| robots | `index, follow` on pages, `noindex, follow` on the 404 | `render.test.tsx` (404 cases) |
+| OG / Twitter | `og:type=website`, `og:site_name`, `og:title`, `og:description`, `og:url` (= canonical), `og:image` (hero from `IMAGE_META.hero[0]`, absolute), `og:locale` (`hu_HU` / `de_AT` / `en_GB`), `twitter:card=summary_large_image` + title/description/image | `seo.spec.ts` (og:image host) |
+| JSON-LD | see §2 | `render.test.tsx` |
 
-> Note: For SPA/CSR, all Playwright SEO assertions must run **after `networkidle`** or after the page has fully hydrated — not on raw HTML. The "SSR Verify" pattern (checking raw HTML before JS) only applies to SSG/prerendered builds.
+Static shell (`index.html`): favicon stack (svg + 32/16 png + apple-touch + `site.webmanifest`), `theme-color #faf7f2`, four self-hosted font preloads, fallback `<title>` that prerender removes.
 
----
+## 2. Structured data
 
-## Sparring Manifesto (Push Back Rules)
-- **Veto on Performance Drains**: Automatically block any script, asset, or component update that degrades Lighthouse performance scores below 95 without a documented business-critical justification.
-- **Single H1 Enforcement**: Veto any layout that lacks a unique `<h1>` per route or contains multiple `<h1>` elements.
-- **Canonical Integrity**: Stop any route deployment that fails to explicitly define its canonical URL and `hreflang` map.
-- **Localized Meta**: Push back on any "quick" SEO overrides that are not externalized to the i18n locale files. No hardcoded SEO strings allowed.
+- **`LocalBusiness` is ONE stable entity on every page**: `@type: ["Florist","LocalBusiness"]`, `@id: https://www.fiorevera.hu/#business`, `url` = the **locale home** (never the current page), `description` = `meta.home.description` (never the page's), address/phone/email from `src/data/contact.ts`, `areaServed` from `serviceAreas[locale]`, `sameAs` Instagram + Facebook, `founder`. No `inLanguage` (not a LocalBusiness property). Asserted for all 21 routes by `render.test.tsx` (`"@type":["Florist","LocalBusiness"]` and `"url":…/<prefix>/`).
+- **`ImageGallery`** on the gallery route only: page node + one `hasPart` node per album with `ImageObject`s (`contentUrl`, `width`, `height`, `caption` = templated alt). Built in `src/pages/GalleryPage.tsx`, passed via `SeoHead jsonLd={[...]}`. `render.test.tsx` expects 16 `"@type":"ImageGallery"` on `/munkaim/`.
+- Page-specific data goes into a **new node** (`WebPage`, `Product`…), never into the business entity.
+- JSON is emitted with `<` escaped as `<`; keep that when adding blocks.
 
-## Implicit Loading (Handshakes)
-- `design-system-expert`: Asset/layout changes (CLS/LCP). Favicon image format decisions.
-- `i18n-guardian`: hreflang verification, locale changes, `<html lang>` sync.
-- `qa-specialist`: SSR/SEO E2E tests (DoD pipeline).
+## 3. The 404 rule
+
+- `dist/404.html` has an **empty `#root`**, `noindex, follow`, **no canonical, no og:url, no hreflang**; the client renders `NotFound` in the locale of the requested path (`localeFromPath`), so one head, no duplicates.
+- Vercel serves `404.html` natively with **HTTP 404**. **Never add catch-all rewrites** (`/:path*` → `/404.html`): a rewrite answers 200 = soft 404 (QA 2026-11-09 M2). MASTER-PLAN 4.1's "SPA rewrite" wording is superseded by this rule.
+- Verify on the first Vercel preview (BACKLOG `[LAUNCH]` item): `curl -s -o /dev/null -w '%{http_code}\n' https://<preview>/de/gibt-es-nicht/` → `404`, body has `lang="de"` and the DE `notFound.title`. `vite preview` falls back to `index.html` with 200, so it cannot prove this.
+
+## 4. Sitemap, robots, legacy URLs
+
+- `public/sitemap.xml` is generated from `allRoutes()` + `alternatesFor()` (`xhtml:link` per locale incl. `x-default`) by `npm run sitemap` (first step of `npm run build`). Never hand-edit. Sitemap = route table: adding a route to `ROUTES` is the only way to get it listed. Open: no `lastmod` (see backlog); `changefreq`/`priority` are ignored by Google.
+- `public/robots.txt`: `Allow: /` + `Sitemap: https://www.fiorevera.hu/sitemap.xml`. Keep `/assets/` crawlable (images rank).
+- **Legacy URL preservation (US-11)**: every legacy HU and DE slug stays identical. Only two redirects exist — `REDIRECTS` in `routes.ts` mirrored in `vercel.json`: `/viragoskert/` → `/rolunk/`, `/de/blumengarten/` → `/de/uebermich/` (301, both with and without trailing slash; revertible per D-16). Cutover check (MASTER-PLAN 4.3): `curl -I` on every legacy URL → 200, the two above → 301.
+
+## 5. Images
+
+`src/components/Common/Picture.tsx` is the only `<img>` path: `srcSet` with three tiers (`srcSmall` 800w, `srcMedium` 1280w, `src` ≤ 1920w), `sizes` (default `100vw` — tighten per slot), explicit `width`/`height` (CLS 0), `loading="lazy"` by default; `priority` → `eager` + `fetchpriority="high"` + `decoding="sync"` for the **LCP image only** (hero, first gallery slide). Alt comes from `albumAlt()` templates (`gallery.albumAlt`), never hand-written per file. Assets are webp ≤ 200 KB (`tests/unit/assets.test.ts`). Open: hero + service-card photos ship `alt=""`; logo preload precedes the hero (QA minors).
+
+## 6. Lighthouse
+
+Targets (PRD Goal 3, MASTER-PLAN 3.3): mobile Performance / Accessibility / SEO ≥ 90 on every route, LCP < 2.5 s, CLS < 0.1. Measured 2026-11-09 on the preview build (Lighthouse 12.8): SEO 100, Best Practices 100, Accessibility 100 (after M7/M8), Performance desktop 99, mobile 82–92 (home median 85; LCP 4.2–4.7 s, bandwidth-bound by 4 font preloads + JS → BACKLOG `[PERF]` font subsetting).
+
+```bash
+npm run build && npm run preview                       # http://localhost:4173, prerendered HTML
+OUT=/private/tmp/claude-502/-Users-gabor-seboek-Documents-Projects-Private-fiorevera/<session>/scratchpad/lighthouse
+npm exec --yes -- lighthouse http://localhost:4173/de/ --output=json --output=html \
+  --output-path="$OUT/home-de-mobile" --chrome-flags="--headless=new" \
+  --only-categories=performance,accessibility,best-practices,seo        # mobile = default profile
+npm exec --yes -- lighthouse http://localhost:4173/ --preset=desktop --output=json --output-path="$OUT/home-hu-desktop"
+```
+Run home, gallery, rental, contact in HU + one DE/EN each; rerun a Performance outlier twice before reporting it (TBT noise). Attach reports to the Review Brief.
+
+## 7. Audit checks (atlas-style, run on `dist/` or the preview)
+
+| Check | Command / assertion |
+|---|---|
+| Soft 404 | §3 curl → `404` (Vercel preview only) |
+| Duplicate head tags | `grep -c '<title>' dist/de/index.html` → 1; `grep -c 'rel="canonical"' dist/de/index.html` → 1; `grep -c 'rel="canonical"' dist/404.html` → 0; `grep -c 'noindex' dist/404.html` → 1 |
+| Head without JS | `curl -s http://localhost:4173/en/contact/ \| grep -o '<title>[^<]*'` shows the EN title; same for `hreflang=` and `"LocalBusiness"` |
+| hreflang reciprocity | every route's 4 alternates equal `alternatesFor(page)` — unit-tested; re-check only after editing `routes.ts` |
+| Title/description lengths | `npm test -- --run tests/unit/i18n.test.ts` |
+| One `<h1>` per route, lang attribute, HU leaks on DE/EN | `npx playwright test tests/e2e/navigation.spec.ts` |
+| Sitemap = routes | `npm run sitemap && git diff --exit-code public/sitemap.xml` after a route change |
+
+## 8. DoD hooks
+
+`npm run lint` → `npm test -- --run` (`tests/unit/render.test.tsx`: title, canonical, hreflang ×4, Florist/LocalBusiness + stable `url`, localized noindex 404s, ImageGallery count; `tests/unit/i18n.test.ts`: lengths) → `npm run test:e2e` (`tests/e2e/seo.spec.ts`: title/description/canonical/hreflang/x-default/og:image/JSON-LD per route — runs against the **dev server (CSR)**; the prerendered head is covered by `render.test.tsx` and §7, not by e2e) → `npm run build` (sitemap + 21 pages + `404.html`).
+
+## Open SEO backlog (do not re-invent; link, don't add)
+
+| Item | Reference |
+|---|---|
+| `Product`/`Offer` on the rental page, `priceRange`/`geo` on the business | `BACKLOG.md` `[SEO]` M3 entry; QA minors |
+| `BreadcrumbList` | `docs/qa/2026-11-09-qa-session.md` → Minor findings → SEO |
+| Sitemap `lastmod` | `BACKLOG.md` `[SEO]` M3 entry |
+| `og:image:width/height/alt`, `twitter:image:alt`, `og:locale:alternate`, per-page og:image | QA minors → SEO |
+| Home `<h1>` is brand-only ("Fiore Vera"); topic words live in the subtitle | QA minors → SEO (copy sign-off, R-1) |
+| Contact pages thinnest (≈ 700 chars) | QA minors → SEO |
+| Verify native 404 status on the Vercel preview; Search Console sitemap + hreflang report | `BACKLOG.md` `[LAUNCH]`; MASTER-PLAN 4.4 |
+
+## Sparring Manifesto (push back, then propose)
+- **Veto client-only head changes**: anything that sets `document.title`, injects `<meta>`/`<link>` in an effect, or depends on hydration to appear. The head must be in the prerendered HTML.
+- **Veto a canonical (or `og:url`/hreflang) on a `noindex` page** — contradictory signals.
+- **Veto per-page drift of the `LocalBusiness` entity** (`url`, `description`, `@id`, `@type` varying by route). Add a node instead.
+- **Veto routes outside `routes.ts`** — a `<Route>`, sitemap line, redirect or hreflang added by hand elsewhere will desync router, sitemap, prerender and hreflang.
+- **Veto hreflang without reciprocity or without `x-default`**, and any alternate whose URL is not in `ROUTES`.
+- **Veto catch-all rewrites** in `vercel.json` (soft 404) and any Lighthouse-degrading asset above the fold without a stated reason.
+- **Veto hardcoded meta copy**: titles/descriptions live in `meta.*` keys in all three locales (hand off to `i18n-guardian`).
+
+## Handshakes
+- `i18n-guardian`: `meta.*` copy, `<html lang>`, HU leaks in head/JSON-LD/alt.
+- `accessibility-expert`: heading order, skip link, image alt semantics.
+- `qa-specialist`: DoD run, Lighthouse report in the Review Brief, Playwright gates.

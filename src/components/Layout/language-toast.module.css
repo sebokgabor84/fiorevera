@@ -1,6 +1,7 @@
+/* Bottom-anchored: a top toast covered the H1 on phones and the open menu (QA M9). */
 .toast {
   position: fixed;
-  top: calc(var(--header-h) + 0.75rem);
+  bottom: calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
   right: var(--gutter);
   left: var(--gutter);
   z-index: 120;
@@ -36,6 +37,21 @@
   font-size: 1.4rem;
   line-height: 1;
   cursor: pointer;
+}
+:global(body.menu-open) .toast {
+  display: none;
+}
+/* Narrow screens: the toast spans the gutters and wraps to two rows, so the action row must
+   fill its row too — CTA grows, dismiss sits flush right (no dead space after the ×). */
+@media (max-width: 39.99rem) {
+  .actions {
+    flex: 1 1 100%;
+    justify-content: space-between;
+  }
+  .actions > :first-child {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
 }
 @media (min-width: 40rem) {
   .toast {

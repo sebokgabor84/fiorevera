@@ -32,6 +32,14 @@ export const LanguageToast = () => {
     return () => cancelAnimationFrame(frame);
   }, [locale]);
 
+  // Reserve space at the page bottom while the toast is shown, so footer links and form buttons
+  // can always be scrolled above the fixed toast (global.css `body.toast-visible`).
+  useEffect(() => {
+    if (!suggested) return;
+    document.body.classList.add('toast-visible');
+    return () => document.body.classList.remove('toast-visible');
+  }, [suggested]);
+
   if (!suggested) return null;
   const tt = getI18n(suggested).getFixedT(suggested);
 

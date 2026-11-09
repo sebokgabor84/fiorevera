@@ -24,17 +24,16 @@
   </head>
 
   <body>
-    <!-- Accessibility skip link -->
-    <a href="#main-content" class="skip-link">Ugrás a tartalomra</a>
-
+    <!-- The skip link is rendered by <Layout> in the page's language (first focusable element). -->
     <div id="root"><!--app-html--></div>
 
     <script type="module" src="/src/main.tsx"></script>
 
+    <!-- scripts/prerender.ts localizes this paragraph per route (data-noscript marker). -->
     <noscript>
       <div style="padding: 2rem; text-align: center">
-        <h1>Fiore Vera — virág és dekoráció</h1>
-        <p>Az oldal teljes működéséhez kérjük, engedélyezze a JavaScriptet a böngészőjében.</p>
+        <p><strong>Fiore Vera</strong></p>
+        <p data-noscript>Az oldal teljes működéséhez engedélyezd a JavaScriptet a böngésződben.</p>
       </div>
     </noscript>
   </body>

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { absoluteUrl, alternatesFor, pathFor, type Locale, type PageId, LOCALES } from '../../data/routes';
+import { absoluteUrl, alternatesFor, pathFor, type Locale, type PageId } from '../../data/routes';
 import { contact } from '../../data/contact';
 import { serviceAreas } from '../../data/serviceAreas';
 import { IMAGE_META } from '../../data/generated/imageMeta';
@@ -22,17 +22,20 @@ export const SeoHead = ({ locale, page, jsonLd = [] }: Props) => {
   const metaKey = page ?? 'notFound';
   const title = t(`meta.${metaKey}.title`);
   const description = t(`meta.${metaKey}.description`);
-  const canonical = page ? absoluteUrl(pathFor(page, locale)) : absoluteUrl(pathFor('home', locale));
+  // A 404 declares no canonical/og:url: noindex + canonical are contradictory signals (QA M2/SEO #10).
+  const canonical = page ? absoluteUrl(pathFor(page, locale)) : null;
+  const homeUrl = absoluteUrl(pathFor('home', locale));
   const hero = IMAGE_META.hero[0];
   const ogImage = hero ? absoluteUrl(hero.src) : absoluteUrl('/assets/brand/01-logo-fiore-vera.webp');
 
+  // One stable business entity on every page: fixed url + description, never the page's (QA M3).
   const localBusiness = {
     '@context': 'https://schema.org',
-    '@type': 'LocalBusiness',
+    '@type': ['Florist', 'LocalBusiness'],
     '@id': `${absoluteUrl('/')}#business`,
     name: 'Fiore Vera',
-    description,
-    url: canonical,
+    description: t('meta.home.description'),
+    url: homeUrl,
     telephone: contact.phoneHref.replace('tel:', ''),
     email: contact.email,
     image: ogImage,
@@ -46,7 +49,6 @@ export const SeoHead = ({ locale, page, jsonLd = [] }: Props) => {
     areaServed: serviceAreas[locale].map((name) => ({ '@type': 'Place', name })),
     sameAs: [contact.instagram, contact.facebook],
     founder: { '@type': 'Person', name: contact.owner },
-    inLanguage: LOCALES,
   };
 
   return (
@@ -54,7 +56,7 @@ export const SeoHead = ({ locale, page, jsonLd = [] }: Props) => {
       <title>{title}</title>
       <meta name="description" content={description} />
       <meta name="robots" content={page ? 'index, follow' : 'noindex, follow'} />
-      <link rel="canonical" href={canonical} />
+      {canonical && <link rel="canonical" href={canonical} />}
       {page &&
         alternatesFor(page).map((alt) => (
           <link key={alt.hreflang} rel="alternate" hrefLang={alt.hreflang} href={alt.href} />
@@ -63,7 +65,7 @@ export const SeoHead = ({ locale, page, jsonLd = [] }: Props) => {
       <meta property="og:site_name" content="Fiore Vera" />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
-      <meta property="og:url" content={canonical} />
+      {canonical && <meta property="og:url" content={canonical} />}
       <meta property="og:image" content={ogImage} />
       <meta property="og:locale" content={OG_LOCALE[locale]} />
       <meta name="twitter:card" content="summary_large_image" />

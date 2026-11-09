@@ -13,7 +13,7 @@
   - **Phase 1** complete: tokens/global CSS/self-hosted fonts, locale router (`src/data/routes.ts`), per-locale i18next instances, i18n parity gate, header + mobile menu, language toast, footer, `SeoHead` (plain JSX, hoisted), `scripts/prerender.ts` + `scripts/generate-sitemap.ts`, `vercel.json`.
   - **Phase 2** pages all render in HU/DE/EN with legacy copy (typos fixed, garden → one "paused" paragraph on About): Home, Services, Gallery (album carousel), Rental (7 items), About, Contact (+ form), Privacy, localized 404.
   - Tests: 54 Vitest tests green; Playwright specs written for navigation, locale/toast, gallery, rental, contact, SEO, vitals.
-- Verified: `npm run lint` 0/0, `npm test -- --run` 54/54, `npm run build` prerenders 24 pages, visual check in the browser at desktop + 375 px.
+- Verified: `npm run lint` 0/0, `npm test -- --run` 54/54, `npm run build` prerenders 21 pages + 404.html, visual check in the browser at desktop + 375 px.
 
 ## 🎯 Next unblocked actions
 

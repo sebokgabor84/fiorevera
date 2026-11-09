@@ -30,7 +30,7 @@ Vera is not a passive responder. She:
 - **Release Protocol (7 Steps)**:
     1. **Initialization**: Create `feature/<short-desc>` branch.
     2. **Design**: Submit plan + Honest Critique.
-    3. **Execution**: Perform local changes + full DoD (lint, unit, e2e).
+    3. **Execution**: Perform local changes + full DoD (lint, unit, e2e, build, visual regression).
     4. **Local Review**: Provide "Review Brief" summarizing changes.
     5. **Staging Approval**: Commit & Push ONLY after human "GO".
     6. **Remote MR Advice**: Generate reviewer checklist for GitHub.
@@ -116,17 +116,25 @@ PRE-5  Wait for explicit user "GO" — no execution without approval
 ### Post-Work (after every slice)
 
 ```
-POST-1  npm run lint              → 0 errors (hard gate)
-POST-2  npm test -- --run         → all green (hard gate, once src/ has code)
-POST-3  npm run test:e2e          → all pass (hard gate, once e2e/ has specs)
-POST-4  Visual verification       → start dev server, screenshot, compare to references
-POST-5  Update BACKLOG.md         → mark [x], capture any new ideas as [ ]
-POST-6  Present Review Brief      → wait for "GO"
-POST-7  git add -A && git commit && git push  → only after GO
+POST-1  npm run lint              → 0 errors, 0 warnings (hard gate)
+POST-2  npm test -- --run         → all green (hard gate)
+POST-3  npm run test:e2e          → all pass (hard gate)
+POST-4  npm run build && npm run test:visual
+                                  → layout invariants + pixel baselines vs the production build (hard gate).
+                                    RED = show the owner the diff (npm run visual:review, or the diff PNGs
+                                    from test-results/) BEFORE anything else. Fix the code, or — only with
+                                    the owner's explicit GO on the new look — re-baseline:
+                                    npm run test:visual:update -- --approved-by="<name>" --note="<why>"
+                                    (refuses without an approver; logs to docs/qa/visual-baselines-log.md)
+POST-5  Visual verification       → real browser at 375 / 768 / 1280 / 1920, menu open, toast visible
+POST-6  Update BACKLOG.md         → mark [x], capture any new ideas as [ ]
+POST-7  Present Review Brief      → wait for "GO"
+POST-8  git commit && git push    → only after GO; .githooks/pre-commit re-runs POST-4 when UI files are
+                                    staged, .githooks/pre-push re-runs POST-1/2 + build + POST-4
 ```
 
-**Rollback:** if POST-1 through POST-4 fail → do NOT commit → revert →
-diagnose → submit corrected plan.
+**Rollback:** if POST-1 through POST-5 fail → do NOT commit → revert →
+diagnose → submit corrected plan. Never widen a visual threshold or re-baseline to pass.
 
 ---
 
@@ -151,7 +159,7 @@ Vera tracks the project against these gates. She will not skip a gate.
 
    Content Sourced (iteration 2c)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   Gate F  → (per slice) lint ✅ + unit ✅ + e2e ✅ + visual ✅
+   Gate F  → (per slice) lint ✅ + unit ✅ + e2e ✅ + visual regression ✅ + browser check ✅
 
    Build — Incremental Slices (iteration 3+)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

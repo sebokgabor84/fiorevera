@@ -9,7 +9,9 @@ export const albumCover = (album: Album): ImageAsset | undefined => {
   return images[album.coverIndex] ?? images[0];
 };
 
-export const albumTitle = (album: Album, t: TFunction): string => (album.titleKey ? t(album.titleKey) : album.couple);
+/** "Klaudia és Thomas" / "Klaudia und Thomas" / "Klaudia and Thomas" — the joiner is localized (QA M5). */
+export const albumTitle = (album: Album, t: TFunction): string =>
+  album.titleKey ? t(album.titleKey) : album.partners ? album.partners.join(` ${t('gallery.and')} `) : album.id;
 
 /** "Venue, Town" plus the country for non-HU venues. */
 export const albumVenue = (album: Album, t: TFunction): string =>

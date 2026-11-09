@@ -47,7 +47,6 @@
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "menu": "Menu",
-    "logoLabel": "Fiore Vera – home",
     "quote": "Request a quote"
   },
   "lang": {
@@ -55,8 +54,7 @@
     "hu": "Magyar",
     "de": "Deutsch",
     "en": "English",
-    "switchTo": "Switch language to {{lang}}",
-    "current": "Current language: {{lang}}"
+    "current": "current language"
   },
   "toast": {
     "body": "This site is also available in English.",
@@ -72,7 +70,9 @@
     "readMore": "Read more",
     "backToTop": "Back to top",
     "openInMaps": "Open in Maps",
-    "newTab": "(opens in a new tab)"
+    "newTab": "(opens in a new tab)",
+    "skipToContent": "Skip to content",
+    "noscript": "Please enable JavaScript in your browser for the full site."
   },
   "home": {
     "hero": {
@@ -242,7 +242,8 @@
     "cta": {
       "title": "Would you like your wedding here too?",
       "button": "Request a quote"
-    }
+    },
+    "and": "and"
   },
   "rental": {
     "hero": {
@@ -418,7 +419,8 @@
     "pagesTitle": "Pages",
     "languagesTitle": "Languages",
     "rights": "All rights reserved.",
-    "areas": "Service area: {{areas}}"
+    "areas": "Service area: {{areas}}",
+    "socialLabel": "Social media"
   },
   "testimonials": {
     "nagy-orsolya": "Thank you so much for your incredibly wonderful, conscientious, kind, helpful, beautiful, precise, personal and humble work!! We wholeheartedly recommend you to everyone.",

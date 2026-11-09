@@ -31,6 +31,11 @@ export const Header = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  const close = useCallback(() => {
+    setOpenPath(null);
+    toggleRef.current?.focus();
+  }, []);
+
   // Focus first link when opened; lock body scroll
   useEffect(() => {
     if (!open) return;
@@ -39,22 +44,21 @@ export const Header = () => {
     // Scroll lock via a class scoped to the mobile breakpoint in global.css, so a resize to
     // desktop or a hot reload while the menu is open can never leave the page unscrollable.
     document.body.classList.add('menu-open');
+    // Escape closes the menu wherever focus is (toggle button, body after a tap on empty space).
+    const onKey = (e: globalThis.KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        close();
+      }
+    };
+    document.addEventListener('keydown', onKey);
     return () => {
+      document.removeEventListener('keydown', onKey);
       document.body.classList.remove('menu-open');
     };
-  }, [open]);
-
-  const close = useCallback(() => {
-    setOpenPath(null);
-    toggleRef.current?.focus();
-  }, []);
+  }, [open, close]);
 
   const onPanelKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'Escape') {
-      e.preventDefault();
-      close();
-      return;
-    }
     if (e.key !== 'Tab' || !panelRef.current) return;
     const items = Array.from(panelRef.current.querySelectorAll<HTMLElement>(FOCUSABLE));
     if (items.length === 0) return;
@@ -72,7 +76,8 @@ export const Header = () => {
   return (
     <header className={`${styles.header} ${scrolled || open ? styles.scrolled : ''}`}>
       <div className={`container ${styles.bar}`}>
-        <LocalizedLink page="home" className={styles.logo} aria-label={t('nav.logoLabel')}>
+        {/* No aria-label: the accessible name must contain the visible text (WCAG 2.5.3, QA M8). */}
+        <LocalizedLink page="home" className={styles.logo}>
           {logo && <img src={logo.src} width={logo.width} height={logo.height} alt="" className={styles.logoImg} />}
           <span className={styles.wordmark}>
             <span className={styles.brand}>Fiore Vera</span>

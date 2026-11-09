@@ -11,20 +11,24 @@ const i18nKey = z.string().regex(/^[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+$/, 'dotted i1
 
 export const CountryCodeSchema = z.enum(['HU', 'AT']);
 
-export const AlbumSchema = z.object({
-  id: slug,
-  /** Couple (proper noun, not translated). */
-  couple: z.string().min(1),
-  /** Optional i18n key for albums that are not a couple (magazine shoot, styled shoot). */
-  titleKey: i18nKey.optional(),
-  venue: z.object({
-    name: z.string().min(1).nullable(),
-    town: z.string().min(1).nullable(),
-    country: CountryCodeSchema,
-  }),
-  /** Index into IMAGE_META.gallery[id] — exactly one cover per album, chosen by Vera (D-6). */
-  coverIndex: z.number().int().nonnegative(),
-});
+export const AlbumSchema = z
+  .object({
+    id: slug,
+    /** The couple as two first names (proper nouns); joined with the locale's "and" (`gallery.and`). */
+    partners: z.tuple([z.string().min(1), z.string().min(1)]).optional(),
+    /** i18n key for albums that are not a couple (magazine shoot, styled shoot). */
+    titleKey: i18nKey.optional(),
+    venue: z.object({
+      name: z.string().min(1).nullable(),
+      town: z.string().min(1).nullable(),
+      country: CountryCodeSchema,
+    }),
+    /** Index into IMAGE_META.gallery[id] — exactly one cover per album, chosen by Vera (D-6). */
+    coverIndex: z.number().int().nonnegative(),
+  })
+  .refine((a) => Boolean(a.partners) !== Boolean(a.titleKey), {
+    message: 'an album has either partners or a titleKey',
+  });
 export type Album = z.infer<typeof AlbumSchema>;
 
 export const RentalUnitSchema = z.enum(['occasion', 'piece', 'set', 'wall']);

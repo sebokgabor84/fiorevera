@@ -13,7 +13,7 @@ interface Props extends Omit<ImgHTMLAttributes<HTMLImageElement>, 'src' | 'srcSe
 export const Picture = ({ asset, alt, sizes = '100vw', priority = false, ...rest }: Props) => (
   <img
     src={asset.src}
-    srcSet={`${asset.srcSmall} 800w, ${asset.src} ${asset.width}w`}
+    srcSet={`${asset.srcSmall} 800w, ${asset.srcMedium} 1280w, ${asset.src} ${asset.width}w`}
     sizes={sizes}
     width={asset.width}
     height={asset.height}

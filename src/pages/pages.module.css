@@ -6,9 +6,16 @@
   gap: var(--space-6);
   align-items: start;
 }
+/* Sticky only in the two-column layout (≥ 48rem): in a single column the image would pin
+   under the header and the text would scroll behind it (critical mobile bug, 2026-11-09). */
 .sticky {
-  position: sticky;
-  top: calc(var(--header-h) + 1rem);
+  position: static;
+}
+@media (min-width: 48rem) {
+  .sticky {
+    position: sticky;
+    top: calc(var(--header-h) + 1rem);
+  }
 }
 .anchor {
   scroll-margin-top: calc(var(--header-h) + 1rem);
@@ -86,6 +93,8 @@
   width: 100%;
   border-radius: var(--radius-lg);
   aspect-ratio: 4 / 5;
+  /* Sticky column must fit a 768 px laptop viewport together with the facts list below it. */
+  max-height: min(60vh, 32rem);
   object-fit: cover;
 }
 .facts {

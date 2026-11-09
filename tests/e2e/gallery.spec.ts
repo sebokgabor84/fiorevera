@@ -2,6 +2,9 @@ import { test, expect } from '@playwright/test';
 import { albums } from '../../src/data/albums';
 
 test.describe('gallery (PRD D-6/D-7)', () => {
+  // The language toast is covered by locale.spec; here it would only sit over the carousel arrows on phones.
+  test.beforeEach(({ page }) => page.addInitScript(() => localStorage.setItem('fv-lang-toast-dismissed', '1')));
+
   test('renders 15 album sections and only loads above-the-fold images', async ({ page }) => {
     const imageRequests: string[] = [];
     page.on('request', (req) => {

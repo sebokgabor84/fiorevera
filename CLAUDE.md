@@ -15,7 +15,7 @@ Session close goes through the `goodbye` skill (`.agent/skills/goodbye/SKILL.md`
 The scope contract is **`MASTER-PLAN.md`** (34 numbered items, frozen from `docs/PRD.md`). Every build action traces to an item; new ideas go to `BACKLOG.md`. As of the first build pass (`feature/site-build`):
 
 - **Done:** Phase 0.1 archive (`scripts/archive-legacy.ts` → `references/legacy/`), 0.2 image pipeline (`assets-src/<slot>/` → `public/assets/**.webp` + generated `src/data/generated/imageMeta.ts`), 0.4 page map; Phase 1 (tokens, locale router, i18n parity gate, header + mobile menu, language toast, footer, `SeoHead`, prerender + sitemap); all Phase 2 pages render in all 3 locales with the archived legacy photography.
-- **Open:** 0.3 skill reshapes, 1.3 Vera's 15 cover picks, 2.3/2.4 copy sign-off (R-1), 2.10 form provider endpoint, Phase 3 quality gates (axe, Lighthouse, firefox/webkit/Mobile Chrome runs), Phase 4 Vercel + cutover.
+- **Open:** 1.3 Vera's 15 cover picks, 2.3/2.4 copy sign-off (R-1), 2.10 form provider endpoint, Phase 3: axe as a hard gate (the 4-browser e2e run, Lighthouse and the visual-regression gate are in place; QA session report in `docs/qa/`), Phase 4 Vercel + cutover.
 - **Heavy folders are git-ignored** (`references/legacy/images/`, `references/legacy/raw/`, `assets-src/`, ~155 MB each side); regenerate with `npm run archive:legacy -- --seed-assets` then `npm run optimize:assets`. `references/legacy/manifest.json` + Markdown pages are committed.
 
 Key source facts: `src/data/routes.ts` is the single route source (router, `SeoHead`, hreflang, sitemap, prerender). `src/i18n/config.ts` creates one pre-initialised i18next instance per locale from the pathname — no language detection, no `changeLanguage`, nothing reads `window` during render (hydration-safe). `src/entry-client.tsx` hydrates when `#root` has element children, else renders (dev). `src/entry-server.tsx` is used by `scripts/prerender.ts` and by `tests/unit/render.test.tsx`. Data lives in `src/data/*.ts` with Zod contracts in `src/data/types.ts`; image lists come only from the generated `imageMeta.ts` (data references slots/album slugs, never filenames — PRD D-5).
@@ -32,6 +32,9 @@ npm run preview          # serve dist/
 npm run lint             # eslint . — 0 errors AND 0 warnings before any commit
 npm test -- --run        # vitest (54 tests: routes, data, i18n parity, server render of every route, archive, assets)
 npm run test:e2e         # playwright — reuses a running dev server locally; specs in tests/e2e/
+npm run test:visual      # visual regression + layout invariants vs the PRODUCTION build (vite preview :4173); chromium; baselines in tests/visual/__screenshots__/
+npm run test:visual:update  # re-baseline — ONLY after the owner approved the new look
+npm run prepush          # lint → unit → build → visual (what .githooks/pre-push runs)
 npm run archive:legacy -- --seed-assets   # Webnode archive → references/legacy/ + assets-src/
 npm run optimize:assets  # assets-src/ → public/assets/**.webp + src/data/generated/imageMeta.ts
 npm run validate:i18n    # key-parity gate on the three locale files
@@ -43,7 +46,7 @@ Run a single e2e spec: `npx playwright test tests/e2e/<name>.spec.ts`. Playwrigh
 
 ## Definition of Done (enforced before every commit/push)
 
-Run in order, stop on first failure, **fix the code not the test**: `npm run lint` → `npm test -- --run` → `npm run test:e2e` → `npm run build` (prerender must succeed). A build slice is additionally not "done" until it has been **visually verified** in a real browser (README step 9 / `AGENTS.md` POST-4) — the pipeline checks lint/test/vitals, not whether it looks right. No commit without an explicit user "GO".
+Run in order, stop on first failure, **fix the code not the test**: `npm run lint` → `npm test -- --run` → `npm run test:e2e` → `npm run build` (prerender must succeed) → `npm run test:visual` (layout invariants + pixel baselines against the production build). A build slice is additionally not "done" until it has been **visually verified** in a real browser at 375, 768, 1280 and 1920 px with the menu open and the toast visible (README step 9 / `AGENTS.md` POST-4) — the automated gates catch regressions, not taste. The git pre-push hook (`.githooks/pre-push`, installed by `npm run prepare`) runs lint → unit → build → visual; `FV_SKIP_HOOKS=1` bypasses it only in an emergency and must be recorded in the PR. Re-baseline (`npm run test:visual:update`) only after an explicit owner GO on the new look — never to make a red run green. No commit without an explicit user "GO".
 
 ## Conventions that will trip you up
 
@@ -84,12 +87,15 @@ Mood: romantic, rustic-elegant, warm, organic — the legacy aesthetic elevated,
 
 Work is routed through `.agent/skills/<name>/SKILL.md`. 11 skills: 8 domain skills (design-system-expert, seo-expert, accessibility-expert, i18n-guardian, qa-specialist, skill-creator, lockscreen-qr-generator, desktop-background-generator), 2 planning skills (grill-me, to-prd), and the goodbye close ritual. `AGENTS.md`'s routing table maps trigger keywords → skill; if nothing matches, stop and propose creating one via `skill-creator` rather than guessing. All 8 domain skills are retained intentionally — the goal is a digital + physical brand ecosystem (website + iPhone-lockscreen QR + Mac wallpaper), not just the site.
 
-**Reshape status — mixed, read carefully:**
+**Reshape status (2026-11-09): all 11 skills describe this repo.** `design-system-expert`, `seo-expert`, `i18n-guardian`, `qa-specialist`, `lockscreen-qr-generator` and `desktop-background-generator` were rewritten code-first for Fiore Vera on 2026-11-09 (MASTER-PLAN 0.3); `accessibility-expert`, `skill-creator`, `goodbye` were updated earlier; `grill-me` and `to-prd` are project-neutral. If a skill contradicts the code, the code wins — fix the skill in the same change.
+
+<!-- superseded on 2026-11-09:
 - `design-system-expert` is **partially reshaped**: the palette/typography/CSS principles are Fiore Vera, but the asset library, "Sparring Manifesto" (still vetoes breaking the "Steampunk aesthetic"), artisan terminology, Mission Control vocabulary and `resources/*.md` are GaborPortfolio leftovers. Trust the token table, not the rest.
 - `accessibility-expert`, `skill-creator`, `goodbye` have been updated for this repo.
 - `seo-expert`, `i18n-guardian`, `qa-specialist`, `lockscreen-qr-generator`, `desktop-background-generator` are still the portfolio versions (steampunk prompts, portfolio data contracts). Their *process* transfers; their examples do not.
+-->
 
-**Lockscreen pipeline** (`scripts/generate-lockscreen.ts`, run via `npm run lockscreen`): sharp composites a pre-generated QR (`public/assets/lockscreen/qr-fiorevera.png`, made with the `qrcode` package) and a circular logo badge onto an AI-generated background, inpainting the top band for the iOS clock. Coordinates are hardcoded for a 768-wide canvas. The background source path (`BG_SOURCE`) is an **absolute path outside the repo** (an Antigravity brain folder) — the script will not run on another machine or after that folder is cleaned; copy the source into `public/assets/lockscreen/` and point the constant there before relying on it. The many `variant-*`, `transparent-*`, `*-frame.jpg` files in that folder are untracked working iterations.
+**Lockscreen pipeline** (`scripts/generate-lockscreen.ts` + `scripts/lockscreen/designs.ts`, run via `npm run lockscreen` / `npm run lockscreen:variants`): sharp composites the brand badge and a `qrcode`-generated QR onto the committed inputs under `public/assets/lockscreen/`; linen-classic is the confirmed final, with an Instagram edition. All inputs are repo-local since 2026-11-08. Details, QR rules and the owner's taste constraints: `.agent/skills/lockscreen-qr-generator/SKILL.md`.
 
 **Planning docs**: `BACKLOG.md` (repo root) is the single source of truth for open work, with the status schema defined in `AGENTS.md` (`- [STATUS] **[CATEGORY]** Description — \`reference\` _(added: YYYY-MM-DD)_`). Once the PRD is grilled, `MASTER-PLAN.md` becomes the frozen build scope: every build action traces to a numbered item; emergent ideas go to `BACKLOG.md`, never silently into the master plan.
 

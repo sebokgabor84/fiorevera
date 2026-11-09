@@ -133,7 +133,9 @@ npm run dev              # vite dev server → http://localhost:5173 (CSR; prere
 npm run lint             # eslint — 0 errors / 0 warnings
 npm test -- --run        # vitest: routes, data contracts, i18n parity, server render of every route, archive, assets
 npm run test:e2e         # playwright (chromium, firefox, webkit, Mobile Chrome) — reuses a running dev server
-npm run build            # sitemap → tsc → vite build → vite build --ssr → prerender 21 routes + 3 localized 404s into dist/
+npm run test:visual      # visual regression + layout invariants against the production build (chromium; baselines committed)
+npm run prepush          # lint → unit → build → visual — the same chain .githooks/pre-push runs before every push
+npm run build            # sitemap → tsc → vite build → vite build --ssr → prerender 21 routes + a locale-neutral 404.html into dist/
 npm run preview          # serve dist/ (static HTML per route)
 ```
 

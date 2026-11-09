@@ -36,3 +36,6 @@ assets-src/
 # Claude Code local state
 .claude/settings.local.json
 .claude/worktrees/
+
+# visual regression reports (baselines under tests/visual/__screenshots__ ARE committed)
+playwright-report-visual

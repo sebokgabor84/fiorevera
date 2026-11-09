@@ -18,6 +18,8 @@ export const LanguageSwitch = ({ compact = false }: Props) => {
       <ul className={styles.list}>
         {LOCALES.map((code: Locale) => {
           const active = code === locale;
+          // Accessible name starts with the visible "HU"/"DE"/"EN" (WCAG 2.5.3 Label in Name).
+          const label = `${code.toUpperCase()} – ${t(`lang.${code}`)}`;
           return (
             <li key={code}>
               <Link
@@ -26,7 +28,7 @@ export const LanguageSwitch = ({ compact = false }: Props) => {
                 lang={code}
                 className={`${styles.link} ${active ? styles.active : ''}`}
                 aria-current={active ? 'true' : undefined}
-                aria-label={active ? t('lang.current', { lang: t(`lang.${code}`) }) : t('lang.switchTo', { lang: t(`lang.${code}`) })}
+                aria-label={active ? `${label} (${t('lang.current')})` : label}
                 onClick={() => rememberLanguageChoice(code)}
               >
                 {code.toUpperCase()}

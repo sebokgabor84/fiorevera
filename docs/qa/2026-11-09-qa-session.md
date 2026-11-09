@@ -72,3 +72,25 @@ Zero CLS and zero horizontal overflow at every width; all images alt/width/heigh
 ## Honest critique
 
 Two of the thirteen majors are regressions from this session's own work: the global safety layer (M1) silently undid the container width on every page, and the always-visible toast's z-index (M9) was never tested against the mobile menu. The always-glass header fix also introduced a `backdrop-filter` containing-block bug that trapped the menu panel; it was caught and fixed within the session, but it shows that visual verification at one width is not a gate. The unit/E2E suite is green through all of this because none of these are asserted: no test checks container width, line length, toast stacking, or the prerendered head. The Phase 3 gates (axe on every route, Lighthouse, prerendered-head assertions) should land as tests before the fixes, so they stay fixed.
+
+## Fix status (same day, second pass)
+
+All 13 majors were fixed on `feature/site-build` after the owner's GO; the minors stay open in `BACKLOG.md`.
+
+| # | Fix | Verification |
+|---|---|---|
+| M1 | `.container` removed from the safety layer; `max-width: min(100%, var(--content-max))` | container 1152 px at 1920, lead 1072 px, `hyphens: manual` on desktop text |
+| M2 | Catch-all rewrites removed from `vercel.json`; one empty-root `dist/404.html` with noindex and no canonical; client renders the locale's NotFound | static-host emulation: `/de/gibt-es-nicht/` → HTTP 404, `lang="de"`, DE title/h1, one canonical-free head |
+| M3 | LocalBusiness `url` = locale home, stable description, `["Florist","LocalBusiness"]`, no `inLanguage` | unit test asserts type + url on all 21 routes |
+| M4 | Skip link rendered by `Layout` (`common.skipToContent`); noscript paragraph localized in `prerender.ts` | `dist/en/index.html`: "Skip to content", EN noscript text |
+| M5 | `partners: [a, b]` + `gallery.and` joiner | DE gallery: 23 × "Klaudia und Thomas", 0 × "és" |
+| M6 | `__BUILD_YEAR__` via Vite `define` | type-check + render tests |
+| M7 | Reason-card numerals in `--color-sage-deep` | Lighthouse accessibility 100 on home (was 96) |
+| M8 | Logo link without aria-label; switch labels "HU – Magyar", "DE – Deutsch (aktuelle Sprache)" | axe `label-content-name-mismatch` gone from Lighthouse |
+| M9 | Toast bottom-anchored, hidden while the menu is open, `body.toast-visible` reserves space | phone: no overlap with the H1; not visible over the open menu |
+| M10 | Escape handled on `document` while the menu is open | Escape with focus on the toggle closes the menu (`aria-expanded="false"`) |
+| M11 | `.track:focus-visible { outline-offset: -4px }` | ring inside the clipped carousel box |
+| M12 | Reasons three-up only ≥ 64rem; hyphenation only on body text ≤ 48rem | 768 px: one column; desktop hero/footer text unhyphenated |
+| M13 | 1280 px image tier (`srcMedium`) in pipeline + `Picture` | 181 files, all ≤ 200 KB; Lighthouse lab LCP unchanged (its Moto G profile already picked 800 px) — follow-up: font subsetting |
+
+Gates after the pass: lint 0/0, type-check clean, Vitest 54/54, Playwright full suite (see commit message for the final count), `npm run build` → 21 pages + `404.html`.

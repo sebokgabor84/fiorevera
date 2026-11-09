@@ -13,7 +13,8 @@ import styles from './footer.module.css';
 export const Footer = () => {
   const { t } = useTranslation();
   const { locale, page } = useLocale();
-  const year = new Date().getFullYear();
+  // Build-time constant (vite `define`): no Date in render paths (PRD D-18, QA M6).
+  const year = __BUILD_YEAR__;
   const address = `${contact.address.postalCode} ${contact.address.city}, ${contact.address.street}`;
 
   return (
@@ -23,7 +24,7 @@ export const Footer = () => {
           <p className={styles.brand}>Fiore Vera</p>
           <p className={styles.tagline}>{t('footer.tagline')}</p>
           <p className={`muted ${styles.areas}`}>{t('footer.areas', { areas: serviceAreas[locale].join(', ') })}</p>
-          <ul className={styles.social} aria-label="Social">
+          <ul className={styles.social} aria-label={t('footer.socialLabel')}>
             <li>
               <a href={contact.instagram} target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
                 <FaInstagram aria-hidden="true" />

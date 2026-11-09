@@ -32,20 +32,33 @@
   border-bottom: var(--glass-border);
   box-shadow: 0 6px 24px rgba(44, 40, 37, 0.08);
 }
-.bar {
+/*
+ * The header bar is wider than the content column: logo + 6 nav items + language switch +
+ * quote button need ~1180 px, so at --content-max (72rem) the logo was squeezed and its
+ * text broke per character (regression found 2026-11-09 at 1280–1920 px).
+ */
+.header .bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
   min-height: var(--header-h);
+  max-width: min(100%, 90rem);
 }
 .logo {
   display: inline-flex;
+  flex: 0 0 auto;
   align-items: center;
   gap: var(--space-3);
   text-decoration: none;
   color: var(--color-text-main);
   min-height: var(--touch);
+}
+.brand,
+.tagline {
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 .logoImg {
   width: 2.75rem;
