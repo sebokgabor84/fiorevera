@@ -26,7 +26,11 @@
 .actions {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: var(--space-2);
+  /* The body text and the action row wrap to two rows at every width, so the action row always
+     fills its line: CTA left, dismiss flush right — never dead space after the ×. */
+  flex: 1 1 100%;
 }
 .dismiss {
   width: var(--touch);
@@ -41,13 +45,8 @@
 :global(body.menu-open) .toast {
   display: none;
 }
-/* Narrow screens: the toast spans the gutters and wraps to two rows, so the action row must
-   fill its row too — CTA grows, dismiss sits flush right (no dead space after the ×). */
+/* Narrow screens: the CTA also grows to fill the row. */
 @media (max-width: 39.99rem) {
-  .actions {
-    flex: 1 1 100%;
-    justify-content: space-between;
-  }
   .actions > :first-child {
     flex: 1 1 auto;
     justify-content: center;
