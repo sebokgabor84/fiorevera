@@ -25,7 +25,7 @@ Replaces the Webnode legacy site with a prerendered, hydration-safe SPA that kee
 | `npm test -- --run` | 54 passed (7 files) |
 | `npm run test:e2e` (chromium, firefox, webkit, Mobile Chrome) | 260 passed, 16 skipped (contact success path needs `VITE_FORM_ENDPOINT`; device-specific tests) |
 | `npm run build` | 21 pages + `404.html` prerendered |
-| `npm run test:visual` (new) | 107 passed: 82 layout invariants (10 pages × 8 widths, overlays, menu) + 25 pixel baselines against the production build |
+| `npm run test:visual` (new) | 109 passed: 82 layout invariants (10 pages × 8 widths, overlays, menu) + 27 pixel baselines against the production build |
 | Lighthouse (production build, mobile) | SEO 100, best practices 100, accessibility 100; performance 83–92 mobile, 99 desktop |
 | Atlas web-qa modules | UI: zero CLS, no overflow/clipping/broken images on 48 loads; axe: 0 violations after fixes |
 
@@ -33,7 +33,7 @@ Hooks: `.githooks/pre-commit` (build + visual when UI files are staged) and `.gi
 
 ## Decisions a reviewer should know
 
-- Baselines (`tests/visual/__screenshots__/`, 25 PNGs, 9.2 MB) were generated after the reviewed fixes but not yet eyeballed one by one by the owner; see `docs/qa/visual-baselines-log.md`. Re-baselining requires `npm run test:visual:update -- --approved-by="<name>"`.
+- Baselines (`tests/visual/__screenshots__/`, 27 PNGs, 9.2 MB) were reviewed one by one by the owner on 2026-11-09 on the contact sheet (`node scripts/visual-contact-sheet.mjs` → `tests/visual/review.html`); the review found and fixed one harness artifact (carousel-1280 cut below the viewport) and one footer defect (e-mail breaking mid-word at 1280). Every approval is in `docs/qa/visual-baselines-log.md`. Re-baselining requires `npm run test:visual:update -- --approved-by="<name>"`.
 - Vercel 404: catch-all rewrites removed; `dist/404.html` is an empty-root shell with noindex that the client renders per locale. Verified with a static-host emulation locally; needs a check on the first Vercel preview.
 - Portrait photos (73 of 170) are centre-cropped in the 3:2 carousel; Vera's cover picks (item 1.3) still pending.
 - Mobile LCP in Lighthouse (4.2–4.7 s) is bandwidth-bound by four font preloads + JS; follow-up is font subsetting (BACKLOG).
@@ -48,7 +48,7 @@ Hooks: `.githooks/pre-commit` (build + visual when UI files are staged) and `.gi
 - [ ] Gallery: arrows always visible and on top; arrows and arrow keys move slides; Escape not needed
 - [ ] Contact form: empty, bad email, valid data; without endpoint shows the config-missing error, never a fake success
 - [ ] Mobile menu: Escape closes it even with focus on the toggle; toast hidden while open
-- [ ] `npm run build && npm run test:visual` — 107 green; open `playwright-report-visual/` once to see the baselines
+- [ ] `npm run build && npm run test:visual` — 109 green; `node scripts/visual-contact-sheet.mjs` and open `tests/visual/review.html` to see every baseline on one page
 - [ ] `npm run test:e2e` locally — expect 16 skipped
 - [ ] `vercel.json`: two garden 301s present, no rewrites, headers intact
 

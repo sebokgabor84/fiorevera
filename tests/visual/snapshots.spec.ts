@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { HEADER_WIDTHS, PAGES, SNAPSHOT_HEIGHT, SNAPSHOT_WIDTHS, openStable } from './helpers';
+import { HEADER_WIDTHS, PAGES, SNAPSHOT_HEIGHT, SNAPSHOT_WIDTHS, expectFullyInViewport, openStable } from './helpers';
 
 /**
  * Pixel baselines (chromium, css pixels, animations off, toast dismissed).
@@ -50,11 +50,13 @@ test.describe('interactive states', () => {
 
   for (const width of SNAPSHOT_WIDTHS) {
     test(`gallery first carousel on slide 2 @ ${width}`, async ({ page }) => {
-      await openStable(page, PAGES[2].path, width);
+      // The first album section (heading + carousel) is 832 px tall at 1280: it must fit the viewport,
+      // otherwise the element screenshot freezes a half-painted frame (see expectFullyInViewport).
+      await openStable(page, PAGES[2].path, width, width >= 1024 ? 1200 : 900);
       const region = page.getByRole('region').first();
-      await region.scrollIntoViewIfNeeded();
       await region.getByRole('button').nth(1).click();
       await page.waitForTimeout(400);
+      await expectFullyInViewport(region);
       await expect(region).toHaveScreenshot(`carousel-slide2-${width}.png`);
     });
   }

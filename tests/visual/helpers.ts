@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 import { ROUTES } from '../../src/data/routes';
 
 /** Pages under visual regression: every HU page, the DE and EN home, and the localized 404. */
@@ -75,3 +75,17 @@ export const rootRemVar = async (page: Page, name: string): Promise<number> =>
     const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
     return raw.endsWith('rem') ? parseFloat(raw) * rem : parseFloat(raw);
   }, name);
+
+/**
+ * Element screenshots only paint what lies inside the viewport: the part of a scroll container below
+ * the viewport edge comes out blank (the first carousel-slide2-1280 baseline froze a cut photo and a
+ * missing counter pill that way). Fail loudly instead, so the fix is a taller viewport, not a bad PNG.
+ */
+export const expectFullyInViewport = async (locator: Locator): Promise<void> => {
+  await locator.scrollIntoViewIfNeeded();
+  const box = await locator.evaluate((el) => {
+    const r = el.getBoundingClientRect();
+    return { top: Math.round(r.top), bottom: Math.round(r.bottom), innerHeight };
+  });
+  expect(box.top >= 0 && box.bottom <= box.innerHeight, `element spans ${box.top}–${box.bottom}px in a ${box.innerHeight}px viewport; raise the viewport height for this snapshot`).toBe(true);
+};

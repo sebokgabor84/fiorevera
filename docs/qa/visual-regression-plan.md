@@ -10,7 +10,11 @@ Added 2026-11-09 after two layout regressions reached the owner on the same day 
 | Pixel baselines | `tests/visual/snapshots.spec.ts` | Full-page clips (1500 px, gallery 1100 px) at 375 and 1280 for the 8 HU pages, DE/EN home at 375, header strips at 1120/1280/1440/1920, menu open at 375, first carousel on slide 2 at 375/1280. Chromium, CSS pixels, animations off, toast pre-dismissed, lazy images in the clip force-decoded. Threshold `maxDiffPixelRatio` 0.001 or 150 px. | ~12 s |
 | Harness | `playwright.visual.config.ts`, `tests/visual/helpers.ts` | Runs against `vite preview` of the **production build** on :4173 (`reuseExistingServer`), 60 s per test, HTML report in `playwright-report-visual/`. | |
 
-Baselines: `tests/visual/__screenshots__/` (25 PNGs, 9.2 MB, platform-specific: generated on macOS; a CI runner needs its own set).
+Baselines: `tests/visual/__screenshots__/` (27 PNGs, 9.2 MB, platform-specific: generated on macOS; a CI runner needs its own set).
+
+## Reviewing the set (once, and after every re-baseline)
+
+A pixel baseline only proves "renders like the committed PNG"; a flaw frozen into one is defended as the approved look from then on. So every baseline gets a human look once: `node scripts/visual-contact-sheet.mjs` writes `tests/visual/review.html`, one scrollable page with every PNG scaled down, grouped by what it covers, with the checklist for that group and an OK / Issue verdict per image that can be copied as text. Serve it (`.claude/launch.json` → `visual-review`, or any static server over `tests/visual/`); a `file://` page cannot load the images in the app's browser pane. The owner reviewed the initial set this way on 2026-11-09 (see `visual-baselines-log.md`).
 
 ## When it runs
 
@@ -35,6 +39,7 @@ With the header fix temporarily reverted (bar capped at `--content-max` again) a
 - Pixel snapshots cover the first viewport-and-a-half per page; the layout invariants cover the full page. Long pages (gallery) do not get full-height pixel baselines.
 - New page → add it to `PAGES` in `tests/visual/helpers.ts`; new overlay or fixed element → add its hit-test to the overlay block in `layout.spec.ts`; new breakpoint → add it to `LAYOUT_WIDTHS` and, if it changes the header, to `HEADER_WIDTHS`.
 - Baseline size budget: keep the committed set under 15 MB; prefer clips and strips over whole pages; consider Git LFS if re-baselining becomes frequent.
+- An element snapshot must fit the viewport: Chromium leaves the part of a scroll container below the viewport edge unpainted, so the PNG freezes a half-painted frame (the first carousel-1280 baseline lost the bottom 108 px and the counter pill that way). Raise the viewport height for that test and guard it with `expectFullyInViewport` from `helpers.ts`.
 
 ## Next steps (backlog)
 

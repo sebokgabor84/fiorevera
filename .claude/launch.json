@@ -22,6 +22,19 @@
         "--strictPort"
       ],
       "port": 4173
+    },
+    {
+      "name": "visual-review",
+      "runtimeExecutable": "./node_modules/.bin/vite",
+      "runtimeArgs": [
+        "preview",
+        "--outDir",
+        "tests/visual",
+        "--port",
+        "4174",
+        "--strictPort"
+      ],
+      "port": 4174
     }
   ]
 }
