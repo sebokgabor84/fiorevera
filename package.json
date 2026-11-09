@@ -13,7 +13,8 @@
     "test:vitals": "playwright test tests/e2e/vitals.spec.ts",
     "preview": "vite preview",
     "optimize:assets": "node scripts/optimize-images.js",
-    "lockscreen": "npx tsx scripts/generate-lockscreen.ts"
+    "lockscreen": "npx tsx scripts/generate-lockscreen.ts",
+    "lockscreen:variants": "npx tsx scripts/generate-lockscreen-variants.ts"
   },
   "dependencies": {
     "i18next": "^25.7.4",
