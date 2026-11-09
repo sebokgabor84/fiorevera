@@ -7,13 +7,13 @@
 
 ## 🟢 Open / Next Up
 
-- [ ] **[BUILD]** Execute `MASTER-PLAN.md` phases 0–4 (frozen scope, 33 items) — `MASTER-PLAN.md` _(added: 2026-11-09)_
+- [ ] **[BUILD]** Execute `MASTER-PLAN.md` phases 0–4 (frozen scope, 34 items) — `MASTER-PLAN.md` _(added: 2026-11-09)_
 - [ ] **[TOOLING]** `scripts/archive-legacy.ts` — local copy of the Webnode site (texts, translations, images, manifest) before cutover — `MASTER-PLAN.md#0.1` _(added: 2026-11-09)_
 - [ ] **[TOOLING]** `scripts/validate-i18n.ts` — HU/DE/EN key-parity gate run by `npm test` — `MASTER-PLAN.md#1.4` _(added: 2026-11-09)_
 - [ ] **[TOOLING]** `scripts/optimize-images.js` — sharp pipeline to webp ≤ 200 KB + dimension manifest — `MASTER-PLAN.md#0.2` _(added: 2026-11-09)_
-- [ ] **[SEO]** Prerender / SSG per route if Search Console shows weak indexing of any locale (PRD Honest Critique #1) — `docs/PRD.md#R-3` _(added: 2026-11-09)_
-- [ ] **[SEO]** Per-album routes (`/munkaim/<slug>/`) for venue-level local SEO, if venue searches matter — `docs/PRD.md#D-6` _(added: 2026-11-09)_
-- [ ] **[ASSETS]** Retina hero photoshoot (legacy cap 1920 px / hero 960×640) — `docs/PRD.md#R-2` _(added: 2026-11-09)_
+- [ ] **[SEO]** Per-album routes (`/munkaim/<slug>/`) for venue-level local SEO, if venue searches matter — `docs/PRD.md#D-6` _(added: 2026-11-09; **declined by owner 2026-11-09** — revisit only with Search Console evidence)_
+- [ ] **[ASSETS]** Replace the legacy image set with new photography (owner-planned; drop originals into `assets-src/<slot>/`, re-run `npm run optimize:assets`, re-pick covers) — `docs/PRD.md#D-5` _(added: 2026-11-09)_
+- [ ] **[FEATURE]** Re-enable the Flower Garden page (HU `/viragoskert/`, DE `/de/blumengarten/`, EN `/en/flower-garden/`) from the archived copy when the garden returns; revert the two 301s — `references/legacy/`, `docs/PRD.md#D-16` _(added: 2026-11-09)_
 - [ ] **[FEATURE]** Instagram feed embed on the homepage (needs token + consent review) — `docs/PRD.md#D-14` _(added: 2026-11-09)_
 - [ ] **[FEATURE]** Blog / seasonal updates (Markdown, 3 locales) — `docs/PRD.md#D-14` _(added: 2026-11-09)_
 - [ ] **[FEATURE]** Approximate EUR prices next to HUF on DE/EN rental page — `docs/PRD.md#D-8` _(added: 2026-11-09)_

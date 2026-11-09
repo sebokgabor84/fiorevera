@@ -140,7 +140,7 @@ Vera tracks the project against these gates. She will not skip a gate.
    Gate A  → PRD drafted via interview mode + stress-tested with grill-me   ✅ 2026-11-09
    Gate B  → MASTER-PLAN.md frozen + all open questions resolved           ✅ 2026-11-09
 
-✅ DONE    PRD + Master Plan (iteration 2a) — see MASTER-PLAN.md for the 33-item build contract
+✅ DONE    PRD + Master Plan (iteration 2a) — see MASTER-PLAN.md for the 34-item build contract
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    Gate C  → design-system-expert reshaped (palette + typography confirmed)
    Gate D  → all domain skills reshaped
