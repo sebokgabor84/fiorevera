@@ -7,6 +7,7 @@ export const SKILL_NAMES = [
   'accessibility-expert',
   'design-system-expert',
   'desktop-background-generator',
+  'favicon-builder',
   'goodbye',
   'grill-me',
   'i18n-guardian',

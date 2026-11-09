@@ -17,6 +17,8 @@
     "optimize:assets": "node scripts/optimize-images.js",
     "lockscreen": "npx tsx scripts/generate-lockscreen.ts",
     "lockscreen:variants": "npx tsx scripts/generate-lockscreen-variants.ts",
+    "favicon": "tsx scripts/generate-favicons.ts",
+    "favicon:variants": "tsx scripts/favicon-variants.ts",
     "archive:legacy": "tsx scripts/archive-legacy.ts",
     "validate:i18n": "tsx scripts/validate-i18n.ts",
     "sitemap": "tsx scripts/generate-sitemap.ts",

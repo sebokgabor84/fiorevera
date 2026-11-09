@@ -39,6 +39,8 @@ npm run archive:legacy -- --seed-assets   # Webnode archive → references/legac
 npm run optimize:assets  # assets-src/ → public/assets/**.webp + src/data/generated/imageMeta.ts
 npm run validate:i18n    # key-parity gate on the three locale files
 npm run lockscreen       # regenerates the QR lockscreen PNGs
+npm run favicon          # public/favicon.svg → favicon-16/32, apple-touch-icon, android-chrome PNGs (add -- --from <variant-id> to ship a design-round variant first)
+npm run favicon:variants # regenerates docs/design/favicon-variants.html (the favicon design round, with 16 px raster proof)
 ```
 
 Run a single unit test: `npm test -- --run tests/unit/render.test.tsx` (or `-t "test name"`).
@@ -50,7 +52,7 @@ Run in order, stop on first failure, **fix the code not the test**: `npm run lin
 
 ## Conventions that will trip you up
 
-- **Skill registry drift gate.** `src/types/skills.ts` holds the `SKILL_NAMES` const union (11 skills). `tests/unit/skills.test.ts` fails if a skill directory exists on disk without a union entry, if a union entry has no `SKILL.md`, or if a skill name is not mentioned in backticks in `AGENTS.md`. Adding/renaming a skill means touching all three. The same test also fails if `CLAUDE.md`, `README.md`, or `AGENTS.md` contain the legacy singular-named agent file name (`AGENTS.md` is canonical) — don't write that string anywhere in these docs.
+- **Skill registry drift gate.** `src/types/skills.ts` holds the `SKILL_NAMES` const union (12 skills). `tests/unit/skills.test.ts` fails if a skill directory exists on disk without a union entry, if a union entry has no `SKILL.md`, or if a skill name is not mentioned in backticks in `AGENTS.md`. Adding/renaming a skill means touching all three. The same test also fails if `CLAUDE.md`, `README.md`, or `AGENTS.md` contain the legacy singular-named agent file name (`AGENTS.md` is canonical) — don't write that string anywhere in these docs.
 - **ESLint `check-file` naming** (errors, not warnings):
   - `src/components/**/` folders → `PASCAL_CASE`
   - `src/components/**/*.tsx` → `PASCAL_CASE`
@@ -85,15 +87,17 @@ Mood: romantic, rustic-elegant, warm, organic — the legacy aesthetic elevated,
 
 ## Architecture: skill-driven agent workflow
 
-Work is routed through `.agent/skills/<name>/SKILL.md`. 11 skills: 8 domain skills (design-system-expert, seo-expert, accessibility-expert, i18n-guardian, qa-specialist, skill-creator, lockscreen-qr-generator, desktop-background-generator), 2 planning skills (grill-me, to-prd), and the goodbye close ritual. `AGENTS.md`'s routing table maps trigger keywords → skill; if nothing matches, stop and propose creating one via `skill-creator` rather than guessing. All 8 domain skills are retained intentionally — the goal is a digital + physical brand ecosystem (website + iPhone-lockscreen QR + Mac wallpaper), not just the site.
+Work is routed through `.agent/skills/<name>/SKILL.md`. 12 skills: 9 domain skills (design-system-expert, seo-expert, accessibility-expert, i18n-guardian, qa-specialist, skill-creator, lockscreen-qr-generator, desktop-background-generator, favicon-builder), 2 planning skills (grill-me, to-prd), and the goodbye close ritual. `AGENTS.md`'s routing table maps trigger keywords → skill; if nothing matches, stop and propose creating one via `skill-creator` rather than guessing. All 9 domain skills are retained intentionally — the goal is a digital + physical brand ecosystem (website + iPhone-lockscreen QR + Mac wallpaper), not just the site.
 
-**Reshape status (2026-11-09): all 11 skills describe this repo.** `design-system-expert`, `seo-expert`, `i18n-guardian`, `qa-specialist`, `lockscreen-qr-generator` and `desktop-background-generator` were rewritten code-first for Fiore Vera on 2026-11-09 (MASTER-PLAN 0.3); `accessibility-expert`, `skill-creator`, `goodbye` were updated earlier; `grill-me` and `to-prd` are project-neutral. If a skill contradicts the code, the code wins — fix the skill in the same change.
+**Reshape status (2026-11-09): all 12 skills describe this repo.** `design-system-expert`, `seo-expert`, `i18n-guardian`, `qa-specialist`, `lockscreen-qr-generator` and `desktop-background-generator` were rewritten code-first for Fiore Vera on 2026-11-09 (MASTER-PLAN 0.3); `accessibility-expert`, `skill-creator`, `goodbye` were updated earlier; `grill-me` and `to-prd` are project-neutral; `favicon-builder` was created code-first on 2026-11-09 (favicon design round). If a skill contradicts the code, the code wins — fix the skill in the same change.
 
 <!-- superseded on 2026-11-09:
 - `design-system-expert` is **partially reshaped**: the palette/typography/CSS principles are Fiore Vera, but the asset library, "Sparring Manifesto" (still vetoes breaking the "Steampunk aesthetic"), artisan terminology, Mission Control vocabulary and `resources/*.md` are GaborPortfolio leftovers. Trust the token table, not the rest.
 - `accessibility-expert`, `skill-creator`, `goodbye` have been updated for this repo.
 - `seo-expert`, `i18n-guardian`, `qa-specialist`, `lockscreen-qr-generator`, `desktop-background-generator` are still the portfolio versions (steampunk prompts, portfolio data contracts). Their *process* transfers; their examples do not.
 -->
+
+**Favicon pipeline** (`scripts/favicon/crest.ts` side-effect-free crest builder, `scripts/favicon/variants.ts` design-round catalogue, `scripts/favicon/glyphs.ts` Cormorant outlines generated by `scripts/favicon/extract-glyphs.py`, `scripts/generate-favicons.ts` → `npm run favicon`, `scripts/favicon-variants.ts` → `npm run favicon:variants`): the favicon is a family crest — the badge's open arc with three trailing dots per side, always carrying a letter — rendered only from the five locked tokens and checked at 16 px with sharp. Rules and the owner interview: `.agent/skills/favicon-builder/SKILL.md`.
 
 **Lockscreen pipeline** (`scripts/generate-lockscreen.ts` + `scripts/lockscreen/designs.ts`, run via `npm run lockscreen` / `npm run lockscreen:variants`): sharp composites the brand badge and a `qrcode`-generated QR onto the committed inputs under `public/assets/lockscreen/`; linen-classic is the confirmed final, with an Instagram edition. All inputs are repo-local since 2026-11-08. Details, QR rules and the owner's taste constraints: `.agent/skills/lockscreen-qr-generator/SKILL.md`.
 
