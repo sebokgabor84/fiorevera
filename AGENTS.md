@@ -137,10 +137,10 @@ Vera tracks the project against these gates. She will not skip a gate.
 ```
 ✅ DONE    Scaffold (iteration 1) — repo, configs, skills framework, plan
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   Gate A  → PRD drafted via interview mode + stress-tested with grill-me
-   Gate B  → MASTER-PLAN.md frozen + all open questions resolved
+   Gate A  → PRD drafted via interview mode + stress-tested with grill-me   ✅ 2026-11-09
+   Gate B  → MASTER-PLAN.md frozen + all open questions resolved           ✅ 2026-11-09
 
-⏭️  NEXT   PRD + Master Plan (iteration 2a)
+✅ DONE    PRD + Master Plan (iteration 2a) — see MASTER-PLAN.md for the 33-item build contract
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    Gate C  → design-system-expert reshaped (palette + typography confirmed)
    Gate D  → all domain skills reshaped
@@ -225,11 +225,11 @@ Schema: `- [STATUS] **[CATEGORY]** Description — \`reference\` _(added: YYYY-M
 | # | Question | Blocks | Status |
 |---|---|---|---|
 | 1 | Brand palette & typography | `design-system-expert` reshape | ✅ Resolved (`design-system-expert`) |
-| 2 | Full confirmed page list (incl. EN variants) | PRD / IA | ❓ Open |
-| 3 | Photography — does she have a usable set? | Content step (build blocker) | ❓ Open |
+| 2 | Full confirmed page list (incl. EN variants) | PRD / IA | ✅ Resolved (`docs/PRD.md` D-2/D-3 — 7 pages, Flower Garden dropped) |
+| 3 | Photography — does she have a usable set? | Content step (build blocker) | ✅ Resolved (`docs/PRD.md` D-5 — reuse legacy CDN set) |
 | 4 | Vercel project setup | Launch | ⚠️ Task pending |
-| 5 | EN locale — confirm inclusion in final locale set | i18n-guardian | ⚠️ Assumed yes per plan |
-| 6 | `to-prd` publish target — local markdown confirmed? | to-prd skill | ⚠️ Deferred to local md |
+| 5 | EN locale — confirm inclusion in final locale set | i18n-guardian | ✅ Confirmed (PRD D-3) |
+| 6 | `to-prd` publish target — local markdown confirmed? | to-prd skill | ✅ Local markdown (`docs/PRD.md`); GitHub Issues → BACKLOG |
 
 ---
 
