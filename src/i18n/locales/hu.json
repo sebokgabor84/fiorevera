@@ -1,0 +1,431 @@
+{
+  "meta": {
+    "siteName": "Fiore Vera",
+    "tagline": "virág és dekoráció",
+    "home": {
+      "title": "Esküvői dekoráció és virágkötészet – Fiore Vera, Zala megye",
+      "description": "Teljes körű esküvői dekoráció, esküvői virágkötészet és kellékbérlés Zalakarosról – Zala megye, Balaton és környéke. Kérj árajánlatot!"
+    },
+    "services": {
+      "title": "Esküvői dekorációs szolgáltatások – Fiore Vera",
+      "description": "Teljes körű esküvői dekoráció a tervezéstől a másnapi elpakolásig, esküvői virágkötészet szezonális virágokból és kellékbérlés – Zala megye."
+    },
+    "gallery": {
+      "title": "Munkáim – esküvői dekorációk – Fiore Vera",
+      "description": "Valódi esküvők Zala megyéből, a Balatonról és Ausztriából: főasztalok, szertartáshelyszínek, csokrok és asztaldíszek a Fiore Vera dekorációival."
+    },
+    "rental": {
+      "title": "Esküvői kellékbérlés árakkal – Fiore Vera, Zalakaros",
+      "description": "Boldogságkapu, arany virágállvány, hengerváza, gyertyatartó, pezsgőfal és feliratos tükör bérelhető – méretek, darabszám és árak egy helyen."
+    },
+    "about": {
+      "title": "Rólam – Sebőkné Antalics Veronika – Fiore Vera",
+      "description": "Vera vagyok, esküvői dekoratőr és virágkötő Zalakarosról. Ismerd meg, hogyan született a Fiore Vera, és miért a természetes, szezonális stílus a védjegyem."
+    },
+    "contact": {
+      "title": "Kapcsolat és árajánlatkérés – Fiore Vera",
+      "description": "Kérj árajánlatot esküvői dekorációra, virágkötészetre vagy kellékbérlésre. Telefon, e-mail, Instagram – Zalakaros, Zala megye."
+    },
+    "privacy": {
+      "title": "Adatkezelési tájékoztató – Fiore Vera",
+      "description": "Tájékoztató arról, hogyan kezeljük a kapcsolatfelvételi űrlapon megadott adatokat és a nyelvi beállításodat a fiorevera.hu oldalon."
+    },
+    "notFound": {
+      "title": "Az oldal nem található – Fiore Vera",
+      "description": "A keresett oldal nem létezik. Térj vissza a Fiore Vera kezdőlapjára."
+    }
+  },
+  "nav": {
+    "home": "Kezdőlap",
+    "services": "Szolgáltatások",
+    "gallery": "Munkáim",
+    "rental": "Kellékbérlés",
+    "about": "Rólam",
+    "contact": "Kapcsolat",
+    "privacy": "Adatkezelés",
+    "mainLabel": "Fő navigáció",
+    "openMenu": "Menü megnyitása",
+    "closeMenu": "Menü bezárása",
+    "menu": "Menü",
+    "logoLabel": "Fiore Vera – kezdőlap",
+    "quote": "Kérj árajánlatot"
+  },
+  "lang": {
+    "label": "Nyelv",
+    "hu": "Magyar",
+    "de": "Deutsch",
+    "en": "English",
+    "switchTo": "Váltás erre a nyelvre: {{lang}}",
+    "current": "Jelenlegi nyelv: {{lang}}"
+  },
+  "toast": {
+    "body": "Ez az oldal magyarul is elérhető.",
+    "cta": "Magyar változat",
+    "dismiss": "Bezárás"
+  },
+  "common": {
+    "phone": "Telefon",
+    "email": "E-mail",
+    "address": "Cím",
+    "instagram": "Instagram",
+    "facebook": "Facebook",
+    "readMore": "Tovább",
+    "backToTop": "Vissza az oldal tetejére",
+    "openInMaps": "Megnyitás térképen",
+    "newTab": "(új lapon nyílik)"
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "Esküvői dekoráció · Zala megye és a Balaton",
+      "title": "Fiore Vera",
+      "subtitle": "virág és dekoráció",
+      "lead": "Álmaid esküvői dekorációja – a tervezéstől a másnapi elpakolásig, hogy a Nagy Napon csak az ünneplésre kelljen figyelnetek.",
+      "cta": "Nézd meg a munkáimat",
+      "ctaSecondary": "Kérj árajánlatot"
+    },
+    "pitch": {
+      "eyebrow": "Miért a Fiore Vera?",
+      "title": "Esküvőre készülsz, de nem tudod, hogyan hozd össze álmaid dekorját?",
+      "intro": "A legjobb helyre jöttél. Azért vagyok, hogy a Nagy Nap dekorációja pontosan olyan legyen, amilyennek elképzeltétek – és közben a költségvetés is a helyén maradjon.",
+      "reasons": {
+        "budget": {
+          "title": "Szezonális virágok és bérelhető kellékek",
+          "body": "Az éppen nyíló, szezonális virágokkal és a folyamatosan bővülő kellékpalettámmal úgy lesz gyönyörű a dekoráció, hogy a költségek nem szöknek az egekbe."
+        },
+        "planning": {
+          "title": "Leveszem a terhet a vállatokról",
+          "body": "Szaktudásommal a dekoráció megtervezésének és kivitelezésének minden lépését átvállalom – nektek csak élveznetek kell a napot."
+        },
+        "props": {
+          "title": "Nem kell feleslegesen vásárolnotok",
+          "body": "Boldogságkapu, vázák, gyertyatartók, pezsgőfal: béreljétek ki tőlem, amire szükségetek van, ahelyett, hogy olyan tárgyakra költenétek, amiket később nem használtok."
+        }
+      },
+      "events": "Esküvők mellett szívesen díszítek más családi és céges rendezvényeket is."
+    },
+    "services": {
+      "eyebrow": "Szolgáltatások",
+      "title": "Amiben segíteni tudok",
+      "cards": {
+        "full": {
+          "title": "Teljes körű esküvői dekoráció",
+          "body": "Tervezés, virágkötészet, helyszíndíszítés és másnapi elpakolás – egy kézben, stresszmentesen.",
+          "cta": "Hogyan dolgozom"
+        },
+        "floristry": {
+          "title": "Esküvői virágkötészet",
+          "body": "Menyasszonyi csokor, asztaldíszek, főasztal-installáció – szezonális virágokból, természetes színvilágban.",
+          "cta": "Virágdíszek esküvőre"
+        },
+        "rental": {
+          "title": "Kellékbérlés",
+          "body": "Boldogságkapuk, arany virágállványok, vázák, gyertyatartók, pezsgőfal és feliratos tükör – árakkal, méretekkel.",
+          "cta": "Bérelhető kellékek"
+        }
+      }
+    },
+    "gallery": {
+      "eyebrow": "Munkáim",
+      "title": "Valódi esküvők, valódi helyszínek",
+      "intro": "Zala megyétől a Balatonon át Ausztriáig – néhány a párok közül, akiknek a Nagy Napját díszíthettem.",
+      "cta": "Az összes esküvő"
+    },
+    "testimonials": {
+      "eyebrow": "Rólam mondták",
+      "title": "Párok, akik már bíztak bennem"
+    },
+    "about": {
+      "eyebrow": "Rólam",
+      "title": "Szia, Vera vagyok",
+      "body": "Esküvői dekoratőr, virágkötő és édesanya Zalakarosról. A saját esküvőm dekorálása közben jöttem rá, hogy ez az, amit szívvel-lélekkel tudok csinálni – azóta párok tucatjainak segítettem, hogy a Nagy Nap dekorációja felejthetetlen legyen.",
+      "cta": "Ismerj meg jobban"
+    },
+    "cta": {
+      "title": "Tetszenek a munkáim?",
+      "body": "Mesélj az esküvőtökről – a helyszínről, a dátumról, az elképzeléseitekről –, és részletes árajánlatot készítek nektek.",
+      "button": "Kérj árajánlatot",
+      "or": "vagy hívj bátran:"
+    }
+  },
+  "services": {
+    "hero": {
+      "eyebrow": "Szolgáltatások",
+      "title": "Esküvői dekoráció, virágkötészet, kellékbérlés",
+      "intro": "Három módon tudok segíteni: átvállalom a teljes dekorációt, elkészítem a virágdíszeket, vagy kölcsönadom a kellékeket, ha magatok díszítenétek. A szolgáltatások külön-külön is kérhetők."
+    },
+    "full": {
+      "eyebrow": "1 · Teljes körű esküvői dekoráció",
+      "title": "Teljes körű esküvői dekoráció",
+      "intro": "Ha nem szeretnél magad gondoskodni az esküvői dekoráció kivitelezéséről, válaszd a teljes körű dekorációs szolgáltatásomat. A tervezéstől kezdve a virágkötészeten át a helyszín díszítéséig és a másnapi elpakolásig minden beletartozik. Tökéletes megoldás, ha a Nagy Napon stresszmentes készülődésről álmodozol.",
+      "scope": "Kérhetitek a polgári szertartás helyszínének dekorációját, a templomi szertartás helyszínének feldíszítését és a vacsora helyszínének ünnepi díszbe öltöztetését. Ha nincs mindháromra szükség, semmi baj – a szolgáltatás kérhető külön-külön is.",
+      "processTitle": "Így dolgozom",
+      "steps": {
+        "meeting": {
+          "title": "Kötelezettségmentes első találkozó",
+          "body": "Az első találkozásunkkor részletesen elmesélhetitek a konkrét elképzeléseiteket – de ha ezek még nincsenek, az sem baj, együtt kitaláljuk a koncepciót. Ötleteket adok, mivel tehetjük különlegessé a díszítést, vagy hol tudtok csökkenteni a költségeken. Szívesen fogadom, ha hoztok képeket is, amik visszaadják a hangulatot, amit el szeretnétek érni."
+        },
+        "quote": {
+          "title": "Árajánlat készítése",
+          "body": "Részletes árajánlatot készítek a megbeszéltek alapján. A meglévő eszközeimet bérleti díjjal bocsátom rendelkezésetekre; az egyszer használatos kellékek (gyertya, szalvéta, egyedi táblák) a vásárlás kategóriába esnek. Munkadíjat külön nem számolok fel, az a tételek árába van kalkulálva. Az utolsó tétel az útiköltség, amit Ft/km-ben adok meg."
+        },
+        "visit": {
+          "title": "Ingyenes helyszínbejárás",
+          "body": "Együtt elmegyünk az esküvő helyszínére – ezért nem számolok fel km-díjat. Ez a tervezés nagyon fontos része: megnézzük, mit hova tegyünk, méreteket veszek (például a főasztal háttérhez), megkérdezzük az ott dolgozókat, mit szabad, és kapunk egy összképet arról, milyen dekoráció illik a helyszín hangulatához."
+        },
+        "floral": {
+          "title": "Virágkötészeti munkák elkészítése",
+          "body": "A virágdíszeket szezonális, frissen érkező virágokból készítem, amiket helyi termelőktől és nagykereskedésből szerzek be. Arra törekszem, hogy minél több különleges virág kerüljön a dekorációba – így az esküvőtök egyedisége is fokozható."
+        }
+      },
+      "checklistTitle": "Milyen virágdíszek szoktak kelleni egy esküvőre?",
+      "checklist": {
+        "bridal": "menyasszonyi csokor",
+        "toss": "dobócsokor",
+        "parents": "szülőköszöntő csokrok",
+        "boutonniere": "vőlegény- és férfikitűzők",
+        "bridesmaid": "koszorúslánycsokor vagy kardísz",
+        "headTable": "főasztaldísz",
+        "tables": "asztaldíszek",
+        "car": "autódísz",
+        "church": "templomi oltárdísz, karzat, padok díszítése",
+        "installations": "installációk a főasztal mögé, a polgári szertartás helyszínére, fotóhelyszínre",
+        "hair": "virágékszerek a menyasszonynak: koszorú, virágos hajfésű",
+        "petals": "virágszirmok"
+      }
+    },
+    "floristry": {
+      "eyebrow": "2 · Esküvői virágkötészet",
+      "title": "Esküvői virágkötészet szezonális virágokkal",
+      "intro": "Romantikus, színes, illatos virágdíszek az éppen nyíló, szezonális virágokból – természetes színvilágban, a helyszínhez és az egyéniségetekhez igazítva.",
+      "body": "A virágokat helyi termelőktől és nagykereskedésből szerzem be, közvetlenül a Nagy Nap előtt, így frissen és tartósan kerülnek a csokrokba és díszekbe. Ha ti magatok készítenétek a dekorációt, akkor is szívesen megkötöm nektek a csokrokat és elkészítem a virágdíszeket – a virágkötészet önállóan is kérhető.",
+      "seasonTitle": "Szezonalitás",
+      "season": "Áprilistól októberig a legszebb a kínálat: tavasszal tulipán, nárcisz, boglárka és szellőrózsa, nyáron pünkösdi rózsa, szarkaláb és tátika, ősszel dália, zinnia és őszirózsa. A szezonon kívüli időszakra is találunk megoldást – ezt az első találkozón beszéljük át.",
+      "cta": "Kérj árajánlatot virágdíszekre"
+    },
+    "rental": {
+      "eyebrow": "3 · Kellékbérlés",
+      "title": "Kellékbérlés",
+      "intro": "Te magad készítenéd el az esküvői dekorációt, de nem szeretnél nagy összeget fektetni a kellékekbe, és gondot okoz, hol tárold őket? Ebben is segíthetek.",
+      "body": "Boldogságkapu, fényfüggöny, vázák, mécsesek, gyertyatartók, ládák, kaspók, vörös szőnyeg és egyéb dekorációs eszközök állnak rendelkezésetekre. Nézzük át együtt, mire lehet szükségetek!",
+      "cta": "Bérelhető kellékek és árak"
+    },
+    "cta": {
+      "title": "Beszéljük át az esküvőtöket",
+      "body": "Az első találkozó kötelezettségmentes – mesélj az elképzeléseitekről, és megmutatom, hogyan valósíthatjuk meg.",
+      "button": "Kapcsolatfelvétel"
+    }
+  },
+  "gallery": {
+    "hero": {
+      "eyebrow": "Munkáim",
+      "title": "Esküvők, amiket díszíthettem",
+      "intro": "Minden esküvő más – más helyszín, más pár, más történet. Itt találod az elmúlt évek munkáit: kattints vagy koppints egy albumra, és lapozz bele a képekbe."
+    },
+    "albumAlt": "Esküvői dekoráció – {{title}}, {{venue}}, {{n}}. kép",
+    "albumAltNoVenue": "Esküvői dekoráció – {{title}}, {{n}}. kép",
+    "photoCount": "{{count}} kép",
+    "albumTitles": {
+      "eskuvo-classic-magazin-fotozas": "Esküvő Classic Magazin fotózás",
+      "teli-fotozas-2022": "Téli fotózás 2022"
+    },
+    "countries": {
+      "HU": "Magyarország",
+      "AT": "Ausztria"
+    },
+    "carousel": {
+      "open": "Album megnyitása: {{title}}",
+      "label": "Képek: {{title}}",
+      "prev": "Előző kép",
+      "next": "Következő kép",
+      "close": "Vissza a borítóképhez",
+      "status": "{{n}}. kép, összesen {{total}}",
+      "hint": "Nyilakkal lapozhatsz, Esc-kel bezárhatod"
+    },
+    "cta": {
+      "title": "Szeretnéd, hogy a ti esküvőtök is ide kerüljön?",
+      "button": "Kérj árajánlatot"
+    }
+  },
+  "rental": {
+    "hero": {
+      "eyebrow": "Kellékbérlés",
+      "title": "Bérelhető esküvői kellékek",
+      "intro": "Ha saját magad készíted a dekort, azt tanácsolom, bérelj kellékeket. Nem kell feleslegesen nagy összeget olyan eszközökbe fektetned, amire az esküvő után semmi szükséged, és nem kell azon törnöd a fejed, hova rakod el a sok holmit a Nagy Nap után."
+    },
+    "howTo": {
+      "title": "Hogyan működik?",
+      "steps": {
+        "choose": "Válasszatok a bérelhető kellékeim közül.",
+        "reserve": "Foglaljátok le őket e-mailben a Nagy Napra – minél korábban, annál biztosabb.",
+        "pickup": "Személyes átvétel Zalakaroson, előre egyeztetett időpontban.",
+        "ask": "Bármilyen kérdés merül fel, keressetek nyugodtan telefonon is."
+      }
+    },
+    "currencyNote": "Az árak forintban (HUF) értendők, egy alkalomra szólnak.",
+    "labels": {
+      "size": "Méret",
+      "quantity": "Készlet",
+      "price": "Ár",
+      "deposit": "Kaució",
+      "pickup": "Átvétel",
+      "pickupOnly": "csak személyesen",
+      "pickupZalakaros": "csak személyesen, Zalakaroson",
+      "pieces": "{{count}} db",
+      "sets": "{{count}} szett",
+      "walls": "{{count}} db",
+      "available": "{{count}} áll rendelkezésre"
+    },
+    "units": {
+      "occasion": "alkalom",
+      "piece": "db",
+      "set": "szett",
+      "wall": "fal"
+    },
+    "items": {
+      "wooden-arch": {
+        "name": "Fa boldogságkapu",
+        "description": "Fából készült boldogságkapunk alkalmas a polgári szertartás díszítésére, de akár a főasztal mögött is elhelyezhető. Többféleképpen díszíthető.",
+        "notes": "Öt részre szerelhető, összerakása két embernek nagyjából 15 percet vesz igénybe, csavarokkal rögzíthető."
+      },
+      "birch-arch": {
+        "name": "Nyírfa boldogságkapu",
+        "description": "Nyírfából készült boldogságkapunk bevethető akár a polgári szertartáson, akár a vacsora helyszínén. Tetszőlegesen díszíthető.",
+        "notes": "Három részre szedhető, összerakása csavarokkal történik – két embernek 10 perces feladat."
+      },
+      "gold-flower-stands": {
+        "name": "Arany virágállványok",
+        "description": "Fémből készült virágállványaink körasztalos elrendezéshez a legalkalmasabbak, de táblaasztalos elrendezés esetén is mutatósak. Bármilyen virágdísz elkészíthető hozzájuk: élő, száraz, művirág.",
+        "notes": "Magasság 70 cm, arany színben."
+      },
+      "cylinder-vase-set": {
+        "name": "Hengerváza szett",
+        "description": "Háromrészes üveg hengerváza szettünk tökéletes dísze az asztaloknak, de jól használható kiegészítő elemként szinte bárhol. Ha élvezni szeretnétek a gyertyafényt, úszógyertyával használjátok.",
+        "notes": "Tömbgyertyát ne gyújtsatok meg benne: a viasz belefolyik a vázába és nem lehet kitakarítani – ebben az esetben a vázákat meg kell vásárolni. Méretek: 28×8 cm, 23×10 cm, 17×12 cm (magasság × átmérő)."
+      },
+      "gold-candle-holder-set": {
+        "name": "Arany fém talpas gyertyatartó szett",
+        "description": "Ha igazán exkluzív megjelenésű talpas gyertyatartót szeretnél a dekorációdba, ezzel a szettel nem fogsz mellé. Karcsú, szálas gyertyával használható, ideális körasztalos és táblaasztalos elrendezéshez is.",
+        "notes": "Három részre szétszerelhető, így praktikus a szállítása. Magasságok: 23, 28 és 33 cm; belső szájátmérő 2,2 cm."
+      },
+      "champagne-wall": {
+        "name": "Pezsgőfal",
+        "description": "Látványos elem, mely tökéletes kelléke lehet a pezsgős fogadásnak, de akár az est további részében is használható, ha folyamatosan feltöltik.",
+        "notes": "Világító „Cheers” felirat tartozik hozzá. Összesen 100 pohár fér rá (a felirat használatakor 90). Könnyen összeszerelhető."
+      },
+      "wedding-mirror": {
+        "name": "Esküvői feliratos tükör",
+        "description": "Dobd fel az esküvői dekorációt egy feliratozott tükörrel, ami szolgálhat köszöntőtáblaként, ültetőtáblaként, vagy tartalmazhat egy kedves üzenetet a vendégeknek. A bérlés tartalmazza az egyedi matrica elkészítését és felragasztását – kapcsolatfelvétel után látványtervet küldünk.",
+        "notes": "A bérlés egy hétvégére szól: csütörtöktől vehető át, hétfő estig kell visszahozni. Rendelés előtt kérlek, egyeztess velünk időpontot. A kaució a tükör sérülésmentes visszaadásakor visszajár."
+      }
+    },
+    "cta": {
+      "title": "Lefoglalnád valamelyiket?",
+      "body": "Írj egy e-mailt a kiválasztott kellékekkel és az esküvő dátumával, vagy hívj, és átbeszéljük a részleteket.",
+      "email": "Foglalás e-mailben",
+      "emailSubject": "Kellékbérlés foglalás – fiorevera.hu",
+      "phone": "Hívás"
+    }
+  },
+  "about": {
+    "hero": {
+      "eyebrow": "Rólam",
+      "title": "A Fiore Vera születéséről",
+      "greeting": "Üdvözöllek!"
+    },
+    "intro": "Sebőkné Antalics Veronika vagyok, esküvői dekoratőr, virágkötő és édesanya.",
+    "story1": "A saját esküvőm dekorációjának elkészítésekor fogalmazódott meg bennem, hogy esküvői dekoratőrként szeretnék dolgozni. Nagyon tetszett a hónapokon át tartó tervezgetés, majd az esküvő előtti díszítés – teljes lázban égtem. Mindig is vonzott az esküvők világa, a virágokkal való alkotás. Ez az, amit igazán, szívvel-lélekkel tudok csinálni.",
+    "story2": "Az esküvő egy különleges és nagy jelentőséggel bíró nap mindenki életében. Minden lány titkon arról álmodik, hogy a Nagy Napon királylánynak érezhesse magát, és csodásan felékesített környezetben mondhassa ki szerettei körében a boldogító igent.",
+    "story3": "Ezért vagyok én: hogy a teljes dekoráció terhét levegyem a vállatokról – az előkészületektől a kivitelezésen át egészen a másnapi lebontásig. Alkotásaimmal hozzájárulok ahhoz, hogy az esküvőtök örök emlék maradjon, amit szívesen néztek vissza a fotókon. Legyen felejthetetlen a Nagy Nap dekója!",
+    "garden": {
+      "title": "A kertem – egy kis szünet",
+      "body": "Több szezonon át saját kertemben termesztettem a vágott virágokat az esküvőkhöz – ez formálta a természetes, szezonális stílusomat, ami ma is a munkáim védjegye. Az egyre szárazabb nyarak miatt a kert most pihen, de amint az időjárás engedi, visszatérek hozzá. Addig is helyi termelők és nagykereskedés friss, szezonális virágaival dolgozom."
+    },
+    "facts": {
+      "based": "Zalakaros, Zala megye",
+      "style": "Természetes, szezonális, romantikus"
+    },
+    "cta": {
+      "title": "Találkozzunk!",
+      "body": "Az első beszélgetés kötelezettségmentes – mesélj az esküvőtökről, és együtt kitaláljuk a koncepciót.",
+      "button": "Kapcsolatfelvétel"
+    }
+  },
+  "contact": {
+    "hero": {
+      "eyebrow": "Kapcsolat",
+      "title": "Hívj bátran!",
+      "intro": "Kérj árajánlatot esküvői dekorációra, virágkötészetre vagy kellékbérlésre. Írj néhány sort az esküvőtökről, és hamarosan jelentkezem."
+    },
+    "ownerLabel": "Dekoratőr",
+    "social": {
+      "title": "Kövess az Instagramon",
+      "body": "Friss munkák, kulisszák mögötti pillanatok és szezonális inspiráció."
+    },
+    "form": {
+      "title": "Árajánlatkérés",
+      "intro": "A csillaggal jelölt mezők kitöltése kötelező.",
+      "name": "Név",
+      "email": "E-mail cím",
+      "phone": "Telefonszám",
+      "optional": "nem kötelező",
+      "date": "Esküvő dátuma",
+      "venue": "Helyszín",
+      "message": "Üzenet",
+      "messagePlaceholder": "Mesélj az elképzeléseitekről: szertartás, vacsorahelyszín, színvilág, létszám…",
+      "consent": "Hozzájárulok, hogy a megadott adataimat a megkeresésem megválaszolása céljából kezeljék az <0>adatkezelési tájékoztató</0> szerint.",
+      "submit": "Üzenet küldése",
+      "sending": "Küldés…",
+      "success": "Köszönöm az üzenetet! Hamarosan jelentkezem a megadott elérhetőségen.",
+      "error": "Az üzenetet nem sikerült elküldeni. Kérlek, próbáld újra, vagy írj közvetlenül e-mailben.",
+      "errors": {
+        "required": "Ez a mező kötelező.",
+        "email": "Kérlek, érvényes e-mail címet adj meg.",
+        "consent": "A küldéshez el kell fogadnod az adatkezelési tájékoztatót."
+      }
+    }
+  },
+  "privacy": {
+    "title": "Adatkezelési tájékoztató",
+    "updated": "Utolsó frissítés: {{date}}",
+    "intro": "Ez a tájékoztató összefoglalja, milyen adatokat kezel a fiorevera.hu weboldal, miért és meddig. Az adatkezelő: Sebőkné Antalics Veronika (Fiore Vera), 8749 Zalakaros, Rózsa utca 53.",
+    "sections": {
+      "form": {
+        "title": "Kapcsolatfelvételi űrlap",
+        "body": "Az űrlapon megadott adatokat (név, e-mail cím, opcionálisan telefonszám, esküvő dátuma, helyszín, üzenet) kizárólag a megkeresésed megválaszolására és az árajánlat elkészítésére használom. Az adatokat az űrlapszolgáltató továbbítja az info.fiorevera@gmail.com címre, ahol a levelezésben őrzöm meg legfeljebb az árajánlat érvényességéig, megrendelés esetén a szerződéses kapcsolat lezárultáig. Az adatkezelés jogalapja a hozzájárulásod, amit bármikor visszavonhatsz."
+      },
+      "storage": {
+        "title": "Nyelvi beállítás",
+        "body": "Ha a nyelvi ajánlatot bezárod vagy nyelvet váltasz, ezt a böngésződ helyi tárolójában (localStorage) jegyezzük meg, hogy ne kelljen újra választanod. Ez az adat nem hagyja el az eszközödet, és a böngésző adatainak törlésével bármikor eltávolítható."
+      },
+      "analytics": {
+        "title": "Látogatottsági statisztika",
+        "body": "Az oldal a Vercel Web Analytics sütimentes, anonim látogatottsági mérését használja. Nem tárol személyes adatot és nem követ más weboldalakon – ezért az oldalon nincs sütibanner."
+      },
+      "rights": {
+        "title": "Jogaid",
+        "body": "Bármikor kérheted a rólad tárolt adatok megtekintését, helyesbítését vagy törlését, és visszavonhatod a hozzájárulásodat az info.fiorevera@gmail.com címen. Panasszal a Nemzeti Adatvédelmi és Információszabadság Hatósághoz (NAIH) fordulhatsz."
+      }
+    }
+  },
+  "notFound": {
+    "eyebrow": "404",
+    "title": "Ez az oldal nem található",
+    "body": "Lehet, hogy a link elavult, vagy elgépelted a címet. Térj vissza a kezdőlapra, vagy nézd meg a munkáimat.",
+    "cta": "Vissza a kezdőlapra",
+    "ctaSecondary": "Munkáim"
+  },
+  "footer": {
+    "tagline": "Esküvői dekoráció, virágkötészet és kellékbérlés Zalakarosról – Zala megye, Balaton és Nyugat-Magyarország.",
+    "contactTitle": "Kapcsolat",
+    "pagesTitle": "Oldalak",
+    "languagesTitle": "Nyelvek",
+    "rights": "Minden jog fenntartva.",
+    "areas": "Szolgáltatási terület: {{areas}}"
+  },
+  "testimonials": {
+    "nagy-orsolya": "Nagyon szépen köszönjük az elképesztően csodálatos, lelkiismeretes, kedves, segítőkész, gyönyörű, precíz, személyre szabott és alázatos munkátokat!! Bátran ajánljuk mindenkinek.",
+    "hajnal-durgo-adrienn": "Nagyon szépen köszönjük Verának és kis csapatának a precíz munkájukat. Ajánlom őt minden olyan menyasszonynak, aki egy természetes színvilágú esküvődekorációt álmodott meg a nagy napjára. Vera mindent meg fog tenni, hogy a ti esküvői dekorációtok is gyönyörű legyen.",
+    "borbely-antalics-csilla": "Abszolút profi! Minden elképzelésünket kielégítő munkát kaptunk. Ár-érték arányban korrekt. Csak ajánlani tudjuk.",
+    "toth-szabo-klaudia": "Az esküvőnk egyik meghatározó pillanata volt számomra, amikor beléptünk a lagzi helyszínéül szolgáló étterembe és megláttam a dekorációt. Minden képzeletemet felülmúlta, amit Vera alkotott, csodaszép volt."
+  }
+}

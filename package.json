@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsx scripts/generate-sitemap.ts && tsc -b && vite build && vite build --ssr src/entry-server.tsx --outDir dist-ssr && tsx scripts/prerender.ts",
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "vitest",
@@ -14,7 +14,10 @@
     "preview": "vite preview",
     "optimize:assets": "node scripts/optimize-images.js",
     "lockscreen": "npx tsx scripts/generate-lockscreen.ts",
-    "lockscreen:variants": "npx tsx scripts/generate-lockscreen-variants.ts"
+    "lockscreen:variants": "npx tsx scripts/generate-lockscreen-variants.ts",
+    "archive:legacy": "tsx scripts/archive-legacy.ts",
+    "validate:i18n": "tsx scripts/validate-i18n.ts",
+    "sitemap": "tsx scripts/generate-sitemap.ts"
   },
   "dependencies": {
     "i18next": "^25.7.4",

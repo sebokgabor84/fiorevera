@@ -10,8 +10,8 @@ Website for a decoration & floristry business, built on the agent-driven, skill-
 
 | | |
 |---|---|
-| **Current iteration** | 2a — PRD confirmed (`docs/PRD.md`) + `MASTER-PLAN.md` frozen (34 numbered items); QR lockscreen shipped (parallel track) |
-| **Next iteration** | 2b/2c — `MASTER-PLAN.md` Phase 0: archive legacy site → image pipeline → reshape remaining skills; then Phase 1 app shell → Phase 2 pages (visual-gated) → launch |
+| **Current iteration** | 3 — first build pass on `feature/site-build`: MASTER-PLAN Phase 0 (archive + image pipeline), Phase 1 (tokens, locale router, i18n gate, header/toast/footer, SeoHead, prerender) and all Phase 2 pages render in HU/DE/EN with the archived legacy photography; unit + E2E suites in place |
+| **Next iteration** | 3b — Vera's cover picks + copy sign-off per locale (1.3 / 2.4 / R-1), form provider wired (`VITE_FORM_ENDPOINT`, 2.10), skill reshapes (0.3), Phase 3 quality gates (axe, Lighthouse, all 4 Playwright projects), then Vercel (Phase 4) |
 | **Local path** | `/Users/gabor.seboek/Documents/Projects/Private/fiorevera` |
 | **Remote** | `https://github.com/sebokgabor84/fiorevera` |
 | **Template source** | `/Users/gabor.seboek/Documents/Projects/Private/Learning/GaborPortfolio` |
@@ -125,13 +125,25 @@ fiorevera/
 
 > The app does **not** build yet — source files (`main.tsx`, components, data, locales) are intentionally absent and arrive in iteration 2. This commit is a structure + plan checkpoint only.
 
-## Local dev (once iteration 2 adds source)
+## Local dev
 
 ```bash
 npm install
-npm run dev          # vite dev server
-npm run lint         # eslint
-npm test -- --run    # vitest
-npm run test:e2e     # playwright
-npm run build        # tsc + vite build
+npm run dev              # vite dev server → http://localhost:5173 (CSR; prerendered HTML only in the build)
+npm run lint             # eslint — 0 errors / 0 warnings
+npm test -- --run        # vitest: routes, data contracts, i18n parity, server render of every route, archive, assets
+npm run test:e2e         # playwright (chromium, firefox, webkit, Mobile Chrome) — reuses a running dev server
+npm run build            # sitemap → tsc → vite build → vite build --ssr → prerender 21 routes + 3 localized 404s into dist/
+npm run preview          # serve dist/ (static HTML per route)
 ```
+
+### Legacy archive & replaceable assets (MASTER-PLAN 0.1 / 0.2)
+
+```bash
+npm run archive:legacy -- --seed-assets   # Webnode HU+DE pages → references/legacy/ (Markdown + raw HTML + manifest.json), 193 images, seeds assets-src/
+npm run optimize:assets                   # assets-src/<slot>/ → public/assets/**/*.webp (≤ 200 KB, 1920 + 800 px) + src/data/generated/imageMeta.ts
+```
+
+- `references/legacy/manifest.json` and the Markdown copies are committed; `references/legacy/images/` + `references/legacy/raw/` (155 MB) and `assets-src/` (158 MB) are **git-ignored** because they exceed the 100 MB threshold (PRD D-17/R-6) — regenerate them with the two commands above. Local path on the build machine: `/Users/gabor.seboek/Documents/Projects/Private/fiorevera/references/legacy/images/`.
+- To replace imagery (PRD D-5): drop originals into `assets-src/hero/`, `assets-src/gallery/<album-slug>/`, `assets-src/rental/<item-id>/` or `assets-src/about/`, run `npm run optimize:assets`, then adjust `coverIndex` in `src/data/albums.ts` if the cover moved.
+- Contact form: set `VITE_FORM_ENDPOINT` (+ `VITE_FORM_ACCESS_KEY` for Web3Forms) — see `.env.example`. Without it the form fails cleanly and shows the e-mail fallback.

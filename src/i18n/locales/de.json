@@ -1,0 +1,431 @@
+{
+  "meta": {
+    "siteName": "Fiore Vera",
+    "tagline": "Blumen & Deko",
+    "home": {
+      "title": "Hochzeitsdekoration & Floristik – Fiore Vera | Burgenland",
+      "description": "Komplette Hochzeitsdekoration, Hochzeitsfloristik und Dekoverleih aus Zalakaros – für Burgenland, Wien, Niederösterreich und Steiermark. Jetzt Angebot anfragen!"
+    },
+    "services": {
+      "title": "Hochzeitsdekoration – Leistungen – Fiore Vera",
+      "description": "Komplette Hochzeitsdekoration von der Planung bis zum Abbau, Hochzeitsfloristik mit saisonalen Blumen und Dekoverleih – Burgenland, Wien, Niederösterreich."
+    },
+    "gallery": {
+      "title": "Referenzen – Hochzeitsdekorationen – Fiore Vera",
+      "description": "Echte Hochzeiten aus Westungarn, vom Balaton und aus dem Burgenland: Haupttische, Trauungsorte, Sträuße und Tischdekorationen von Fiore Vera."
+    },
+    "rental": {
+      "title": "Dekoverleih für die Hochzeit mit Preisen – Fiore Vera",
+      "description": "Traubogen, goldene Blumenständer, Zylindervasen, Kerzenständer, Sektwand und Spiegel mit Schriftzug zum Mieten – Maße, Stückzahl und Preise auf einen Blick."
+    },
+    "about": {
+      "title": "Über mich – Veronika Sebőkné Antalics – Fiore Vera",
+      "description": "Ich bin Vera, Hochzeitsdekorateurin und Floristin aus Zalakaros. Wie Fiore Vera entstand und warum der natürliche, saisonale Stil meine Handschrift ist."
+    },
+    "contact": {
+      "title": "Kontakt & Angebot anfragen – Fiore Vera",
+      "description": "Frag ein Angebot für Hochzeitsdekoration, Floristik oder Dekoverleih an. Telefon, E-Mail, Instagram – Zalakaros, Westungarn."
+    },
+    "privacy": {
+      "title": "Datenschutzerklärung – Fiore Vera",
+      "description": "Informationen darüber, wie wir die Daten aus dem Kontaktformular und deine Spracheinstellung auf fiorevera.hu verarbeiten."
+    },
+    "notFound": {
+      "title": "Seite nicht gefunden – Fiore Vera",
+      "description": "Die gesuchte Seite existiert nicht. Zurück zur Startseite von Fiore Vera."
+    }
+  },
+  "nav": {
+    "home": "Startseite",
+    "services": "Leistungen",
+    "gallery": "Referenzen",
+    "rental": "Verleih",
+    "about": "Über mich",
+    "contact": "Kontakt",
+    "privacy": "Datenschutz",
+    "mainLabel": "Hauptnavigation",
+    "openMenu": "Menü öffnen",
+    "closeMenu": "Menü schließen",
+    "menu": "Menü",
+    "logoLabel": "Fiore Vera – Startseite",
+    "quote": "Angebot anfragen"
+  },
+  "lang": {
+    "label": "Sprache",
+    "hu": "Magyar",
+    "de": "Deutsch",
+    "en": "English",
+    "switchTo": "Sprache wechseln zu {{lang}}",
+    "current": "Aktuelle Sprache: {{lang}}"
+  },
+  "toast": {
+    "body": "Diese Seite gibt es auch auf Deutsch.",
+    "cta": "Zur deutschen Version",
+    "dismiss": "Schließen"
+  },
+  "common": {
+    "phone": "Telefon",
+    "email": "E-Mail",
+    "address": "Adresse",
+    "instagram": "Instagram",
+    "facebook": "Facebook",
+    "readMore": "Mehr",
+    "backToTop": "Zurück nach oben",
+    "openInMaps": "In Karten öffnen",
+    "newTab": "(öffnet in neuem Tab)"
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "Hochzeitsdekoration · Burgenland, Wien & Westungarn",
+      "title": "Fiore Vera",
+      "subtitle": "Blumen & Deko",
+      "lead": "Die Hochzeitsdekoration eurer Träume – von der Planung bis zum Abbau am nächsten Tag, damit ihr am großen Tag nur noch feiern müsst.",
+      "cta": "Meine Arbeiten ansehen",
+      "ctaSecondary": "Angebot anfragen"
+    },
+    "pitch": {
+      "eyebrow": "Warum Fiore Vera?",
+      "title": "Ihr bereitet eure Hochzeit vor, wisst aber nicht, wie ihr die Deko eurer Träume umsetzen sollt?",
+      "intro": "Dann seid ihr hier richtig. Ich sorge dafür, dass die Dekoration am großen Tag genau so wird, wie ihr sie euch vorgestellt habt – und das Budget trotzdem im Rahmen bleibt.",
+      "reasons": {
+        "budget": {
+          "title": "Saisonale Blumen und Deko zum Mieten",
+          "body": "Mit saisonalen Blumen, die gerade blühen, und meinem ständig wachsenden Verleihangebot wird die Dekoration wunderschön, ohne dass die Kosten in die Höhe schießen."
+        },
+        "planning": {
+          "title": "Ich nehme euch die Last ab",
+          "body": "Planung und Umsetzung der Dekoration übernehme ich Schritt für Schritt – ihr müsst den Tag nur noch genießen."
+        },
+        "props": {
+          "title": "Nichts unnötig kaufen",
+          "body": "Traubogen, Vasen, Kerzenständer, Sektwand: Mietet bei mir, was ihr braucht, statt Geld für Dinge auszugeben, die ihr später nicht mehr benötigt."
+        }
+      },
+      "events": "Neben Hochzeiten dekoriere ich gerne auch andere Familien- und Firmenfeiern."
+    },
+    "services": {
+      "eyebrow": "Leistungen",
+      "title": "Wobei ich euch helfen kann",
+      "cards": {
+        "full": {
+          "title": "Komplette Hochzeitsdekoration",
+          "body": "Planung, Floristik, Dekoration vor Ort und Abbau am nächsten Tag – aus einer Hand, stressfrei.",
+          "cta": "So arbeite ich"
+        },
+        "floristry": {
+          "title": "Hochzeitsfloristik",
+          "body": "Brautstrauß, Tischdekorationen, Installation am Haupttisch – aus saisonalen Blumen in natürlichen Farben.",
+          "cta": "Blumenschmuck für die Hochzeit"
+        },
+        "rental": {
+          "title": "Dekoverleih",
+          "body": "Traubögen, goldene Blumenständer, Vasen, Kerzenständer, Sektwand und Spiegel mit Schriftzug – mit Preisen und Maßen.",
+          "cta": "Mietangebot ansehen"
+        }
+      }
+    },
+    "gallery": {
+      "eyebrow": "Referenzen",
+      "title": "Echte Hochzeiten, echte Orte",
+      "intro": "Vom Komitat Zala über den Balaton bis nach Österreich – einige der Paare, deren großen Tag ich dekorieren durfte.",
+      "cta": "Alle Hochzeiten"
+    },
+    "testimonials": {
+      "eyebrow": "Meinungen",
+      "title": "Paare, die mir vertraut haben"
+    },
+    "about": {
+      "eyebrow": "Über mich",
+      "title": "Hallo, ich bin Vera",
+      "body": "Hochzeitsdekorateurin, Floristin und Mutter aus Zalakaros. Beim Dekorieren meiner eigenen Hochzeit habe ich gemerkt, dass ich das mit Herz und Seele tun kann – seitdem habe ich Dutzenden Paaren zu einer unvergesslichen Dekoration verholfen.",
+      "cta": "Mehr über mich"
+    },
+    "cta": {
+      "title": "Gefallen dir meine Arbeiten?",
+      "body": "Erzählt mir von eurer Hochzeit – Ort, Datum, Vorstellungen – und ich erstelle euch ein detailliertes Angebot.",
+      "button": "Angebot anfragen",
+      "or": "oder ruft einfach an:"
+    }
+  },
+  "services": {
+    "hero": {
+      "eyebrow": "Leistungen",
+      "title": "Hochzeitsdekoration, Floristik, Dekoverleih",
+      "intro": "Auf drei Arten kann ich helfen: Ich übernehme die komplette Dekoration, fertige den Blumenschmuck an oder verleihe euch die Deko, wenn ihr selbst gestalten möchtet. Die Leistungen sind auch einzeln buchbar."
+    },
+    "full": {
+      "eyebrow": "1 · Komplette Hochzeitsdekoration",
+      "title": "Komplette Hochzeitsdekoration",
+      "intro": "Wenn ihr euch nicht selbst um die Umsetzung der Hochzeitsdekoration kümmern möchtet, wählt meinen umfassenden Dekorationsservice. Von der Planung über die Floristik bis zur Dekoration des Veranstaltungsorts und dem Abbau am nächsten Tag ist alles enthalten. Die perfekte Lösung, wenn ihr euch eine stressfreie Vorbereitung am großen Tag wünscht.",
+      "scope": "Ihr könnt die Dekoration für den Ort der standesamtlichen Trauung, den Blumenschmuck für die kirchliche Zeremonie und die festliche Gestaltung des Festsaals anfragen. Falls ihr nicht alle drei braucht, kein Problem – die Leistungen können auch einzeln gebucht werden.",
+      "processTitle": "So arbeite ich",
+      "steps": {
+        "meeting": {
+          "title": "Unverbindliches Erstgespräch",
+          "body": "Beim ersten Treffen könnt ihr mir eure konkreten Vorstellungen ausführlich schildern – und falls es die noch nicht gibt, entwickeln wir das Konzept gemeinsam. Ich gebe euch Ideen, wie wir die Dekoration besonders machen oder wo ihr sparen könnt. Bringt gerne Bilder mit, die die Stimmung zeigen, die ihr euch wünscht."
+        },
+        "quote": {
+          "title": "Angebotserstellung",
+          "body": "Auf Basis des Besprochenen erstelle ich ein detailliertes Angebot. Meine vorhandene Deko stelle ich euch gegen eine Mietgebühr zur Verfügung; Einwegartikel wie Kerzen, Servietten und individuelle Schilder fallen in die Kaufkategorie. Arbeitszeit berechne ich nicht separat, sie ist in den Preisen enthalten. Der letzte Posten sind die Fahrtkosten, die ich pro Kilometer angebe."
+        },
+        "visit": {
+          "title": "Kostenlose Besichtigung des Veranstaltungsorts",
+          "body": "Gemeinsam besuchen wir den Ort der Hochzeit – dafür berechne ich keine Kilometerpauschale. Das ist ein sehr wichtiger Teil der Planung: Wir überlegen, was wohin kommt, ich nehme Maße (zum Beispiel für den Hintergrund des Haupttischs), wir fragen das Team vor Ort, was erlaubt ist, und bekommen ein Gefühl dafür, welche Dekoration zur Atmosphäre des Ortes passt."
+        },
+        "floral": {
+          "title": "Anfertigung der floristischen Arbeiten",
+          "body": "Den Blumenschmuck fertige ich aus saisonalen, frisch gelieferten Blumen an, die ich von regionalen Produzenten und aus dem Großhandel beziehe. Mir ist wichtig, möglichst viele besondere Blumen in die Dekoration zu bringen – das macht eure Hochzeit noch einzigartiger."
+        }
+      },
+      "checklistTitle": "Welcher Blumenschmuck wird für eine Hochzeit üblicherweise gebraucht?",
+      "checklist": {
+        "bridal": "Brautstrauß",
+        "toss": "Wurfstrauß",
+        "parents": "Sträuße für die Eltern",
+        "boutonniere": "Anstecker für den Bräutigam und die Herren",
+        "bridesmaid": "Brautjungfernstrauß oder Armschmuck",
+        "headTable": "Dekoration des Haupttischs",
+        "tables": "Tischdekorationen",
+        "car": "Autoschmuck",
+        "church": "Altarschmuck, Empore und Bänke in der Kirche",
+        "installations": "Installationen hinter dem Haupttisch, am Ort der standesamtlichen Trauung, für die Fotolocation",
+        "hair": "Blumenschmuck für die Braut: Kranz, Blumenkamm",
+        "petals": "Blütenblätter"
+      }
+    },
+    "floristry": {
+      "eyebrow": "2 · Hochzeitsfloristik",
+      "title": "Hochzeitsfloristik mit saisonalen Blumen",
+      "intro": "Romantischer, bunter, duftender Blumenschmuck aus saisonalen Blumen, die gerade blühen – in natürlichen Farben, abgestimmt auf den Ort und eure Persönlichkeit.",
+      "body": "Die Blumen beziehe ich von regionalen Produzenten und aus dem Großhandel, direkt vor dem großen Tag – so kommen sie frisch und haltbar in Sträuße und Gestecke. Wenn ihr die Dekoration selbst gestalten möchtet, binde ich trotzdem gerne eure Sträuße und fertige den Blumenschmuck an – die Floristik ist auch einzeln buchbar.",
+      "seasonTitle": "Saisonalität",
+      "season": "Von April bis Oktober ist das Angebot am schönsten: im Frühling Tulpen, Narzissen, Ranunkeln und Anemonen, im Sommer Pfingstrosen, Rittersporn und Löwenmäulchen, im Herbst Dahlien, Zinnien und Astern. Auch außerhalb der Saison finden wir eine Lösung – das besprechen wir beim Erstgespräch.",
+      "cta": "Angebot für Blumenschmuck anfragen"
+    },
+    "rental": {
+      "eyebrow": "3 · Dekoverleih",
+      "title": "Dekoverleih",
+      "intro": "Ihr möchtet die Hochzeitsdekoration selbst gestalten, aber nicht viel Geld in Deko investieren und euch keine Gedanken über die Lagerung machen? Auch dabei kann ich helfen.",
+      "body": "Traubogen, Lichtervorhang, Vasen, Teelichter, Kerzenständer, Kisten, Übertöpfe, roter Teppich und weitere Dekorationsartikel stehen euch zur Verfügung. Lasst uns gemeinsam durchgehen, was ihr braucht!",
+      "cta": "Mietangebot und Preise"
+    },
+    "cta": {
+      "title": "Lasst uns über eure Hochzeit sprechen",
+      "body": "Das Erstgespräch ist unverbindlich – erzählt mir von euren Vorstellungen, und ich zeige euch, wie wir sie umsetzen können.",
+      "button": "Kontakt aufnehmen"
+    }
+  },
+  "gallery": {
+    "hero": {
+      "eyebrow": "Referenzen",
+      "title": "Hochzeiten, die ich dekorieren durfte",
+      "intro": "Jede Hochzeit ist anders – ein anderer Ort, ein anderes Paar, eine andere Geschichte. Hier findet ihr meine Arbeiten der letzten Jahre: Klickt oder tippt auf ein Album und blättert durch die Bilder."
+    },
+    "albumAlt": "Hochzeitsdekoration – {{title}}, {{venue}}, Bild {{n}}",
+    "albumAltNoVenue": "Hochzeitsdekoration – {{title}}, Bild {{n}}",
+    "photoCount": "{{count}} Bilder",
+    "albumTitles": {
+      "eskuvo-classic-magazin-fotozas": "Fotoshooting für das Magazin Esküvő Classic",
+      "teli-fotozas-2022": "Winter-Fotoshooting 2022"
+    },
+    "countries": {
+      "HU": "Ungarn",
+      "AT": "Österreich"
+    },
+    "carousel": {
+      "open": "Album öffnen: {{title}}",
+      "label": "Bilder: {{title}}",
+      "prev": "Vorheriges Bild",
+      "next": "Nächstes Bild",
+      "close": "Zurück zum Titelbild",
+      "status": "Bild {{n}} von {{total}}",
+      "hint": "Mit den Pfeiltasten blättern, mit Esc schließen"
+    },
+    "cta": {
+      "title": "Soll eure Hochzeit auch hier erscheinen?",
+      "button": "Angebot anfragen"
+    }
+  },
+  "rental": {
+    "hero": {
+      "eyebrow": "Dekoverleih",
+      "title": "Hochzeitsdeko zum Mieten",
+      "intro": "Wenn ihr die Dekoration selbst gestaltet, empfehle ich euch, die Deko zu mieten. So investiert ihr nicht unnötig viel Geld in Dinge, die ihr nach der Hochzeit nicht mehr braucht, und müsst euch nicht fragen, wohin mit all den Sachen nach dem großen Tag."
+    },
+    "howTo": {
+      "title": "So funktioniert es",
+      "steps": {
+        "choose": "Wählt aus meinem Mietangebot.",
+        "reserve": "Reserviert die Artikel per E-Mail für den großen Tag – je früher, desto sicherer.",
+        "pickup": "Abholung persönlich in Zalakaros zu einem vereinbarten Termin.",
+        "ask": "Bei Fragen könnt ihr mich auch gerne anrufen."
+      }
+    },
+    "currencyNote": "Alle Preise in ungarischen Forint (HUF), pro Anlass.",
+    "labels": {
+      "size": "Maße",
+      "quantity": "Bestand",
+      "price": "Preis",
+      "deposit": "Kaution",
+      "pickup": "Abholung",
+      "pickupOnly": "nur Selbstabholung",
+      "pickupZalakaros": "nur Selbstabholung in Zalakaros",
+      "pieces": "{{count}} Stück",
+      "sets": "{{count}} Sets",
+      "walls": "{{count}} Stück",
+      "available": "{{count}} verfügbar"
+    },
+    "units": {
+      "occasion": "Anlass",
+      "piece": "Stück",
+      "set": "Set",
+      "wall": "Wand"
+    },
+    "items": {
+      "wooden-arch": {
+        "name": "Traubogen aus Holz",
+        "description": "Unser Traubogen aus Holz eignet sich für die Dekoration der standesamtlichen Trauung, kann aber auch hinter dem Haupttisch stehen. Er lässt sich auf verschiedene Arten schmücken.",
+        "notes": "Besteht aus fünf Teilen; zwei Personen bauen ihn in etwa 15 Minuten auf, die Teile werden verschraubt."
+      },
+      "birch-arch": {
+        "name": "Traubogen aus Birke",
+        "description": "Unser Traubogen aus Birkenholz passt zur standesamtlichen Trauung ebenso wie in den Festsaal. Er kann nach Belieben dekoriert werden.",
+        "notes": "In drei Teile zerlegbar, wird verschraubt – für zwei Personen eine Sache von 10 Minuten."
+      },
+      "gold-flower-stands": {
+        "name": "Goldene Blumenständer",
+        "description": "Unsere Blumenständer aus Metall eignen sich am besten für runde Tische, machen aber auch an langen Tafeln eine gute Figur. Jeder Blumenschmuck ist möglich: frisch, getrocknet oder künstlich.",
+        "notes": "Höhe 70 cm, goldfarben."
+      },
+      "cylinder-vase-set": {
+        "name": "Zylindervasen-Set",
+        "description": "Unser dreiteiliges Glas-Zylindervasen-Set ist eine perfekte Tischdekoration und lässt sich auch als Akzent fast überall einsetzen. Wer Kerzenlicht genießen möchte, verwendet Schwimmkerzen.",
+        "notes": "Stumpenkerzen bitte nicht darin anzünden: Das Wachs läuft in die Vase und lässt sich nicht entfernen – in diesem Fall müssen die Vasen gekauft werden. Maße: 28×8 cm, 23×10 cm, 17×12 cm (Höhe × Durchmesser)."
+      },
+      "gold-candle-holder-set": {
+        "name": "Goldene Metall-Kerzenständer, Set",
+        "description": "Wenn ihr wirklich exklusive Kerzenständer für eure Dekoration sucht, liegt ihr mit diesem Set richtig. Schlank gestaltet, für Stabkerzen, ideal für runde Tische wie für lange Tafeln.",
+        "notes": "In drei Teile zerlegbar und dadurch leicht zu transportieren. Höhen: 23, 28 und 33 cm; Innendurchmesser 2,2 cm."
+      },
+      "champagne-wall": {
+        "name": "Sektwand",
+        "description": "Ein spektakuläres Element – das perfekte Accessoire für den Sektempfang, das bei laufendem Nachfüllen auch den ganzen Abend über genutzt werden kann.",
+        "notes": "Mit leuchtendem „Cheers“-Schriftzug. Insgesamt passen 100 Gläser darauf (90 mit Schriftzug). Leicht aufzubauen."
+      },
+      "wedding-mirror": {
+        "name": "Hochzeitsspiegel mit Schriftzug",
+        "description": "Verleiht eurer Dekoration mit einem beschrifteten Spiegel das gewisse Etwas – als Willkommensschild, Sitzplan oder mit einer lieben Botschaft an die Gäste. Die Miete enthält die Gestaltung und das Anbringen des individuellen Aufklebers – nach der Kontaktaufnahme schicken wir euch einen Entwurf.",
+        "notes": "Die Miete gilt für ein Wochenende: Abholung ab Donnerstag, Rückgabe bis Montagabend. Bitte vor der Bestellung einen Termin mit uns vereinbaren. Die Kaution wird bei unbeschädigter Rückgabe erstattet."
+      }
+    },
+    "cta": {
+      "title": "Möchtet ihr etwas reservieren?",
+      "body": "Schreibt eine E-Mail mit den gewünschten Artikeln und dem Hochzeitsdatum, oder ruft an, und wir besprechen die Details.",
+      "email": "Per E-Mail reservieren",
+      "emailSubject": "Reservierung Dekoverleih – fiorevera.hu",
+      "phone": "Anrufen"
+    }
+  },
+  "about": {
+    "hero": {
+      "eyebrow": "Über mich",
+      "title": "Wie Fiore Vera entstanden ist",
+      "greeting": "Servus!"
+    },
+    "intro": "Ich bin Veronika Sebőkné Antalics, Hochzeitsdekorateurin, Floristin und Mutter.",
+    "story1": "Die Idee, als Hochzeitsdekorateurin zu arbeiten, entstand, als ich die Dekoration für meine eigene Hochzeit gestaltete. Die monatelange Planung und das Dekorieren vor der Hochzeit haben mir riesigen Spaß gemacht – ich habe förmlich dafür gebrannt. Die Welt der Hochzeiten und das kreative Arbeiten mit Blumen haben mich schon immer fasziniert. Das ist es, was ich mit Herz und Seele tun kann.",
+    "story2": "Eine Hochzeit ist ein ganz besonderer, bedeutungsvoller Tag im Leben. Jede Frau träumt insgeheim davon, sich am großen Tag wie eine Prinzessin zu fühlen und ihr Ja-Wort in einer wunderschön geschmückten Umgebung im Kreis ihrer Liebsten zu geben.",
+    "story3": "Deshalb bin ich da: um euch die gesamte Last der Dekoration abzunehmen – von den Vorbereitungen über die Umsetzung bis zum Abbau am nächsten Tag. Mit meinen Kreationen trage ich dazu bei, dass eure Hochzeit eine bleibende Erinnerung wird, die ihr auf den Fotos immer wieder gerne anschaut. Die Deko des großen Tages soll unvergesslich sein!",
+    "garden": {
+      "title": "Mein Garten – eine kleine Pause",
+      "body": "Mehrere Saisons lang habe ich die Schnittblumen für die Hochzeiten in meinem eigenen Garten angebaut – das hat meinen natürlichen, saisonalen Stil geprägt, der bis heute meine Handschrift ist. Wegen der immer trockeneren Sommer ruht der Garten gerade, aber sobald das Wetter es erlaubt, kehre ich zu ihm zurück. Bis dahin arbeite ich mit frischen, saisonalen Blumen von regionalen Produzenten und aus dem Großhandel."
+    },
+    "facts": {
+      "based": "Zalakaros, Komitat Zala (Ungarn)",
+      "style": "Natürlich, saisonal, romantisch"
+    },
+    "cta": {
+      "title": "Lernen wir uns kennen!",
+      "body": "Das erste Gespräch ist unverbindlich – erzählt mir von eurer Hochzeit, und wir entwickeln gemeinsam das Konzept.",
+      "button": "Kontakt aufnehmen"
+    }
+  },
+  "contact": {
+    "hero": {
+      "eyebrow": "Kontakt",
+      "title": "Ruft gerne an!",
+      "intro": "Fragt ein Angebot für Hochzeitsdekoration, Floristik oder Dekoverleih an. Schreibt mir ein paar Zeilen zu eurer Hochzeit, und ich melde mich bald."
+    },
+    "ownerLabel": "Dekorateurin",
+    "social": {
+      "title": "Folgt mir auf Instagram",
+      "body": "Aktuelle Arbeiten, Blicke hinter die Kulissen und saisonale Inspiration."
+    },
+    "form": {
+      "title": "Angebot anfragen",
+      "intro": "Felder mit Stern sind Pflichtfelder.",
+      "name": "Name",
+      "email": "E-Mail-Adresse",
+      "phone": "Telefonnummer",
+      "optional": "optional",
+      "date": "Hochzeitsdatum",
+      "venue": "Veranstaltungsort",
+      "message": "Nachricht",
+      "messagePlaceholder": "Erzählt mir von euren Vorstellungen: Trauung, Festsaal, Farbwelt, Gästezahl …",
+      "consent": "Ich bin einverstanden, dass meine Angaben zur Beantwortung meiner Anfrage gemäß der <0>Datenschutzerklärung</0> verarbeitet werden.",
+      "submit": "Nachricht senden",
+      "sending": "Wird gesendet …",
+      "success": "Danke für eure Nachricht! Ich melde mich bald über die angegebenen Kontaktdaten.",
+      "error": "Die Nachricht konnte nicht gesendet werden. Bitte versucht es noch einmal oder schreibt mir direkt per E-Mail.",
+      "errors": {
+        "required": "Dieses Feld ist erforderlich.",
+        "email": "Bitte gib eine gültige E-Mail-Adresse an.",
+        "consent": "Zum Absenden musst du der Datenschutzerklärung zustimmen."
+      }
+    }
+  },
+  "privacy": {
+    "title": "Datenschutzerklärung",
+    "updated": "Zuletzt aktualisiert: {{date}}",
+    "intro": "Diese Erklärung fasst zusammen, welche Daten die Website fiorevera.hu verarbeitet, warum und wie lange. Verantwortliche: Veronika Sebőkné Antalics (Fiore Vera), 8749 Zalakaros, Rózsa utca 53., Ungarn.",
+    "sections": {
+      "form": {
+        "title": "Kontaktformular",
+        "body": "Die im Formular angegebenen Daten (Name, E-Mail-Adresse, optional Telefonnummer, Hochzeitsdatum, Veranstaltungsort, Nachricht) verwende ich ausschließlich, um eure Anfrage zu beantworten und ein Angebot zu erstellen. Der Formulardienst leitet die Daten an info.fiorevera@gmail.com weiter, wo ich sie in meinem Postfach höchstens bis zum Ablauf des Angebots aufbewahre, bei Beauftragung bis zum Abschluss des Vertragsverhältnisses. Rechtsgrundlage ist eure Einwilligung, die ihr jederzeit widerrufen könnt."
+      },
+      "storage": {
+        "title": "Spracheinstellung",
+        "body": "Wenn ihr den Sprachhinweis schließt oder die Sprache wechselt, merken wir uns das im lokalen Speicher eures Browsers (localStorage), damit ihr nicht erneut wählen müsst. Diese Information verlässt euer Gerät nicht und kann jederzeit über das Löschen der Browserdaten entfernt werden."
+      },
+      "analytics": {
+        "title": "Besucherstatistik",
+        "body": "Die Website nutzt die cookiefreie, anonyme Besuchermessung Vercel Web Analytics. Es werden keine personenbezogenen Daten gespeichert und ihr werdet nicht über andere Websites hinweg verfolgt – deshalb gibt es auf dieser Seite kein Cookie-Banner."
+      },
+      "rights": {
+        "title": "Eure Rechte",
+        "body": "Ihr könnt jederzeit Auskunft über die zu euch gespeicherten Daten, deren Berichtigung oder Löschung verlangen und eure Einwilligung unter info.fiorevera@gmail.com widerrufen. Beschwerden könnt ihr an die ungarische Datenschutzbehörde (NAIH) oder an eure zuständige Aufsichtsbehörde richten."
+      }
+    }
+  },
+  "notFound": {
+    "eyebrow": "404",
+    "title": "Diese Seite wurde nicht gefunden",
+    "body": "Vielleicht ist der Link veraltet oder die Adresse vertippt. Kehrt zur Startseite zurück oder schaut euch meine Arbeiten an.",
+    "cta": "Zur Startseite",
+    "ctaSecondary": "Referenzen"
+  },
+  "footer": {
+    "tagline": "Hochzeitsdekoration, Floristik und Dekoverleih aus Zalakaros – für Burgenland, Wien, Niederösterreich, die Steiermark und Westungarn.",
+    "contactTitle": "Kontakt",
+    "pagesTitle": "Seiten",
+    "languagesTitle": "Sprachen",
+    "rights": "Alle Rechte vorbehalten.",
+    "areas": "Einsatzgebiet: {{areas}}"
+  },
+  "testimonials": {
+    "nagy-orsolya": "Wir danken euch ganz herzlich für eure unglaublich wundervolle, gewissenhafte, freundliche, hilfsbereite, schöne, präzise, maßgeschneiderte und bescheidene Arbeit! Wir empfehlen euch uneingeschränkt weiter.",
+    "hajnal-durgo-adrienn": "Wir danken Vera und ihrem kleinen Team ganz herzlich für ihre präzise Arbeit. Ich empfehle sie jeder Braut, die sich für ihre Hochzeit eine Dekoration in natürlichen Farben wünscht. Vera wird alles daransetzen, dass auch eure Hochzeitsdekoration wunderschön wird.",
+    "borbely-antalics-csilla": "Absolut professionell! Wir haben eine Arbeit erhalten, die all unsere Vorstellungen erfüllt. Das Preis-Leistungs-Verhältnis ist fair. Wir können nur empfehlen.",
+    "toth-szabo-klaudia": "Einer der prägendsten Momente unserer Hochzeit war für mich, als wir das Restaurant betraten, in dem gefeiert wurde, und die Dekoration sahen. Alles, was ich mir vorgestellt hatte, wurde von Vera übertroffen – es war einfach wunderschön."
+  }
+}

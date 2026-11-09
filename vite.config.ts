@@ -9,6 +9,6 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: './src/setupTests.ts',
-    exclude: ['node_modules', 'dist', 'tests/e2e/**'], // Exclude Playwright tests
+    exclude: ['node_modules', 'dist', 'tests/e2e/**', '.claude/**', 'references/**', 'assets-src/**'], // Playwright specs + sibling worktrees
   },
 });

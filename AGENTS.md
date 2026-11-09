@@ -167,17 +167,21 @@ Vera tracks the project against these gates. She will not skip a gate.
 **URL:** [www.fiorevera.hu](https://www.fiorevera.hu) — baseline to replicate
 and dramatically improve. Do not copy verbatim — eliminate all known bugs.
 
-### Page Map to Replicate
+### Page Map (PRD D-2/D-3 — legacy platform: Webnode 2)
 
-| HU URL | DE URL | EN URL (new) | Page |
+| HU URL | DE URL (legacy slug) | EN URL (new) | Page |
 |---|---|---|---|
 | `/` | `/de/` | `/en/` | Homepage |
 | `/szolgaltatasok/` | `/de/dienstleistungen/` | `/en/services/` | Services |
-| `/munkaim/` | `/de/referenzen/` | `/en/references/` | Portfolio/Gallery |
-| `/viragoskert/` | `/de/blumengarten/` | `/en/flower-garden/` | Flower Garden |
+| `/munkaim/` | `/de/referenzen/` | `/en/portfolio/` | Portfolio/Gallery |
 | `/kellekberles/` | `/de/verleih/` | `/en/rentals/` | Prop Rental |
 | `/rolunk/` | `/de/uebermich/` | `/en/about/` | About |
 | `/kapcsolat/` | `/de/kontakt/` | `/en/contact/` | Contact |
+| `/adatkezeles/` | `/de/datenschutz/` | `/en/privacy/` | Privacy (new — GDPR form notice) |
+| `/viragoskert/` → 301 `/rolunk/` | `/de/blumengarten/` → 301 `/de/uebermich/` | — | Flower Garden (paused, D-16; copy archived under `references/legacy/`) |
+| localized 404 on every prefix | | | 404 |
+
+Single source in code: `src/data/routes.ts` (router, `SeoHead`, hreflang, sitemap, prerender all read it).
 
 ### Confirmed Visual Design Direction (from live site audit, 2026-09-26)
 
