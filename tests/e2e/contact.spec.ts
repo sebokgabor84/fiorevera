@@ -34,6 +34,27 @@ test.describe('contact form (PRD D-9, US-10)', () => {
     await expect(page.getByLabel(/^Név/)).toBeFocused();
   });
 
+  test('names the problem: e-mail without a dot, malformed phone, over-long venue', async ({ page }) => {
+    await page.goto('/kapcsolat/');
+    await fill(page, 'hu');
+    const f = hu.contact.form;
+    await page.getByLabel(new RegExp(`^${f.email}`)).fill('anna@example'); // the browser accepts this; we want a real domain
+    await page.getByLabel(new RegExp(`^${f.phone}`)).fill('+36-30-865-9108');
+    await page.getByLabel(new RegExp(`^${f.venue}`)).fill('x'.repeat(151));
+    await page.getByRole('button', { name: f.submit }).click();
+    const alerts = page.getByRole('alert');
+    await expect(alerts).toHaveText([f.errors.email, f.errors.phone, f.errors.tooLong.replace('{{max}}', '150')]);
+    await expect(page.getByLabel(new RegExp(`^${f.email}`))).toBeFocused();
+    // A well-formed phone with spaces passes and is not rewritten.
+    await page.getByLabel(new RegExp(`^${f.email}`)).fill('anna@example.com');
+    await page.getByLabel(new RegExp(`^${f.phone}`)).fill('+36 30 865 9108');
+    await page.getByLabel(new RegExp(`^${f.venue}`)).fill('Zalakaros');
+    await mockProvider(page, (route) => route.abort('failed'));
+    await page.getByRole('button', { name: f.submit }).click();
+    const fallback = page.getByRole('alert').locator('a[href^="mailto:"]');
+    await expect(fallback).toHaveAttribute('href', /%2B36%2030%20865%209108/);
+  });
+
   for (const locale of LOCALES) {
     test(`${locale}: success path with a mocked provider`, async ({ page }) => {
       await mockProvider(page, (route) =>

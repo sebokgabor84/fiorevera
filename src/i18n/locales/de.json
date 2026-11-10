@@ -380,7 +380,9 @@
       "errors": {
         "required": "Dieses Feld ist erforderlich.",
         "email": "Bitte gib eine gültige E-Mail-Adresse an.",
-        "consent": "Zum Absenden musst du der Datenschutzerklärung zustimmen."
+        "consent": "Zum Absenden musst du der Datenschutzerklärung zustimmen.",
+        "phone": "Bitte nur Ziffern, Leerzeichen und ein führendes + verwenden (6–15 Ziffern).",
+        "tooLong": "Maximal {{max}} Zeichen sind möglich."
       }
     }
   },

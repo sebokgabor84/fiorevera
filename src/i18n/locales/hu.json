@@ -380,7 +380,9 @@
       "errors": {
         "required": "Ez a mező kötelező.",
         "email": "Kérlek, érvényes e-mail címet adj meg.",
-        "consent": "A küldéshez el kell fogadnod az adatkezelési tájékoztatót."
+        "consent": "A küldéshez el kell fogadnod az adatkezelési tájékoztatót.",
+        "phone": "Kérlek, csak számjegyeket, szóközöket és egy bevezető + jelet használj (6–15 számjegy).",
+        "tooLong": "Legfeljebb {{max}} karakter adható meg."
       }
     }
   },

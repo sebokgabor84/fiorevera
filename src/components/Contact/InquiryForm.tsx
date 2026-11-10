@@ -4,14 +4,14 @@ import { contact } from '../../data/contact';
 import { useLocale } from '../../i18n/localeContext';
 import { buildMailto } from '../../lib/inquiryMailto';
 import { inquirySubject, submitInquiry, type InquiryPayload } from '../../lib/submitInquiry';
+import { validateInquiry, type InquiryError, type InquiryField } from '../../lib/validateInquiry';
 import { LocalizedLink } from '../Common/LocalizedLink';
 import styles from './inquiry-form.module.css';
 
-type Field = 'name' | 'email' | 'phone' | 'date' | 'venue' | 'message' | 'consent';
+type Field = InquiryField;
 type Errors = Partial<Record<Field, string>>;
 type Status = 'idle' | 'sending' | 'success' | 'error';
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 /** Exposed for the E2E suite so it can tell whether a provider endpoint is configured. */
 const ENDPOINT_STATE = import.meta.env.VITE_FORM_ENDPOINT ? 'configured' : 'missing';
 
@@ -25,27 +25,32 @@ export const InquiryForm = () => {
   /** The payload of the last failed submission — feeds the prefilled mailto fallback. */
   const [failed, setFailed] = useState<InquiryPayload | null>(null);
 
-  const validate = (data: FormData): Errors => {
-    const e: Errors = {};
-    const req = (f: Field) => {
-      if (!String(data.get(f) ?? '').trim()) e[f] = t('contact.form.errors.required');
-    };
-    req('name');
-    req('date');
-    req('venue');
-    req('message');
-    const email = String(data.get('email') ?? '').trim();
-    if (!email) e.email = t('contact.form.errors.required');
-    else if (!EMAIL_RE.test(email)) e.email = t('contact.form.errors.email');
-    if (data.get('consent') !== 'on') e.consent = t('contact.form.errors.consent');
-    return e;
+  const message = (err: InquiryError): string =>
+    err.code === 'tooLong' ? t('contact.form.errors.tooLong', { max: err.max }) : t(`contact.form.errors.${err.code}`);
+
+  const validate = (form: HTMLFormElement, data: FormData): Errors => {
+    const field = (f: Exclude<Field, 'consent'>) => String(data.get(f) ?? '');
+    const errors = validateInquiry({
+      name: field('name'),
+      email: field('email'),
+      phone: field('phone'),
+      date: field('date'),
+      venue: field('venue'),
+      message: field('message'),
+      consent: data.get('consent') === 'on',
+      // `noValidate` only silences the browser's bubbles; its e-mail verdict still counts.
+      emailValidByBrowser: form.querySelector<HTMLInputElement>('input[name="email"]')?.validity.valid,
+    });
+    const out: Errors = {};
+    for (const [f, err] of Object.entries(errors) as [Field, InquiryError][]) out[f] = message(err);
+    return out;
   };
 
   const onSubmit = async (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
     const form = ev.currentTarget;
     const data = new FormData(form);
-    const nextErrors = validate(data);
+    const nextErrors = validate(form, data);
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) {
       const first = Object.keys(nextErrors)[0];
@@ -120,7 +125,8 @@ export const InquiryForm = () => {
           <label htmlFor={`${id}-phone`}>
             {t('contact.form.phone')} <span className="muted">({t('contact.form.optional')})</span>
           </label>
-          <input id={`${id}-phone`} name="phone" type="tel" autoComplete="tel" />
+          <input id={`${id}-phone`} name="phone" type="tel" autoComplete="tel" inputMode="tel" aria-invalid={!!errors.phone} aria-describedby={describedBy('phone')} />
+          {errorEl('phone')}
         </div>
         <div className={styles.field}>
           <label htmlFor={`${id}-date`}>{t('contact.form.date')} *</label>
