@@ -1,0 +1,44 @@
+{
+  "$comment": "Personal-data register of fiorevera.hu (gdpr-guardian). Every form field, storage key, env endpoint, external host and browser signal in the code must be declared here with a purpose and the privacy-page key that explains it. Checked by .agent/skills/gdpr-guardian/scripts/audit-personal-data.ts. Keep in sync with docs/gdpr/newsletter-consent-concept.md section 1.",
+  "version": "2026-11-10",
+  "controller": "Sebőkné Antalics Veronika (Fiore Vera), 8749 Zalakaros, Rózsa utca 53.",
+  "formFields": [
+    { "name": "name", "personal": true, "purpose": "answer the inquiry, address the quote", "privacyKey": "privacy.sections.form" },
+    { "name": "email", "personal": true, "purpose": "reply channel for the quote", "privacyKey": "privacy.sections.form" },
+    { "name": "phone", "personal": true, "optional": true, "purpose": "optional call-back", "privacyKey": "privacy.sections.form" },
+    { "name": "date", "personal": true, "purpose": "wedding date: availability and quote; NOT reused for greetings without a separate consent", "privacyKey": "privacy.sections.form" },
+    { "name": "venue", "personal": true, "purpose": "quote (travel, logistics)", "privacyKey": "privacy.sections.form" },
+    { "name": "message", "personal": true, "purpose": "the inquiry itself", "privacyKey": "privacy.sections.form" },
+    { "name": "website", "personal": false, "purpose": "honeypot; must stay empty; dropped client-side, never sent", "privacyKey": "privacy.sections.form" },
+    { "name": "consent", "personal": false, "purpose": "mandatory consent flag for processing the inquiry (GDPR Art. 6(1)(a))", "privacyKey": "privacy.sections.form" }
+  ],
+  "storage": [
+    { "kind": "localStorage", "key": "fv-lang", "purpose": "language chosen by the visitor (consent-exempt preference, PRD D-4)", "privacyKey": "privacy.sections.storage" },
+    { "kind": "localStorage", "key": "fv-lang-toast-dismissed", "purpose": "language toast dismissed (consent-exempt preference, PRD D-4)", "privacyKey": "privacy.sections.storage" }
+  ],
+  "env": [
+    { "name": "VITE_FORM_ENDPOINT", "purpose": "form provider endpoint the inquiry is POSTed to", "processor": "Web3Forms or Formspree — not chosen yet (BACKLOG [FORM]); name it on the privacy page once chosen", "privacyKey": "privacy.sections.form" },
+    { "name": "VITE_FORM_ACCESS_KEY", "purpose": "Web3Forms public access key sent with the inquiry", "processor": "Web3Forms", "privacyKey": "privacy.sections.form" }
+  ],
+  "networkSinks": [
+    { "file": "src/lib/submitInquiry.ts", "purpose": "the only outbound request carrying personal data: inquiry → form provider → info.fiorevera@gmail.com", "privacyKey": "privacy.sections.form" }
+  ],
+  "hosts": [
+    { "host": "api.web3forms.com", "role": "processor candidate: form delivery (India/US — transfer mechanism to confirm)", "privacyKey": "privacy.sections.form" },
+    { "host": "formspree.io", "role": "processor candidate: form delivery (US — transfer mechanism to confirm)", "privacyKey": "privacy.sections.form" },
+    { "host": "va.vercel-scripts.com", "role": "Vercel Web Analytics script — described on the privacy page and allowed in the CSP, NOT wired in code yet (concept note §1 gap 3)", "privacyKey": "privacy.sections.analytics" },
+    { "host": "vitals.vercel-insights.com", "role": "Vercel Web Analytics beacon — same status as va.vercel-scripts.com", "privacyKey": "privacy.sections.analytics" }
+  ],
+  "outboundLinks": [
+    { "host": "www.fiorevera.hu", "role": "the site itself (canonical, hreflang, JSON-LD)" },
+    { "host": "www.instagram.com", "role": "plain link to the Instagram profile; nothing is sent until the visitor clicks" },
+    { "host": "www.facebook.com", "role": "plain link to the Facebook page; nothing is sent until the visitor clicks" },
+    { "host": "www.google.com", "role": "plain link to Google Maps (address); nothing is sent until the visitor clicks" },
+    { "host": "schema.org", "role": "JSON-LD vocabulary URL, never requested by the browser" },
+    { "host": "openapi.vercel.sh", "role": "vercel.json $schema reference, build-time only" }
+  ],
+  "browserSignals": [
+    { "api": "navigator.languages", "file": "src/components/Layout/LanguageToast.tsx", "purpose": "read once in an effect to suggest DE/EN; not stored, not sent (PRD D-4)", "privacyKey": "privacy.sections.storage" },
+    { "api": "navigator.language", "file": "src/components/Layout/LanguageToast.tsx", "purpose": "fallback for browsers without navigator.languages; same use, not stored, not sent", "privacyKey": "privacy.sections.storage" }
+  ]
+}

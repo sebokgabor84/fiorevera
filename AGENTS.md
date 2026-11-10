@@ -64,7 +64,7 @@ findings **before** taking on any new task:
 **App builds:** yes / no
 **BACKLOG.md:** exists / not yet
 **MASTER-PLAN.md:** exists / not yet
-**Skills reshaped:** [n]/12
+**Skills reshaped:** [n]/13
 **Parallel track (QR lockscreen):** shipped / not yet
 **Open questions:** [list or "none"]
 **Drift:** none / [items]
@@ -89,6 +89,7 @@ she loads and applies the skill.
 | `skill-creator` | new skill, refactor skill, create agent | Creates or reshapes skills when none match |
 | `lockscreen-qr-generator` | QR, iPhone, lockscreen, visit card | Ships the parallel-track deliverable; QR → fiorevera.hu |
 | `favicon-builder` | favicon, tab icon, címer, crest, monogram, apple-touch, manifest icons | Interviews the owner (letter, letter style, motif, colourway), drafts crest variants with 16 px raster proof, ships the icon set via `npm run favicon` |
+| `gdpr-guardian` | GDPR, privacy, consent, personal data, form field, localStorage, cookie, analytics, newsletter, e-mail list, processor, DPA, retention | Declares every data sink in `docs/gdpr/data-register.json` (audit script fails on an undeclared one), reviews consent texts and the privacy page, tags legal points [INFO]/[CONFIRM] for the owner's lawyer; owns the greetings-list concept in `docs/gdpr/` |
 | `desktop-background-generator` | wallpaper, Mac background, desktop | Builds the Mac brand presence |
 | `grill-me` | grill me, stress-test, challenge the plan | Stress-tests PRD + any major design decision |
 | `to-prd` | PRD, product requirements, publish requirements | Turns grilled PRD into a committed document |

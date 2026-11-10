@@ -8,6 +8,7 @@ export const SKILL_NAMES = [
   'design-system-expert',
   'desktop-background-generator',
   'favicon-builder',
+  'gdpr-guardian',
   'goodbye',
   'grill-me',
   'i18n-guardian',
