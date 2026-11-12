@@ -1,0 +1,290 @@
+@import './fonts.css';
+@import './tokens.css';
+
+/* ---------- Reset ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-h) + 1rem);
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--color-bg-linen);
+  color: var(--color-text-main);
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+img,
+picture,
+video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  line-height: var(--lh-tight);
+  margin: 0 0 var(--space-4);
+  color: var(--color-text-main);
+  text-wrap: balance;
+}
+h1 {
+  font-size: var(--fs-3xl);
+}
+h2 {
+  font-size: var(--fs-2xl);
+}
+h3 {
+  font-size: var(--fs-xl);
+}
+h4 {
+  font-size: var(--fs-lg);
+}
+p {
+  margin: 0 0 var(--space-4);
+}
+a {
+  color: var(--color-sage-deep);
+  text-decoration-color: var(--color-gold-soft);
+  text-underline-offset: 0.18em;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+a:hover {
+  color: var(--color-text-main);
+  text-decoration-color: var(--color-gold);
+}
+button {
+  font: inherit;
+  color: inherit;
+}
+ul,
+ol {
+  padding-inline-start: 1.25em;
+}
+:focus-visible {
+  outline: 3px solid var(--color-gold);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+::selection {
+  background: var(--color-blush);
+  color: var(--color-text-main);
+}
+
+/* ---------- Skip link (index.html) ---------- */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: var(--space-4);
+  z-index: 2000;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-text-main);
+  color: var(--color-bg-linen);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  text-decoration: none;
+}
+.skip-link:focus {
+  top: 0;
+}
+
+/* ---------- Utilities ---------- */
+.container {
+  width: 100%;
+  max-width: min(100%, var(--content-max));
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+.prose {
+  max-width: var(--prose-max);
+}
+.eyebrow {
+  display: block;
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--color-sage-deep);
+  margin-bottom: var(--space-3);
+}
+.lead {
+  font-size: var(--fs-lg);
+  color: var(--color-text-muted);
+  line-height: var(--lh-snug);
+}
+.muted {
+  color: var(--color-text-muted);
+}
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+.glass-panel {
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+}
+.section {
+  padding-block: var(--space-8);
+}
+.section--tight {
+  padding-block: var(--space-7);
+}
+.section--warm {
+  background: var(--color-surface-warm);
+}
+.section--white {
+  background: var(--color-surface);
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--touch);
+  padding: 0.8rem 1.6rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+.btn:hover {
+  transform: translateY(-1px);
+}
+.btn--primary {
+  background: var(--color-sage-deep);
+  color: #fff;
+}
+.btn--primary:hover {
+  background: var(--color-text-main);
+  color: #fff;
+}
+.btn--gold {
+  background: var(--color-text-main);
+  color: var(--color-bg-linen);
+  border-color: var(--color-gold);
+}
+.btn--gold:hover {
+  background: var(--color-gold-deep);
+  color: #fff;
+}
+.btn--ghost {
+  background: transparent;
+  color: var(--color-text-main);
+  border-color: rgba(44, 40, 37, 0.25);
+}
+.btn--ghost:hover {
+  border-color: var(--color-gold);
+  color: var(--color-text-main);
+}
+.btn--light {
+  background: rgba(250, 247, 242, 0.92);
+  color: var(--color-text-main);
+}
+.btn--light:hover {
+  background: #fff;
+}
+.ornament {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-gold);
+  margin-block: var(--space-4);
+}
+.ornament::before,
+.ornament::after {
+  content: '';
+  flex: 0 0 2.5rem;
+  height: 1px;
+  background: var(--color-gold-soft);
+}
+.card {
+  background: var(--color-surface);
+  border: var(--border-hairline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+/* ---------- Safety Layer (design-system-expert) ---------- */
+/* Never list .container here: an equal-specificity `max-width: 100%` after the utility
+   overrode `--content-max` on every page (QA 2026-11-09, M1). */
+body,
+main,
+section {
+  max-width: 100%;
+}
+h1,
+h2,
+h3,
+h4,
+p,
+li,
+a,
+figcaption,
+blockquote {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+/* Hyphenation only where lines are genuinely short: body text on narrow screens, never headings. */
+@media (max-width: 48rem) {
+  p,
+  li,
+  figcaption,
+  blockquote {
+    hyphens: auto;
+  }
+}
+
+/* Language toast shown (bottom-anchored): keep the page end reachable above it. */
+body.toast-visible {
+  padding-bottom: 7rem;
+}
+
+/* Mobile menu open: lock page scroll only while the panel can actually be shown (< 70rem). */
+@media (max-width: 69.99rem) {
+  body.menu-open {
+    overflow: hidden;
+  }
+}

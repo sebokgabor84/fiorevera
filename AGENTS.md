@@ -30,7 +30,7 @@ Vera is not a passive responder. She:
 - **Release Protocol (7 Steps)**:
     1. **Initialization**: Create `feature/<short-desc>` branch.
     2. **Design**: Submit plan + Honest Critique.
-    3. **Execution**: Perform local changes + full DoD (lint, unit, e2e).
+    3. **Execution**: Perform local changes + full DoD (lint, unit, e2e, build, visual regression).
     4. **Local Review**: Provide "Review Brief" summarizing changes.
     5. **Staging Approval**: Commit & Push ONLY after human "GO".
     6. **Remote MR Advice**: Generate reviewer checklist for GitHub.
@@ -64,7 +64,7 @@ findings **before** taking on any new task:
 **App builds:** yes / no
 **BACKLOG.md:** exists / not yet
 **MASTER-PLAN.md:** exists / not yet
-**Skills reshaped:** [n]/11
+**Skills reshaped:** [n]/13
 **Parallel track (QR lockscreen):** shipped / not yet
 **Open questions:** [list or "none"]
 **Drift:** none / [items]
@@ -88,6 +88,8 @@ she loads and applies the skill.
 | `qa-specialist` | test, lint, TypeScript, Playwright, Vitest, DoD, commit | Runs the DoD pipeline; gates every commit |
 | `skill-creator` | new skill, refactor skill, create agent | Creates or reshapes skills when none match |
 | `lockscreen-qr-generator` | QR, iPhone, lockscreen, visit card | Ships the parallel-track deliverable; QR → fiorevera.hu |
+| `favicon-builder` | favicon, tab icon, címer, crest, monogram, apple-touch, manifest icons | Interviews the owner (letter, letter style, motif, colourway), drafts crest variants with 16 px raster proof, ships the icon set via `npm run favicon` |
+| `gdpr-guardian` | GDPR, privacy, consent, personal data, form field, localStorage, cookie, analytics, newsletter, e-mail list, processor, DPA, retention | Declares every data sink in `docs/gdpr/data-register.json` (audit script fails on an undeclared one), reviews consent texts and the privacy page, tags legal points [INFO]/[CONFIRM] for the owner's lawyer; owns the greetings-list concept in `docs/gdpr/` |
 | `desktop-background-generator` | wallpaper, Mac background, desktop | Builds the Mac brand presence |
 | `grill-me` | grill me, stress-test, challenge the plan | Stress-tests PRD + any major design decision |
 | `to-prd` | PRD, product requirements, publish requirements | Turns grilled PRD into a committed document |
@@ -116,17 +118,25 @@ PRE-5  Wait for explicit user "GO" — no execution without approval
 ### Post-Work (after every slice)
 
 ```
-POST-1  npm run lint              → 0 errors (hard gate)
-POST-2  npm test -- --run         → all green (hard gate, once src/ has code)
-POST-3  npm run test:e2e          → all pass (hard gate, once e2e/ has specs)
-POST-4  Visual verification       → start dev server, screenshot, compare to references
-POST-5  Update BACKLOG.md         → mark [x], capture any new ideas as [ ]
-POST-6  Present Review Brief      → wait for "GO"
-POST-7  git add -A && git commit && git push  → only after GO
+POST-1  npm run lint              → 0 errors, 0 warnings (hard gate)
+POST-2  npm test -- --run         → all green (hard gate)
+POST-3  npm run test:e2e          → all pass (hard gate)
+POST-4  npm run build && npm run test:visual
+                                  → layout invariants + pixel baselines vs the production build (hard gate).
+                                    RED = show the owner the diff (npm run visual:review, or the diff PNGs
+                                    from test-results/) BEFORE anything else. Fix the code, or — only with
+                                    the owner's explicit GO on the new look — re-baseline:
+                                    npm run test:visual:update -- --approved-by="<name>" --note="<why>"
+                                    (refuses without an approver; logs to docs/qa/visual-baselines-log.md)
+POST-5  Visual verification       → real browser at 375 / 768 / 1280 / 1920, menu open, toast visible
+POST-6  Update BACKLOG.md         → mark [x], capture any new ideas as [ ]
+POST-7  Present Review Brief      → wait for "GO"
+POST-8  git commit && git push    → only after GO; .githooks/pre-commit re-runs POST-4 when UI files are
+                                    staged, .githooks/pre-push re-runs POST-1/2 + build + POST-4
 ```
 
-**Rollback:** if POST-1 through POST-4 fail → do NOT commit → revert →
-diagnose → submit corrected plan.
+**Rollback:** if POST-1 through POST-5 fail → do NOT commit → revert →
+diagnose → submit corrected plan. Never widen a visual threshold or re-baseline to pass.
 
 ---
 
@@ -151,7 +161,7 @@ Vera tracks the project against these gates. She will not skip a gate.
 
    Content Sourced (iteration 2c)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   Gate F  → (per slice) lint ✅ + unit ✅ + e2e ✅ + visual ✅
+   Gate F  → (per slice) lint ✅ + unit ✅ + e2e ✅ + visual regression ✅ + browser check ✅
 
    Build — Incremental Slices (iteration 3+)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -167,17 +177,21 @@ Vera tracks the project against these gates. She will not skip a gate.
 **URL:** [www.fiorevera.hu](https://www.fiorevera.hu) — baseline to replicate
 and dramatically improve. Do not copy verbatim — eliminate all known bugs.
 
-### Page Map to Replicate
+### Page Map (PRD D-2/D-3 — legacy platform: Webnode 2)
 
-| HU URL | DE URL | EN URL (new) | Page |
+| HU URL | DE URL (legacy slug) | EN URL (new) | Page |
 |---|---|---|---|
 | `/` | `/de/` | `/en/` | Homepage |
 | `/szolgaltatasok/` | `/de/dienstleistungen/` | `/en/services/` | Services |
-| `/munkaim/` | `/de/referenzen/` | `/en/references/` | Portfolio/Gallery |
-| `/viragoskert/` | `/de/blumengarten/` | `/en/flower-garden/` | Flower Garden |
+| `/munkaim/` | `/de/referenzen/` | `/en/portfolio/` | Portfolio/Gallery |
 | `/kellekberles/` | `/de/verleih/` | `/en/rentals/` | Prop Rental |
 | `/rolunk/` | `/de/uebermich/` | `/en/about/` | About |
 | `/kapcsolat/` | `/de/kontakt/` | `/en/contact/` | Contact |
+| `/adatkezeles/` | `/de/datenschutz/` | `/en/privacy/` | Privacy (new — GDPR form notice) |
+| `/viragoskert/` → 301 `/rolunk/` | `/de/blumengarten/` → 301 `/de/uebermich/` | — | Flower Garden (paused, D-16; copy archived under `references/legacy/`) |
+| localized 404 on every prefix | | | 404 |
+
+Single source in code: `src/data/routes.ts` (router, `SeoHead`, hreflang, sitemap, prerender all read it).
 
 ### Confirmed Visual Design Direction (from live site audit, 2026-09-26)
 

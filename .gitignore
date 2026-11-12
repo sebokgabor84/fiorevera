@@ -27,3 +27,15 @@ build/
 
 # Playwright
 test-results
+
+# Legacy archive images + replaceable asset sources (MASTER-PLAN 0.1/0.2, >100 MB) — regenerate with `npm run archive:legacy -- --seed-assets`
+references/legacy/images/
+references/legacy/raw/
+assets-src/
+
+# Claude Code local state
+.claude/settings.local.json
+.claude/worktrees/
+
+# visual regression reports (baselines under tests/visual/__screenshots__ ARE committed)
+playwright-report-visual

@@ -1,0 +1,59 @@
+/* Bottom-anchored: a top toast covered the H1 on phones and the open menu (QA M9). */
+.toast {
+  position: fixed;
+  bottom: calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
+  right: var(--gutter);
+  left: var(--gutter);
+  z-index: 120;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  box-shadow: var(--shadow-soft);
+}
+.body {
+  margin: 0;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+}
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  /* The body text and the action row wrap to two rows at every width, so the action row always
+     fills its line: CTA left, dismiss flush right — never dead space after the ×. */
+  flex: 1 1 100%;
+}
+.dismiss {
+  width: var(--touch);
+  height: var(--touch);
+  border-radius: 999px;
+  border: var(--border-hairline);
+  background: var(--color-surface);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+:global(body.menu-open) .toast {
+  display: none;
+}
+/* Same at every width (owner decision 2026-11-09): the CTA grows to fill the row, the × sits
+   flush right — no breakpoint-dependent variants of this component. */
+.actions > :first-child {
+  flex: 1 1 auto;
+  justify-content: center;
+}
+@media (min-width: 40rem) {
+  .toast {
+    left: auto;
+    max-width: 28rem;
+  }
+}

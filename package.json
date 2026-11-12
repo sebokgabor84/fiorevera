@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "dev:form": "tsx scripts/fake-form-provider.ts --dev",
+    "form:fake": "tsx scripts/fake-form-provider.ts",
+    "build": "tsx scripts/generate-sitemap.ts && tsc -b && vite build && vite build --ssr src/entry-server.tsx --outDir dist-ssr && tsx scripts/prerender.ts",
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "vitest",
@@ -14,9 +16,21 @@
     "preview": "vite preview",
     "optimize:assets": "node scripts/optimize-images.js",
     "lockscreen": "npx tsx scripts/generate-lockscreen.ts",
-    "lockscreen:variants": "npx tsx scripts/generate-lockscreen-variants.ts"
+    "lockscreen:variants": "npx tsx scripts/generate-lockscreen-variants.ts",
+    "favicon": "tsx scripts/generate-favicons.ts",
+    "favicon:variants": "tsx scripts/favicon-variants.ts",
+    "archive:legacy": "tsx scripts/archive-legacy.ts",
+    "validate:i18n": "tsx scripts/validate-i18n.ts",
+    "audit:gdpr": "tsx .agent/skills/gdpr-guardian/scripts/audit-personal-data.ts",
+    "sitemap": "tsx scripts/generate-sitemap.ts",
+    "test:visual": "playwright test -c playwright.visual.config.ts",
+    "test:visual:update": "node scripts/visual-approve.mjs",
+    "prepush": "npm run lint && npm test -- --run && npm run build && npm run test:visual",
+    "prepare": "git config core.hooksPath .githooks",
+    "visual:review": "playwright test -c playwright.visual.config.ts --reporter=html; playwright show-report playwright-report-visual"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "i18next": "^25.7.4",
     "i18next-browser-languagedetector": "^8.2.0",
     "react": "^19.2.0",
@@ -27,6 +41,7 @@
     "zod": "^4.3.5"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@eslint/js": "^9.39.1",
     "@playwright/test": "^1.57.0",
     "@testing-library/dom": "^10.4.1",

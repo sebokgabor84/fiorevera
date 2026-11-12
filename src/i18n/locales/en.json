@@ -1,0 +1,434 @@
+{
+  "meta": {
+    "siteName": "Fiore Vera",
+    "tagline": "flowers & decoration",
+    "home": {
+      "title": "Wedding Decoration & Floristry at Lake Balaton – Fiore Vera",
+      "description": "Full-service wedding decoration, wedding floristry and prop rental from Zalakaros – Lake Balaton and Western Hungary. Request a quote today!"
+    },
+    "services": {
+      "title": "Wedding Decoration Services – Fiore Vera",
+      "description": "Full wedding decoration from planning to next-day take-down, wedding floristry with seasonal flowers and prop rental – Lake Balaton, Western Hungary."
+    },
+    "gallery": {
+      "title": "Portfolio – Real Weddings – Fiore Vera",
+      "description": "Real weddings from Western Hungary, Lake Balaton and Austria: head tables, ceremony sites, bouquets and table arrangements by Fiore Vera."
+    },
+    "rental": {
+      "title": "Wedding Prop Rental with Prices – Fiore Vera",
+      "description": "Wedding arches, gold flower stands, cylinder vases, candle holders, a champagne wall and a lettered mirror for rent – sizes, stock and prices in one place."
+    },
+    "about": {
+      "title": "About – Veronika Sebőkné Antalics – Fiore Vera",
+      "description": "I'm Vera, a wedding decorator and florist from Zalakaros. Learn how Fiore Vera began and why a natural, seasonal style is my signature."
+    },
+    "contact": {
+      "title": "Contact & Request a Quote – Fiore Vera",
+      "description": "Request a quote for wedding decoration, floristry or prop rental. Phone, email, Instagram – Zalakaros, Western Hungary."
+    },
+    "privacy": {
+      "title": "Privacy Notice – Fiore Vera",
+      "description": "How we handle the data you send through the contact form and your language preference on fiorevera.hu."
+    },
+    "notFound": {
+      "title": "Page Not Found – Fiore Vera",
+      "description": "The page you are looking for does not exist. Return to the Fiore Vera home page."
+    }
+  },
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "gallery": "Portfolio",
+    "rental": "Rentals",
+    "about": "About",
+    "contact": "Contact",
+    "privacy": "Privacy",
+    "mainLabel": "Main navigation",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "menu": "Menu",
+    "quote": "Request a quote"
+  },
+  "lang": {
+    "label": "Language",
+    "hu": "Magyar",
+    "de": "Deutsch",
+    "en": "English",
+    "current": "current language"
+  },
+  "toast": {
+    "body": "This site is also available in English.",
+    "cta": "View in English",
+    "dismiss": "Dismiss"
+  },
+  "common": {
+    "phone": "Phone",
+    "email": "Email",
+    "address": "Address",
+    "instagram": "Instagram",
+    "facebook": "Facebook",
+    "readMore": "Read more",
+    "backToTop": "Back to top",
+    "openInMaps": "Open in Maps",
+    "newTab": "(opens in a new tab)",
+    "skipToContent": "Skip to content",
+    "noscript": "Please enable JavaScript in your browser for the full site."
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "Wedding decoration · Lake Balaton & Western Hungary",
+      "title": "Fiore Vera",
+      "subtitle": "flowers & decoration",
+      "lead": "The wedding decoration of your dreams – from planning to next-day take-down, so on the big day all you have to do is celebrate.",
+      "cta": "See my work",
+      "ctaSecondary": "Request a quote"
+    },
+    "pitch": {
+      "eyebrow": "Why Fiore Vera?",
+      "title": "Planning a wedding but not sure how to pull off the decoration you have in mind?",
+      "intro": "You've come to the right place. I'm here to make sure the decoration on your big day looks exactly the way you imagined – while the budget stays where it should.",
+      "reasons": {
+        "budget": {
+          "title": "Seasonal flowers and props for rent",
+          "body": "With seasonal flowers that are blooming right now and my ever-growing rental range, the decoration turns out beautiful without the costs running away."
+        },
+        "planning": {
+          "title": "I take the load off your shoulders",
+          "body": "I handle every step of planning and setting up the decoration – you only have to enjoy the day."
+        },
+        "props": {
+          "title": "No need to buy things you won't use",
+          "body": "Arches, vases, candle holders, a champagne wall: rent what you need from me instead of spending on items you'll never use again."
+        }
+      },
+      "events": "Besides weddings, I'm happy to decorate other family and corporate events too."
+    },
+    "services": {
+      "eyebrow": "Services",
+      "title": "How I can help",
+      "cards": {
+        "full": {
+          "title": "Full-service wedding decoration",
+          "body": "Planning, floristry, venue styling and next-day take-down – all in one pair of hands, stress-free.",
+          "cta": "How I work"
+        },
+        "floristry": {
+          "title": "Wedding floristry",
+          "body": "Bridal bouquet, table arrangements, head-table installation – from seasonal flowers in a natural palette.",
+          "cta": "Flowers for your wedding"
+        },
+        "rental": {
+          "title": "Prop rental",
+          "body": "Wedding arches, gold flower stands, vases, candle holders, a champagne wall and a lettered mirror – with prices and sizes.",
+          "cta": "Browse the rentals"
+        }
+      }
+    },
+    "gallery": {
+      "eyebrow": "Portfolio",
+      "title": "Real weddings, real venues",
+      "intro": "From Zala county across Lake Balaton to Austria – a few of the couples whose big day I had the pleasure of decorating.",
+      "cta": "All weddings"
+    },
+    "testimonials": {
+      "eyebrow": "Kind words",
+      "title": "Couples who trusted me"
+    },
+    "about": {
+      "eyebrow": "About",
+      "title": "Hi, I'm Vera",
+      "body": "A wedding decorator, florist and mum from Zalakaros. Decorating my own wedding showed me this is what I can do with heart and soul – since then I've helped dozens of couples make their big day unforgettable.",
+      "cta": "Get to know me"
+    },
+    "cta": {
+      "title": "Like what you see?",
+      "body": "Tell me about your wedding – the venue, the date, your ideas – and I'll put together a detailed quote for you.",
+      "button": "Request a quote",
+      "or": "or simply call:"
+    }
+  },
+  "services": {
+    "hero": {
+      "eyebrow": "Services",
+      "title": "Wedding decoration, floristry, prop rental",
+      "intro": "There are three ways I can help: I take over the whole decoration, I create the floral pieces, or I lend you the props if you'd like to decorate yourselves. Each service can be booked on its own."
+    },
+    "full": {
+      "eyebrow": "1 · Full-service wedding decoration",
+      "title": "Full-service wedding decoration",
+      "intro": "If you'd rather not handle the wedding decoration yourselves, choose my full-service package. It covers everything from planning through floristry to styling the venue and taking it all down the next day. The perfect choice if you dream of a stress-free morning on your big day.",
+      "scope": "You can ask for the decoration of the civil ceremony site, the floral styling of the church ceremony and the festive dressing of the reception venue. Don't need all three? No problem – each part can be booked separately.",
+      "processTitle": "How I work",
+      "steps": {
+        "meeting": {
+          "title": "No-obligation first meeting",
+          "body": "At our first meeting you can tell me all about your ideas – and if you don't have any yet, that's fine, we'll shape the concept together. I'll suggest ways to make the decoration special or where you can save. Feel free to bring pictures that capture the mood you're after."
+        },
+        "quote": {
+          "title": "Detailed quote",
+          "body": "Based on what we discussed, I prepare a detailed quote. My existing props are provided for a rental fee; single-use items (candles, napkins, custom signs) fall into the purchase category. I don't charge labour separately – it's included in the item prices. The last line is travel, quoted per kilometre."
+        },
+        "visit": {
+          "title": "Free venue visit",
+          "body": "We visit the wedding venue together – and I don't charge mileage for it. It's a vital part of planning: we decide what goes where, I take measurements (for the head-table backdrop, for example), we ask the staff what's allowed, and we get a feel for which decoration suits the venue's atmosphere."
+        },
+        "floral": {
+          "title": "Creating the floral pieces",
+          "body": "I create the floral decoration from seasonal, freshly delivered flowers sourced from local growers and wholesalers. I aim to bring as many special varieties as possible into the design – it makes your wedding all the more unique."
+        }
+      },
+      "checklistTitle": "Which floral pieces does a wedding usually need?",
+      "checklist": {
+        "bridal": "bridal bouquet",
+        "toss": "toss bouquet",
+        "parents": "thank-you bouquets for the parents",
+        "boutonniere": "boutonnières for the groom and the men",
+        "bridesmaid": "bridesmaid bouquets or wrist corsages",
+        "headTable": "head-table arrangement",
+        "tables": "table arrangements",
+        "car": "car decoration",
+        "church": "altar, gallery and pew decoration in the church",
+        "installations": "installations behind the head table, at the civil ceremony site, at the photo spot",
+        "hair": "floral accessories for the bride: crown, flower comb",
+        "petals": "flower petals"
+      }
+    },
+    "floristry": {
+      "eyebrow": "2 · Wedding floristry",
+      "title": "Wedding floristry with seasonal flowers",
+      "intro": "Romantic, colourful, fragrant floral pieces from the seasonal flowers in bloom right now – in a natural palette, tailored to the venue and to you.",
+      "body": "I source the flowers from local growers and wholesalers right before the big day, so they go into bouquets and arrangements fresh and long-lasting. If you'd like to decorate yourselves, I'm still happy to make your bouquets and floral pieces – floristry can be booked on its own.",
+      "seasonTitle": "Seasonality",
+      "season": "The choice is richest from April to October: tulips, daffodils, ranunculus and anemones in spring, peonies, larkspur and snapdragons in summer, dahlias, zinnias and asters in autumn. We'll find a solution outside the season too – let's talk it through at our first meeting.",
+      "cta": "Request a quote for flowers"
+    },
+    "rental": {
+      "eyebrow": "3 · Prop rental",
+      "title": "Prop rental",
+      "intro": "Want to decorate your wedding yourselves without investing a lot in props or worrying about where to store them afterwards? I can help with that too.",
+      "body": "Wedding arches, a light curtain, vases, tea lights, candle holders, crates, planters, a red carpet and other decoration pieces are available. Let's go through what you might need!",
+      "cta": "Rental items and prices"
+    },
+    "cta": {
+      "title": "Let's talk about your wedding",
+      "body": "The first meeting is free of obligation – tell me about your ideas and I'll show you how we can bring them to life.",
+      "button": "Get in touch"
+    }
+  },
+  "gallery": {
+    "hero": {
+      "eyebrow": "Portfolio",
+      "title": "Weddings I had the pleasure of decorating",
+      "intro": "Every wedding is different – a different venue, a different couple, a different story. Here is my work from the past years: browse the pictures with the arrows or by swiping."
+    },
+    "albumAlt": "Wedding decoration – {{title}}, {{venue}}, photo {{n}}",
+    "albumAltNoVenue": "Wedding decoration – {{title}}, photo {{n}}",
+    "photoCount": "{{count}} photos",
+    "albumTitles": {
+      "eskuvo-classic-magazin-fotozas": "Photo shoot for Esküvő Classic magazine",
+      "teli-fotozas-2022": "Winter photo shoot 2022"
+    },
+    "countries": {
+      "HU": "Hungary",
+      "AT": "Austria"
+    },
+    "carousel": {
+      "label": "Photos: {{title}}",
+      "prev": "Previous photo",
+      "next": "Next photo",
+      "status": "Photo {{n}} of {{total}}",
+      "hint": "Use the arrow keys or swipe to browse"
+    },
+    "cta": {
+      "title": "Would you like your wedding here too?",
+      "button": "Request a quote"
+    },
+    "and": "and"
+  },
+  "rental": {
+    "hero": {
+      "eyebrow": "Prop rental",
+      "title": "Wedding props for rent",
+      "intro": "If you decorate yourselves, my advice is to rent. You won't have to invest in items you'll never need after the wedding, and you won't have to wonder where to put all that stuff once the big day is over."
+    },
+    "howTo": {
+      "title": "How it works",
+      "steps": {
+        "choose": "Choose from my rental items.",
+        "reserve": "Reserve them by email for your big day – the earlier, the safer. Or just call me and we will sort it out 🙂 {{phone}}",
+        "pickup": "Collect them in person in Zalakaros at an agreed time.",
+        "ask": "Any questions? Feel free to call."
+      }
+    },
+    "currencyNote": "All prices are in Hungarian forint (HUF), per occasion.",
+    "labels": {
+      "size": "Size",
+      "quantity": "Stock",
+      "price": "Price",
+      "deposit": "Deposit",
+      "pickup": "Collection",
+      "pickupOnly": "collection in person only",
+      "pickupZalakaros": "collection in person only, in Zalakaros",
+      "pieces": "{{count}} pcs",
+      "sets": "{{count}} sets",
+      "walls": "{{count}} pcs",
+      "available": "{{count}} available"
+    },
+    "units": {
+      "occasion": "occasion",
+      "piece": "pc",
+      "set": "set",
+      "wall": "wall"
+    },
+    "items": {
+      "wooden-arch": {
+        "name": "Wooden wedding arch",
+        "description": "Our wooden arch suits the civil ceremony and also works as a backdrop behind the head table. It can be decorated in many ways.",
+        "notes": "Comes in five parts; two people assemble it in about 15 minutes, the parts are fixed with screws."
+      },
+      "birch-arch": {
+        "name": "Birch wedding arch",
+        "description": "Our birch-wood arch works at the civil ceremony as well as at the reception venue. Decorate it any way you like.",
+        "notes": "Comes apart into three pieces, assembled with screws – a 10-minute job for two people."
+      },
+      "gold-flower-stands": {
+        "name": "Gold flower stands",
+        "description": "Our metal flower stands suit round tables best but look great on long tables too. Any floral piece can go on top: fresh, dried or artificial.",
+        "notes": "Height 70 cm, gold finish."
+      },
+      "cylinder-vase-set": {
+        "name": "Cylinder vase set",
+        "description": "Our three-piece glass cylinder set is a perfect table centrepiece and works as an accent almost anywhere. For candlelight, use floating candles.",
+        "notes": "Please don't light pillar candles inside: the wax runs into the vase and can't be cleaned out – in that case the vases have to be purchased. Sizes: 28×8 cm, 23×10 cm, 17×12 cm (height × diameter)."
+      },
+      "gold-candle-holder-set": {
+        "name": "Gold metal candle holder set",
+        "description": "If you want truly exclusive footed candle holders in your decoration, this set won't disappoint. Slim design, for taper candles, ideal for round and long tables alike.",
+        "notes": "Comes apart into three pieces for easy transport. Heights: 23, 28 and 33 cm; inner diameter 2.2 cm."
+      },
+      "champagne-wall": {
+        "name": "Champagne wall",
+        "description": "A spectacular piece – the perfect prop for the champagne reception, and usable all evening if kept topped up.",
+        "notes": "Comes with an illuminated “Cheers” sign. Holds 100 glasses in total (90 with the sign in place). Easy to assemble."
+      },
+      "wedding-mirror": {
+        "name": "Lettered wedding mirror",
+        "description": "Lift your decoration with a lettered mirror – as a welcome sign, a seating chart or a sweet message to your guests. The rental includes the design and application of the custom decal – after you get in touch, we send you a mock-up.",
+        "notes": "The rental covers one weekend: collect from Thursday, return by Monday evening. Please agree a date with us before ordering. The deposit is refunded when the mirror is returned undamaged."
+      }
+    },
+    "cta": {
+      "title": "Would you like to reserve something?",
+      "body": "Send an email with the items you've chosen and your wedding date, or call and we'll go through the details.",
+      "email": "Reserve by email",
+      "emailSubject": "Prop rental reservation – fiorevera.hu",
+      "phone": "Call"
+    }
+  },
+  "about": {
+    "hero": {
+      "eyebrow": "About",
+      "title": "How Fiore Vera began",
+      "greeting": "Welcome!"
+    },
+    "intro": "I'm Veronika Sebőkné Antalics – wedding decorator, florist and mum.",
+    "story1": "The idea of working as a wedding decorator came to me while I was creating the decoration for my own wedding. I loved the months of planning and the styling before the day – I was completely on fire. The world of weddings and creating with flowers has always drawn me in. This is what I can truly do with heart and soul.",
+    "story2": "A wedding is a special, deeply meaningful day in everyone's life. Every girl secretly dreams of feeling like a princess on her big day and saying “I do” surrounded by loved ones in beautifully decorated surroundings.",
+    "story3": "That's what I'm here for: to lift the whole weight of the decoration off your shoulders – from the preparations through the setup to the take-down the next day. My work helps make your wedding a lasting memory you'll love looking back on in the photos. Let the decoration of your big day be unforgettable!",
+    "garden": {
+      "title": "My garden – taking a break",
+      "body": "For several seasons I grew the cut flowers for my weddings in my own garden – it shaped the natural, seasonal style that is still my signature today. Because of the increasingly dry summers the garden is resting for now, but as soon as the weather allows I'll return to it. Until then I work with fresh, seasonal flowers from local growers and wholesalers."
+    },
+    "facts": {
+      "based": "Zalakaros, Zala county (Hungary)",
+      "style": "Natural, seasonal, romantic"
+    },
+    "cta": {
+      "title": "Let's meet!",
+      "body": "The first conversation is free of obligation – tell me about your wedding and we'll shape the concept together.",
+      "button": "Get in touch"
+    }
+  },
+  "contact": {
+    "hero": {
+      "eyebrow": "Contact",
+      "title": "Give me a call!",
+      "intro": "Request a quote for wedding decoration, floristry or prop rental. Write a few lines about your wedding and I'll get back to you soon."
+    },
+    "ownerLabel": "Decorator",
+    "social": {
+      "title": "Follow me on Instagram",
+      "body": "Recent work, behind-the-scenes moments and seasonal inspiration."
+    },
+    "form": {
+      "title": "Request a quote",
+      "intro": "Fields marked with an asterisk are required.",
+      "name": "Name",
+      "email": "Email address",
+      "phone": "Phone number",
+      "optional": "optional",
+      "date": "Wedding date",
+      "venue": "Venue",
+      "message": "Message",
+      "messagePlaceholder": "Tell me about your ideas: ceremony, reception venue, colours, guest count…",
+      "consent": "I agree that my details are processed to answer my enquiry, as described in the <0>privacy notice</0>.",
+      "submit": "Send message",
+      "sending": "Sending…",
+      "success": "Thank you for your message! I'll get back to you soon using the contact details you provided.",
+      "error": "The message could not be sent. Please try again or email me directly.",
+      "mailFallback": "Open in your mail app",
+      "errors": {
+        "required": "This field is required.",
+        "email": "Please enter a valid email address.",
+        "consent": "You need to accept the privacy notice to send the form.",
+        "phone": "Please use digits, spaces and a leading + only (6–15 digits).",
+        "tooLong": "Please use at most {{max}} characters."
+      }
+    }
+  },
+  "privacy": {
+    "title": "Privacy notice",
+    "updated": "Last updated: {{date}}",
+    "intro": "This notice summarises what data the fiorevera.hu website processes, why and for how long. Controller: Veronika Sebőkné Antalics (Fiore Vera), 8749 Zalakaros, Rózsa utca 53., Hungary.",
+    "sections": {
+      "form": {
+        "title": "Contact form",
+        "body": "The details you enter in the form (name, email address, optionally phone number, wedding date, venue, message) are used solely to answer your enquiry and prepare a quote. The form service forwards the data to info.fiorevera@gmail.com, where I keep it in my mailbox no longer than the validity of the quote, or until the end of our contractual relationship if you book. The legal basis is your consent, which you can withdraw at any time."
+      },
+      "storage": {
+        "title": "Language preference",
+        "body": "If you dismiss the language suggestion or switch languages, we remember this in your browser's local storage (localStorage) so you don't have to choose again. This information never leaves your device and can be removed at any time by clearing your browser data."
+      },
+      "analytics": {
+        "title": "Visitor statistics",
+        "body": "The site uses Vercel Web Analytics, a cookie-free, anonymous visitor measurement. It stores no personal data and does not track you across other websites – which is why this site has no cookie banner."
+      },
+      "rights": {
+        "title": "Your rights",
+        "body": "You can request access to, correction or deletion of the data stored about you and withdraw your consent at any time via info.fiorevera@gmail.com. You may lodge a complaint with the Hungarian data protection authority (NAIH) or your local supervisory authority."
+      }
+    }
+  },
+  "notFound": {
+    "eyebrow": "404",
+    "title": "This page could not be found",
+    "body": "The link may be outdated or the address mistyped. Return to the home page or have a look at my work.",
+    "cta": "Back to home",
+    "ctaSecondary": "Portfolio"
+  },
+  "footer": {
+    "tagline": "Wedding decoration, floristry and prop rental from Zalakaros – Lake Balaton and Western Hungary.",
+    "contactTitle": "Contact",
+    "pagesTitle": "Pages",
+    "languagesTitle": "Languages",
+    "rights": "All rights reserved.",
+    "areas": "Service area: {{areas}}",
+    "socialLabel": "Social media"
+  },
+  "testimonials": {
+    "nagy-orsolya": "Thank you so much for your incredibly wonderful, conscientious, kind, helpful, beautiful, precise, personal and humble work!! We wholeheartedly recommend you to everyone.",
+    "hajnal-durgo-adrienn": "Many thanks to Vera and her small team for their precise work. I recommend her to every bride who dreams of wedding decoration in natural colours for her big day. Vera will do everything to make your wedding decoration beautiful too.",
+    "borbely-antalics-csilla": "Absolutely professional! We received work that met every one of our expectations. Fair value for money. We can only recommend her.",
+    "toth-szabo-klaudia": "One of the defining moments of our wedding for me was when we walked into the restaurant where the reception was held and I saw the decoration. What Vera created exceeded all my imagination – it was simply beautiful."
+  }
+}

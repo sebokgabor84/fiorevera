@@ -1,0 +1,231 @@
+/*
+ * The header always carries its own frosted-linen surface (design-system glass panel).
+ * Over a photo hero the raw image spans black reeds to white linen, so no text colour or
+ * text-shadow can guarantee WCAG 1.4.3; an 85 % linen surface keeps #2c2825 text ≥ 10:1
+ * in the worst case. Scrolling only adds the gold hairline and a deeper shadow.
+ */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.08);
+  box-shadow: 0 2px 12px rgba(44, 40, 37, 0.04);
+  transition:
+    border-color var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out);
+}
+/*
+ * The glass lives on a pseudo-element, not on .header itself: `backdrop-filter` makes an
+ * element the containing block for fixed descendants, which would trap the mobile menu
+ * panel inside the header box and let page content paint over it.
+ */
+.header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+.scrolled {
+  border-bottom: var(--glass-border);
+  box-shadow: 0 6px 24px rgba(44, 40, 37, 0.08);
+}
+/*
+ * The header bar is wider than the content column: logo + 6 nav items + language switch +
+ * quote button need ~1180 px, so at --content-max (72rem) the logo was squeezed and its
+ * text broke per character (regression found 2026-11-09 at 1280–1920 px).
+ */
+.header .bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: var(--header-h);
+  max-width: min(100%, 90rem);
+}
+.logo {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: var(--space-3);
+  text-decoration: none;
+  color: var(--color-text-main);
+  min-height: var(--touch);
+}
+.brand,
+.tagline {
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+.logoImg {
+  width: 2.75rem;
+  height: auto;
+  flex: 0 0 auto;
+}
+.wordmark {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+.brand {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.tagline {
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-top: 0.3rem;
+}
+.desktopNav {
+  display: none;
+}
+.navList {
+  display: flex;
+  gap: clamp(0.25rem, 1vw, 1rem);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.navLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch);
+  padding: 0 0.6rem;
+  white-space: nowrap;
+  hyphens: manual;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--color-text-main);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+.navLink:hover {
+  border-color: var(--color-blush);
+}
+.navActive {
+  border-color: var(--color-gold);
+}
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.desktopOnly {
+  display: none;
+}
+.actions .quoteBtn {
+  display: none;
+  white-space: nowrap;
+}
+.menuToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: var(--touch);
+  min-height: var(--touch);
+  padding: 0 0.5rem;
+  background: transparent;
+  border: var(--border-hairline);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.menuWord {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.burger {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 18px;
+}
+.burger span {
+  display: block;
+  height: 2px;
+  background: var(--color-text-main);
+  border-radius: 2px;
+  transition: transform var(--dur-base) var(--ease-out), opacity var(--dur-base) var(--ease-out);
+}
+.burgerOpen span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+.burgerOpen span:nth-child(2) {
+  opacity: 0;
+}
+.burgerOpen span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+.panel {
+  position: fixed;
+  inset: var(--header-h) 0 0 0;
+  z-index: 99;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-6);
+  padding: var(--space-6) var(--gutter) var(--space-7);
+  background: var(--color-bg-linen);
+  overflow-y: auto;
+}
+.panel[hidden] {
+  display: none;
+}
+.panelList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.panelLink {
+  display: flex;
+  align-items: center;
+  min-height: 3.25rem;
+  font-family: var(--font-heading);
+  font-size: var(--fs-xl);
+  color: var(--color-text-main);
+  text-decoration: none;
+  border-bottom: var(--border-hairline);
+  padding-inline: 0.25rem;
+}
+.panelLink.navActive {
+  color: var(--color-sage-deep);
+  border-bottom-color: var(--color-gold);
+}
+.panelFooter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+@media (min-width: 70rem) {
+  .desktopNav,
+  .desktopOnly {
+    display: block;
+  }
+  .menuToggle,
+  .panel {
+    display: none;
+  }
+}
+@media (min-width: 80rem) {
+  .actions .quoteBtn {
+    display: inline-flex;
+  }
+}
+@media (max-width: 24rem) {
+  .wordmark {
+    display: none;
+  }
+}
