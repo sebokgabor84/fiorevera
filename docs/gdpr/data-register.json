@@ -26,8 +26,8 @@
   "hosts": [
     { "host": "api.web3forms.com", "role": "processor candidate: form delivery (India/US — transfer mechanism to confirm)", "privacyKey": "privacy.sections.form" },
     { "host": "formspree.io", "role": "processor candidate: form delivery (US — transfer mechanism to confirm)", "privacyKey": "privacy.sections.form" },
-    { "host": "va.vercel-scripts.com", "role": "Vercel Web Analytics script — described on the privacy page and allowed in the CSP, NOT wired in code yet (concept note §1 gap 3)", "privacyKey": "privacy.sections.analytics" },
-    { "host": "vitals.vercel-insights.com", "role": "Vercel Web Analytics beacon — same status as va.vercel-scripts.com", "privacyKey": "privacy.sections.analytics" }
+    { "host": "va.vercel-scripts.com", "role": "Vercel Web Analytics — wired 2026-11-12 via @vercel/analytics inject() in src/lib/analytics.ts, production mode, only on fiorevera.hu / *.vercel.app hosts; v2 loads the script and sends page-view beacons same-origin (/_vercel/insights/*), this host is the package's debug/fallback script origin kept in the CSP", "privacyKey": "privacy.sections.analytics" },
+    { "host": "vitals.vercel-insights.com", "role": "Vercel Speed Insights beacon host, allowed in the CSP as a fallback; not used by Web Analytics v2 (same-origin intake)", "privacyKey": "privacy.sections.analytics" }
   ],
   "outboundLinks": [
     { "host": "www.fiorevera.hu", "role": "the site itself (canonical, hreflang, JSON-LD)" },
