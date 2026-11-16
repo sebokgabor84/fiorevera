@@ -1,6 +1,6 @@
 # fiorevera.hu — domain move to Rackhost and launch on Vercel
 
-> **Status:** plan, 2026-11-12; owner decisions D1–D8 recorded the same day (§8). Nothing in this document has been executed. Traces to `MASTER-PLAN.md` Phase 4 (4.1–4.5), PRD D-10, D-15, D-16, D-18, R-7.
+> **Status:** plan, 2026-11-12; owner decisions D1–D8 recorded the same day (§8). **2026-11-16: Webnode Premium expired, the legacy site is offline → the fast lane in §0a replaces the runbook order in §6.** Nothing else in this document has been executed yet. Traces to `MASTER-PLAN.md` Phase 4 (4.1–4.5), PRD D-10, D-15, D-16, D-18, R-7.
 > **This is not legal advice.** The author is a build assistant, not a lawyer. Tags as in `docs/gdpr/`: **[INFO]** = taken from the cited source, **[CONFIRM]** = a lawyer, accountant or the provider's support should confirm, **[DECISION]** = the owner decides.
 > Every policy statement below links to the page it was read from on 2026-11-12. Pages change; re-check the Vercel fair-use page and the Rackhost price list on the day you act.
 
@@ -20,6 +20,129 @@
 What "trouble" is **not** on the table: nobody fines a Hungarian sole trader for using a US host; the domain cannot be taken by Webnode (its terms say the user is the lawful owner); the legacy site stays live as rollback until DNS is verified.
 
 The honest recommendation, in one line: **transfer the domain to Rackhost now, launch on Vercel Pro ($20 per month plus VAT), keep Webnode for 30 days, cancel it.** If the owner decides to launch on Hobby anyway, §1.4 says what that means and how to make the fall-back fast.
+
+---
+
+## 0a. FAST LANE (2026-11-16): the site is offline — step by step
+
+### What happened, verified live on 2026-11-16 07:23 UTC
+
+```
+https://www.fiorevera.hu/   → HTTP 404, Webnode "Error Page", <meta name="robots" content="noindex">
+https://fiorevera.hu/       → HTTP 404 (same)
+NS  fiorevera.hu            → ns1/ns2.register.it      (unchanged)
+A   fiorevera.hu            → 3.73.27.108, 3.125.172.46 TTL 3600 (unchanged, Webnode front-ends)
+CNAME www.fiorevera.hu      → fiorevera-hu.webnode.hu   (unchanged)
+Rackhost cart (owner's screenshot): "domain fenntartás 2027.11.09 – …" → the domain is paid up to 2027-11-09
+```
+
+So: **the domain is alive and registered until 2027-11-09**; only the Webnode project behind it stopped being served. DNS still answers. That is the good news, because it means the fastest fix is a DNS change, not the registrar transfer.
+
+**Why speed matters for SEO [INFO]:** Google re-crawls a page that answers 404 a few times and then drops it from the index; the Webnode error page also carries `noindex`. Days are recoverable, weeks cost rankings. Track A below should happen **today**.
+
+### The two tracks
+
+| | Track A — back online today | Track B — domain to Rackhost this week |
+|---|---|---|
+| What | Deploy the new site on Vercel, point the domain's existing DNS (still editable inside Webnode) at it | Registrar change Webnode/Register.it → Rackhost, DNS zone at Rackhost pointing at Vercel |
+| Time | 1–2 hours of clicking, then up to 1 hour of DNS propagation | pay today; auth code / Rackhost's part 1–5 working days; then the zone at Rackhost takes over |
+| Depends on | Webnode still showing "Manage DNS" for the domain (it is a separately paid service, the domain is still there). If the button is gone, Track B is the only path and B7 becomes the cutover. | nothing from Track A; the two run in parallel |
+| Who | Gabor (Vercel, GitHub), Vera's Webnode login | Gabor in Rackhost, Vera for the registry's confirmation e-mail/SMS and any signed declaration |
+
+Everything in §2–§5 still applies; this section only changes the **order** (§2.3 argued transfer-first because Webnode was live; it no longer is) and adds the click-level how-to the owner asked for.
+
+---
+
+### Track A — back online today
+
+**A1. Create the Vercel project (MASTER-PLAN 4.1)**
+1. [vercel.com](https://vercel.com) → log in with the GitHub account that owns `sebokgabor84/fiorevera` (Gabor's existing Hobby team, decision D1/D2).
+2. **Add New… → Project → Import** `sebokgabor84/fiorevera`. Framework preset: **Vite** (auto-detected). Build command `npm run build`, output directory `dist` (Vite defaults; `vercel.json` in the repo supplies redirects, headers, `trailingSlash`). Leave root directory as is.
+3. **Environment Variables** (before the first deploy, tick Production **and** Preview): `VITE_FORM_ENDPOINT` = `https://api.web3forms.com/submit`, `VITE_FORM_ACCESS_KEY` = the key from the git-ignored `.env.local` (copy it from the file, never from chat).
+4. **Deploy.** The first deployment of a new project is always Production, but it builds the **production branch**, which defaults to `main` — and `main` does not contain the site yet (`feature/site-build` is unmerged). So right after the project exists: **Settings → Git → Production Branch → `feature/site-build` → Save**, then **Deployments → ⋯ on the latest → Redeploy** (or push any commit). This is the emergency path; it keeps the PR review intact. When the PR is merged, switch the production branch back to `main`.
+5. Build must say "prerendered 21 pages + 404.html" in the logs (the same script that runs locally).
+
+**A2. Verify on the `*.vercel.app` URL** (= MASTER-PLAN 4.2, shortened): open `/`, `/de/`, `/en/`, `/kellekberles/`; `/viragoskert/` must 301 to `/rolunk/`; `/de/blumengarten/` → `/de/uebermich/`; a made-up path such as `/nincs-ilyen/` must show the HU not-found page **and** answer HTTP 404 (browser dev tools → Network); send one real inquiry from the contact form on the preview and check `info.fiorevera@gmail.com`. Vera looks at the three locales on her phone (the preview URL is public for a Hobby production deployment; a *preview* deployment would need a Shareable Link).
+
+**A3. Enable Web Analytics:** project → **Analytics → Enable** (D5; the code is already wired on `*.vercel.app` and the real hosts; after the next visit a `/_vercel/insights/view` request appears in dev tools).
+
+**A4. Add the domains in Vercel:** **Settings → Domains → Add** `www.fiorevera.hu`; when Vercel offers to add `fiorevera.hu` as well, accept, and set **`www.fiorevera.hu` as the primary, `fiorevera.hu` → Redirect to www** (§3.1). Both will show "Invalid Configuration" until DNS moves — that is expected. **Write down the two values Vercel shows**: the `A` IP for `fiorevera.hu` and the `CNAME` target for `www` (`xxxx.vercel-dns-0xx.com.`, with the trailing dot). If Vercel instead asks for a `TXT` verification record, the domain is attached to another Vercel account; add that TXT in step A5 too.
+
+**A5. Point the DNS at Vercel inside Webnode** ([Webnode DNS guide](https://www.webnode.com/support/setting-up-dns-records/); Vera's login):
+1. Webnode → the project → **Administration (Beállítások) → Domain management (Domainek)** → next to `fiorevera.hu` click **Manage DNS (DNS kezelése)**.
+2. The two `A` records for `fiorevera.hu` (`3.73.27.108`, `3.125.172.46`): **edit the first → Value = the Vercel A IP; delete the second.** (Webnode lets you change Name/Value, not the type; both stay `A`.)
+3. The `CNAME` for `www` (`fiorevera-hu.webnode.hu`): **edit → Value = the Vercel CNAME target** (with the trailing dot if the form accepts it; without it if Webnode refuses).
+4. Leave `MX`/`SPF` alone for now (D4: nothing uses domain mail; they die with the transfer anyway). Add a `TXT` `google-site-verification=…` record here if A7 is done in the same sitting.
+5. Save. Webnode's own guides say changes propagate in about an hour; the old records' TTL is 3600 s, so worst case 60 minutes.
+6. **If "Manage DNS" is missing** (Webnode hides it for free projects in some cases): try once with **Webnode support** via the contact form from the project-owner e-mail ("please set A fiorevera.hu → <IP> and CNAME www → <target>"), and in parallel treat Track B step B7 as the cutover.
+
+**A6. Verify the cutover** (MASTER-PLAN 4.3 DoD), after ~1 hour:
+```bash
+dig +short A fiorevera.hu
+dig +short CNAME www.fiorevera.hu
+curl -IL https://fiorevera.hu/            # must end at https://www.fiorevera.hu/ with HTTP 200
+curl -I https://www.fiorevera.hu/szolgaltatasok/
+curl -I https://www.fiorevera.hu/de/verleih/
+curl -I https://www.fiorevera.hu/viragoskert/      # 301 → /rolunk/
+curl -I https://www.fiorevera.hu/nincs-ilyen/      # 404
+```
+Vercel's **Settings → Domains** turns green and issues the Let's Encrypt certificate within minutes of the DNS change (§3.4). Check on a phone over mobile data too (different DNS cache). Then set up the **uptime monitor** (D1 monitoring, §1.4 item 5).
+
+**A7. Search Console, same day** (§5): Google Search Console → **Add property → Domain** `fiorevera.hu` → copy the `TXT` record → add it in the Webnode DNS editor (A5) or in the Rackhost zone (B7) → Verify. Then **Sitemaps → submit** `https://www.fiorevera.hu/sitemap.xml`, and **URL Inspection → Request indexing** on `/`, `/de/`, `/en/`. If the old Webnode property still exists, export its Performance report first (it keeps working for a while because the data is historical).
+
+---
+
+### Track B — domain to Rackhost (owner's preference: Rackhost does the work)
+
+**B1. Fix the cart** (owner's screenshot shows `9 év` / 26 100 Ft + ÁFA): change the *fenntartás* dropdown to **1 év** → 2 900 Ft + ÁFA; with the *átregisztráció* line (1 500 Ft + ÁFA) the total is **4 400 Ft + ÁFA = 5 588 Ft**. The registry adds one year on a successful transfer anyway (expiry 2027-11-09 → 2028-11-09); nine prepaid years cost the same per year and buy nothing except not forgetting. If "not forgetting" is the worry, 2–3 years is a fair middle ground; the choice is the owner's. **TOVÁBB.**
+
+**B2. Adatok megadása — registrant data must match the registry record exactly** (D3; otherwise it becomes a paid ownership change with a 30-day lock):
+1. First, on [domain.hu/domain-kereses/](https://www.domain.hu/domain-kereses/) use **Részletes keresés** (advanced search) for `fiorevera.hu` and read the **tulajdonos (registrant)** name and the **regisztrátor**.
+2. If the registrant is **Vera as a private person**: enter exactly that name and address as *Domain tulajdonos*; Gabor can be the *adminisztratív kapcsolattartó*. Use an e-mail Vera reads.
+3. If it shows the business, or a Webnode/Register.it proxy name: **stop**, do not guess; write to Rackhost support with the order number and ask them to run it as an ownership change to Vera (3 000 Ft net + Rackhost's admin fee; they will say what document they need). Webnode's transfer-out article says Webnode sets the real owner first when privacy protection is on — that is the same case.
+4. Create the Rackhost account (Gabor's or Vera's e-mail, both fine; the registry's e-mails go to the registrant's address, not the Rackhost account's).
+
+**B3. Névszerverek:** leave the default Rackhost nameservers (`ns1`–`ns4.dns24.hu`). **B4. Ellenőrzés → pay by card** (books immediately; bank transfer adds 1–3 working days). **B5. Confirm the e-mail** Rackhost sends (link → accept the policy → *Megerősítés*; 30-day window).
+
+**B6. The authorisation — three paths, in the order the owner prefers** ([ISZT policy §3.7](https://www.domain.hu/domain-registration-policy/), [registry news on the 2025 changes](https://www.domain.hu/tudastar/megujul-a-hu-domainregisztracio/), [Rackhost](https://www.rackhost.hu/tudasbazis/domain/hu-domain-atregisztracioja-masik-regisztratortol/)):
+
+| Path | When it applies | What to do | Who does the work |
+|---|---|---|---|
+| **1. Rackhost moves it without an auth code** | the domain is **document-protected (okirat-alapú)**: registered in 2021 under the old paper-based system — the likely case | Since **2025-05-06** the *new* registrar may change registrar on a document-protected domain **without an auth code**, switching it to factor-based protection in the same step. Rackhost may ask Vera for a short signed declaration (nyilatkozat) or run an identity check. → After B4, open a ticket in the Rackhost account (or e-mail `info@rackhost.hu`, +36 1 445 1200) with the order number: *"fiorevera.hu átregisztráció — a domain okirat-alapú, kérem auth kód nélkül, a faktoralapú azonosításra váltással együtt indítani."* Then watch for the registry's confirmation e-mail (link + code, 30-day validity) and SMS if a phone is on file. | **Rackhost**, Vera confirms by e-mail/signs one page |
+| **2. Vera requests the code at the registry** | the domain is already **factor-based** (Rackhost or domain.hu tells you) | [start.domain.hu](https://start.domain.hu) → *auth kód kikérés* → identification by the **registrant's e-mail on file** (time-limited link + code) and SMS/voice code if a phone is registered (max 5 code requests) → the 16-character code arrives, **valid 30 days** → Rackhost account → *Tennivalók → Auth kód megadása*. A registry lock, if ever set, must be lifted there first. The registry calls this the fallback for urgent cases; being offline is one. | Vera, 15 minutes |
+| **3. Webnode generates the code** | paths 1–2 fail, typically because the registry's e-mail on file is a Webnode/Register.it address Vera cannot read | [Webnode contact form](https://www.webnode.com/contact-customer-support/) **from the project owner's e-mail**: "please generate the .hu transfer authorization code for fiorevera.hu (new registrar: Rackhost)"; include Vera's name, address, date of birth, phone and e-mail if privacy protection is on. Enter the code under *Tennivalók*. | Webnode support, days |
+
+**The one thing that decides which path works:** the e-mail address (and phone) the registry holds for the registrant. Read it on the domain.hu advanced search (B2.1); if it is Vera's, paths 1–2 work without Webnode; if it is a proxy address, say so to Rackhost in the ticket and they will tell you whether a signed declaration suffices or Webnode must be involved.
+
+**B7. The Rackhost DNS zone — enter the Vercel records, not the Webnode ones.** Rackhost's "transfer without downtime" recipe says to copy the current records; here the current records are the Webnode front-ends that answer 404, so copy the **Track A target** instead. Rackhost account → **DNS zónák → fiorevera.hu → Rekordok szerkesztése** ([guide](https://www.rackhost.hu/tudasbazis/domain/hogyan-allithatom-be-a-domainhez-tartozo-rekordokat/)):
+
+| Type | Name | Value | TTL |
+|---|---|---|---|
+| A | *(empty)* | the Vercel A IP from A4 | 3600 |
+| CNAME | `www` | the Vercel CNAME target from A4 (trailing dot) | 3600 |
+| TXT | *(empty)* | `google-site-verification=…` from A7 | 3600 |
+| MX | *(empty)* | `0 .` (priority 0, target `.`) | 3600 |
+| TXT | *(empty)* | `v=spf1 -all` | 3600 |
+
+Do this **before** the transfer completes (the zone can be prepared while the domain is still at Register.it), so the moment the registry switches the nameservers to `dns24.hu` the site keeps resolving to Vercel. If Track A could not be done (no DNS editor at Webnode), this step *is* the cutover and the site comes back when the transfer completes.
+
+**B8. After the transfer:** Rackhost e-mails "sikeres átregisztráció"; `dig +short NS fiorevera.hu` shows `ns1.dns24.hu` …; run the A6 commands again. Webnode removes the domain from its side automatically; there is nothing left to cancel there (the Premium plan already expired — MASTER-PLAN 4.5 is moot). For **30 days** no further registrar change or ownership change is possible (policy §3.7.1).
+
+**B9. Keep the domain alive:** in the Rackhost account switch on **automatic renewal** (card) if offered, put **2027-10-09** in both calendars, and make sure the registrant e-mail is one Vera reads — the registry's annual data-update mail and the 30-days-before-expiry notice go there ([annual data update](https://www.domain.hu/annual-data-update/)). This is the one way `fiorevera.hu` can still be lost (§9 item 3).
+
+### Fast-lane checklist
+
+- [ ] A1 Vercel project on `feature/site-build`, env vars set, build log says 21 pages + 404
+- [ ] A2 preview checked (3 locales, 2 × 301, HTTP 404, one real form submission)
+- [ ] A3 Analytics enabled
+- [ ] A4 domains added, www primary, A/CNAME values noted
+- [ ] A5 Webnode DNS edited (or support asked / B7 used instead)
+- [ ] A6 `curl`/`dig` green, certificate valid, phone check, uptime monitor on
+- [ ] A7 Search Console Domain property verified, sitemap submitted, 3 home pages requested
+- [ ] B1 cart = átregisztráció + 1 év (or the years the owner wants) · B2 registrant read on domain.hu and entered unchanged · B4 paid · B5 e-mail confirmed
+- [ ] B6 path chosen; Rackhost ticket opened (path 1) or code entered (path 2/3)
+- [ ] B7 Rackhost zone holds the Vercel records before the nameservers switch
+- [ ] B8 `dig NS` = dns24.hu, A6 commands green again · B9 renewal + calendar + registrant e-mail
 
 ---
 
@@ -109,7 +232,9 @@ Source: ISZT Domain Registration Policy §3.7 and the Domain Transfer page ([dom
 
 **What happens to Webnode [INFO]:** once the domain leaves, Webnode deletes it from its system; the site stays reachable only on its `*.webnode.hu` project address; **any Webnode e-mail mailboxes on the domain are permanently deleted**. The Premium subscription is separate: it keeps running until cancelled through support ([webnode.com/support/payments-and-invoices-faq/](https://www.webnode.com/support/payments-and-invoices-faq/)); after expiry Premium features are blocked for 30 days, then the project reverts to the free tier and over-quota content is deleted. Completed domain registrations and transfers are non-refundable; the 15-day money-back guarantee applies only to a first Premium purchase. **[DECISION]** whether to let the plan run out or cancel it right after the 30-day rollback window (MASTER-PLAN 4.5).
 
-### 2.3 Why transfer first, DNS later (and not the other way round)
+### 2.3 Why transfer first, DNS later (and not the other way round) — superseded on 2026-11-16
+
+> Written while Webnode was still serving the site. With Webnode gone (§0a), DNS-first is the right order: Track A repoints the existing zone at Vercel today, Track B moves the registrar afterwards. The reasoning below is kept for the record.
 
 Webnode does let you edit A and CNAME records of a Webnode-managed domain (Administration → Domain management → Manage DNS; [webnode.com/support/setting-up-dns-records/](https://www.webnode.com/support/setting-up-dns-records/)), so pointing the domain at Vercel *before* transferring is technically possible. It is the worse order:
 
@@ -187,7 +312,7 @@ Google classifies this as a **site move without URL changes** (same host `www.fi
 
 ## 6. Cutover runbook
 
-### 6.1 Order and timing
+### 6.1 Order and timing — superseded by the fast lane in §0a on 2026-11-16 (kept for the record)
 
 | Step | When | Who | Rollback |
 |---|---|---|---|
