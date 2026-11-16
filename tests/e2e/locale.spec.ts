@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { de, en } from './locales';
 
 test.describe('language switch + suggestion toast (PRD D-4)', () => {

@@ -1,4 +1,4 @@
-import { useId, useState, type FormEvent } from 'react';
+import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { contact } from '../../data/contact';
 import { useLocale } from '../../i18n/localeContext';
@@ -24,6 +24,18 @@ export const InquiryForm = () => {
   const [errors, setErrors] = useState<Errors>({});
   /** The payload of the last failed submission — feeds the prefilled mailto fallback. */
   const [failed, setFailed] = useState<InquiryPayload | null>(null);
+  const successRef = useRef<HTMLDivElement>(null);
+
+  // The tall form is replaced by a short card, so the document shrinks and the browser clamps the scroll
+  // position to the new bottom. Bring the card to the top (global scroll-padding keeps it under the
+  // sticky header) and move focus there so screen readers announce the confirmation.
+  useEffect(() => {
+    if (status !== 'success') return;
+    const el = successRef.current;
+    if (!el) return;
+    el.scrollIntoView({ block: 'start' });
+    el.focus({ preventScroll: true });
+  }, [status]);
 
   const message = (err: InquiryError): string =>
     err.code === 'tooLong' ? t('contact.form.errors.tooLong', { max: err.max }) : t(`contact.form.errors.${err.code}`);
@@ -89,7 +101,13 @@ export const InquiryForm = () => {
 
   if (status === 'success') {
     return (
-      <div className={`card ${styles.form} ${styles.success}`} role="status" data-testid="inquiry-success">
+      <div
+        ref={successRef}
+        tabIndex={-1}
+        className={`card ${styles.form} ${styles.success}`}
+        role="status"
+        data-testid="inquiry-success"
+      >
         <h2 className={styles.title}>{t('contact.form.title')}</h2>
         <p>{t('contact.form.success')}</p>
       </div>

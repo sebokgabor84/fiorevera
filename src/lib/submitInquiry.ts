@@ -21,6 +21,9 @@ export type InquiryResult = { ok: true } | { ok: false; reason: 'spam' | 'config
 /** Subject line of the delivered mail — shared with the mailto fallback so both paths look the same in the inbox. */
 export const inquirySubject = (name: string): string => `Árajánlatkérés – fiorevera.hu (${name})`;
 
+/** Sender name shown in the inbox instead of the provider's default (Web3Forms `from_name`). */
+export const INQUIRY_FROM_NAME = 'Fiore Vera weboldal';
+
 export const submitInquiry = async (payload: InquiryPayload, fetchImpl: typeof fetch = fetch): Promise<InquiryResult> => {
   if (payload.website) return { ok: true }; // silently drop bots
   const endpoint = import.meta.env.VITE_FORM_ENDPOINT as string | undefined;
@@ -35,6 +38,7 @@ export const submitInquiry = async (payload: InquiryPayload, fetchImpl: typeof f
     message: payload.message,
     locale: payload.locale,
     subject: inquirySubject(payload.name),
+    from_name: INQUIRY_FROM_NAME,
   };
   if (accessKey) body.access_key = accessKey;
   try {

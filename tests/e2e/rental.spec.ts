@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { LOCALES, ROUTES } from '../../src/data/routes';
 
 test.describe('rental catalog (PRD D-8)', () => {

@@ -17,7 +17,7 @@
     { "kind": "localStorage", "key": "fv-lang-toast-dismissed", "purpose": "language toast dismissed (consent-exempt preference, PRD D-4)", "privacyKey": "privacy.sections.storage" }
   ],
   "env": [
-    { "name": "VITE_FORM_ENDPOINT", "purpose": "form provider endpoint the inquiry is POSTed to", "processor": "Web3Forms or Formspree — not chosen yet (BACKLOG [FORM]); name it on the privacy page once chosen", "privacyKey": "privacy.sections.form" },
+    { "name": "VITE_FORM_ENDPOINT", "purpose": "form provider endpoint the inquiry is POSTed to", "processor": "Web3Forms (chosen 2026-11-11, free plan; company in Kerala, India, servers US-East, DPA offered); still to be named on the privacy page (BACKLOG [GDPR])", "privacyKey": "privacy.sections.form" },
     { "name": "VITE_FORM_ACCESS_KEY", "purpose": "Web3Forms public access key sent with the inquiry", "processor": "Web3Forms", "privacyKey": "privacy.sections.form" }
   ],
   "networkSinks": [
