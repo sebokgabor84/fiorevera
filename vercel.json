@@ -2,7 +2,6 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": false,
   "trailingSlash": true,
-  "_comment_404": "No catch-all rewrites: Vercel serves dist/404.html with HTTP 404 for unmatched paths; the client renders the localized NotFound page (QA 2026-11-09 M2).",
   "redirects": [
     {
       "source": "/viragoskert/",

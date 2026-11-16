@@ -1,6 +1,6 @@
 # fiorevera.hu — domain move to Rackhost and launch on Vercel
 
-> **Status:** plan, 2026-11-12; owner decisions D1–D8 recorded the same day (§8). **2026-11-16: Webnode Premium expired, the legacy site is offline → the fast lane in §0a replaces the runbook order in §6.** Nothing else in this document has been executed yet. Traces to `MASTER-PLAN.md` Phase 4 (4.1–4.5), PRD D-10, D-15, D-16, D-18, R-7.
+> **Status:** plan, 2026-11-12; owner decisions D1–D8 recorded the same day (§8). **2026-11-16: Webnode Premium expired, the legacy site is offline → the fast lane in §0a replaces the runbook order in §6.** **Track A executed 2026-11-16:** Vercel project `fioreveraviragesdekor001` (team `fiorevera`, Hobby) deployed from `main`; A/CNAME repointed in Webnode's DNS centre; certificates for `fiorevera.hu` (07:34 UTC) and `www.fiorevera.hu` (07:39 UTC); all 14 legacy page URLs verified 200 / 308 at 08:4x UTC → **the new site is live on https://www.fiorevera.hu**. Legacy zone snapshot: `docs/launch/legacy-webnode-dns-2026-11-16.md`. Track B (Rackhost transfer) still to do. Traces to `MASTER-PLAN.md` Phase 4 (4.1–4.5), PRD D-10, D-15, D-16, D-18, R-7.
 > **This is not legal advice.** The author is a build assistant, not a lawyer. Tags as in `docs/gdpr/`: **[INFO]** = taken from the cited source, **[CONFIRM]** = a lawyer, accountant or the provider's support should confirm, **[DECISION]** = the owner decides.
 > Every policy statement below links to the page it was read from on 2026-11-12. Pages change; re-check the Vercel fair-use page and the Rackhost price list on the day you act.
 
@@ -62,19 +62,27 @@ Everything in §2–§5 still applies; this section only changes the **order** (
 4. **Deploy.** The first deployment of a new project is always Production, but it builds the **production branch**, which defaults to `main` — and `main` does not contain the site yet (`feature/site-build` is unmerged). So right after the project exists: **Settings → Git → Production Branch → `feature/site-build` → Save**, then **Deployments → ⋯ on the latest → Redeploy** (or push any commit). This is the emergency path; it keeps the PR review intact. When the PR is merged, switch the production branch back to `main`.
 5. Build must say "prerendered 21 pages + 404.html" in the logs (the same script that runs locally).
 
+> `vercel.json` carries no comments on purpose: Vercel's import validator rejects unknown keys ("should NOT have additional property `_comment_404`", seen 2026-11-16). The note that used to live there: there is **no catch-all rewrite**; Vercel serves `dist/404.html` with HTTP 404 for unmatched paths and the client renders the localized not-found page (QA 2026-11-09 M2).
+
 **A2. Verify on the `*.vercel.app` URL** (= MASTER-PLAN 4.2, shortened): open `/`, `/de/`, `/en/`, `/kellekberles/`; `/viragoskert/` must 301 to `/rolunk/`; `/de/blumengarten/` → `/de/uebermich/`; a made-up path such as `/nincs-ilyen/` must show the HU not-found page **and** answer HTTP 404 (browser dev tools → Network); send one real inquiry from the contact form on the preview and check `info.fiorevera@gmail.com`. Vera looks at the three locales on her phone (the preview URL is public for a Hobby production deployment; a *preview* deployment would need a Shareable Link).
 
 **A3. Enable Web Analytics:** project → **Analytics → Enable** (D5; the code is already wired on `*.vercel.app` and the real hosts; after the next visit a `/_vercel/insights/view` request appears in dev tools).
 
 **A4. Add the domains in Vercel:** **Settings → Domains → Add** `www.fiorevera.hu`; when Vercel offers to add `fiorevera.hu` as well, accept, and set **`www.fiorevera.hu` as the primary, `fiorevera.hu` → Redirect to www** (§3.1). Both will show "Invalid Configuration" until DNS moves — that is expected. **Write down the two values Vercel shows**: the `A` IP for `fiorevera.hu` and the `CNAME` target for `www` (`xxxx.vercel-dns-0xx.com.`, with the trailing dot). If Vercel instead asks for a `TXT` verification record, the domain is attached to another Vercel account; add that TXT in step A5 too.
 
-**A5. Point the DNS at Vercel inside Webnode** ([Webnode DNS guide](https://www.webnode.com/support/setting-up-dns-records/); Vera's login):
-1. Webnode → the project → **Administration (Beállítások) → Domain management (Domainek)** → next to `fiorevera.hu` click **Manage DNS (DNS kezelése)**.
-2. The two `A` records for `fiorevera.hu` (`3.73.27.108`, `3.125.172.46`): **edit the first → Value = the Vercel A IP; delete the second.** (Webnode lets you change Name/Value, not the type; both stay `A`.)
-3. The `CNAME` for `www` (`fiorevera-hu.webnode.hu`): **edit → Value = the Vercel CNAME target** (with the trailing dot if the form accepts it; without it if Webnode refuses).
-4. Leave `MX`/`SPF` alone for now (D4: nothing uses domain mail; they die with the transfer anyway). Add a `TXT` `google-site-verification=…` record here if A7 is done in the same sitting.
-5. Save. Webnode's own guides say changes propagate in about an hour; the old records' TTL is 3600 s, so worst case 60 minutes.
-6. **If "Manage DNS" is missing** (Webnode hides it for free projects in some cases): try once with **Webnode support** via the contact form from the project-owner e-mail ("please set A fiorevera.hu → <IP> and CNAME www → <target>"), and in parallel treat Track B step B7 as the cutover.
+**A5. Point the DNS at Vercel inside Webnode** ([Webnode DNS guide](https://www.webnode.com/support/setting-up-dns-records/); Vera's login). Three rows change; nine stay.
+
+*Before you start:* have the two Vercel values from A4 in a text file: the **A record IP** (shown for `fiorevera.hu`) and the **CNAME target** (shown for `www.fiorevera.hu`, looks like `d1d4fc829fe7bc7c.vercel-dns-017.com.`). Copy them with the copy button in Vercel, never retype.
+
+1. Log in to Webnode with Vera's account → open the `fiorevera-hu` project → left menu **Adminisztráció → Domainek** → next to `fiorevera.hu` click **DNS kezelése**. The URL ends with `/dns-management/fiorevera.hu/` and the table lists Típus / Név/hosztnév / Érték / Műveletek.
+2. **First A row** (`A` · `fiorevera.hu` · `3.73.27.108`): click **Szerkesztés** → in the *Érték* field delete `3.73.27.108` and paste the Vercel A IP → **Mentés**. The row now shows the Vercel IP.
+3. **Second A row** (`A` · `fiorevera.hu` · `3.125.172.46`): click **Törlés** → confirm. The table has exactly one `A` row for `fiorevera.hu` afterwards. (Vercel needs a single A record on the apex; two IPs would send half the visitors to the dead Webnode front-end.)
+4. **www row** (`CNAME` · `www.fiorevera.hu` · `fiorevera-hu.webnode.hu.`): click **Szerkesztés** → *Érték*: delete the Webnode value and paste the Vercel CNAME target **with its trailing dot** → **Mentés**. If Webnode rejects the trailing dot, paste it without; both resolve.
+5. **Do not touch** the other nine rows (`_dmarc`, `mail._domainkey`, `key-wb001/002._domainkey`, `autoconfig`, `MX`, `TXT v=spf1`, `SRV _autodiscover`). They are Webnode's mail set-up, nothing uses it (D4), and they disappear when the domain moves to Rackhost.
+6. Re-read the table once: one `A fiorevera.hu → <Vercel IP>`, one `CNAME www.fiorevera.hu → <Vercel target>`. If a row shows the old value, the save did not go through; edit again.
+7. Optional, same sitting: if A7 (Search Console) is done, add a record: Típus **TXT**, Név `fiorevera.hu`, Érték the `google-site-verification=…` string → Mentés.
+8. Write down the time. The old records' TTL is 3600 s, so resolvers may keep the Webnode answer for up to **60 minutes**; Webnode's own guides say about an hour. Do not change the records again during that hour.
+9. **If the DNS kezelése page does not open or has no Szerkesztés buttons**: write to Webnode support via the contact form from the project-owner e-mail asking them to set exactly the two records, and in parallel do Track B step B7, which then becomes the cutover.
 
 **A6. Verify the cutover** (MASTER-PLAN 4.3 DoD), after ~1 hour:
 ```bash
@@ -88,7 +96,9 @@ curl -I https://www.fiorevera.hu/nincs-ilyen/      # 404
 ```
 Vercel's **Settings → Domains** turns green and issues the Let's Encrypt certificate within minutes of the DNS change (§3.4). Check on a phone over mobile data too (different DNS cache). Then set up the **uptime monitor** (D1 monitoring, §1.4 item 5).
 
-**A7. Search Console, same day** (§5): Google Search Console → **Add property → Domain** `fiorevera.hu` → copy the `TXT` record → add it in the Webnode DNS editor (A5) or in the Rackhost zone (B7) → Verify. Then **Sitemaps → submit** `https://www.fiorevera.hu/sitemap.xml`, and **URL Inspection → Request indexing** on `/`, `/de/`, `/en/`. If the old Webnode property still exists, export its Performance report first (it keeps working for a while because the data is historical).
+**A7. Search Console, same day** (§5) — **done 2026-11-16:** Domain property `fiorevera.hu`, DNS TXT `google-site-verification=PAUvTE8j94p1e7yIPnOHCmNnOoObRmOY3l0ro1FyHi0` added as a second TXT row next to Webnode's SPF (never overwrite SPF; several TXT rows at the apex coexist). Carry this exact TXT into the Rackhost zone (B7) or the verification lapses.
+
+Original steps: Google Search Console → **Add property → Domain** `fiorevera.hu` → copy the `TXT` record → add it in the Webnode DNS editor (A5) or in the Rackhost zone (B7) → Verify. Then **Sitemaps → submit** `https://www.fiorevera.hu/sitemap.xml`, and **URL Inspection → Request indexing** on `/`, `/de/`, `/en/`. If the old Webnode property still exists, export its Performance report first (it keeps working for a while because the data is historical).
 
 ---
 
@@ -120,7 +130,7 @@ Vercel's **Settings → Domains** turns green and issues the Let's Encrypt certi
 |---|---|---|---|
 | A | *(empty)* | the Vercel A IP from A4 | 3600 |
 | CNAME | `www` | the Vercel CNAME target from A4 (trailing dot) | 3600 |
-| TXT | *(empty)* | `google-site-verification=…` from A7 | 3600 |
+| TXT | *(empty)* | `google-site-verification=PAUvTE8j94p1e7yIPnOHCmNnOoObRmOY3l0ro1FyHi0` (Search Console Domain property `fiorevera.hu`, added in Webnode 2026-11-16) | 3600 |
 | MX | *(empty)* | `0 .` (priority 0, target `.`) | 3600 |
 | TXT | *(empty)* | `v=spf1 -all` | 3600 |
 
@@ -130,19 +140,24 @@ Do this **before** the transfer completes (the zone can be prepared while the do
 
 **B9. Keep the domain alive:** in the Rackhost account switch on **automatic renewal** (card) if offered, put **2027-10-09** in both calendars, and make sure the registrant e-mail is one Vera reads — the registry's annual data-update mail and the 30-days-before-expiry notice go there ([annual data update](https://www.domain.hu/annual-data-update/)). This is the one way `fiorevera.hu` can still be lost (§9 item 3).
 
-### Fast-lane checklist
+### Fast-lane checklist (status 2026-11-16, end of day)
 
-- [ ] A1 Vercel project on `feature/site-build`, env vars set, build log says 21 pages + 404
-- [ ] A2 preview checked (3 locales, 2 × 301, HTTP 404, one real form submission)
-- [ ] A3 Analytics enabled
-- [ ] A4 domains added, www primary, A/CNAME values noted
-- [ ] A5 Webnode DNS edited (or support asked / B7 used instead)
-- [ ] A6 `curl`/`dig` green, certificate valid, phone check, uptime monitor on
-- [ ] A7 Search Console Domain property verified, sitemap submitted, 3 home pages requested
-- [ ] B1 cart = átregisztráció + 1 év (or the years the owner wants) · B2 registrant read on domain.hu and entered unchanged · B4 paid · B5 e-mail confirmed
-- [ ] B6 path chosen; Rackhost ticket opened (path 1) or code entered (path 2/3)
-- [ ] B7 Rackhost zone holds the Vercel records before the nameservers switch
-- [ ] B8 `dig NS` = dns24.hu, A6 commands green again · B9 renewal + calendar + registrant e-mail
+- [x] A1 Vercel project `fioreveraviragesdekor001` deployed from `main` (the branch was merged instead of switching the production branch), env vars as Config, build log 21 pages + 404
+- [x] A2 preview checked by curl (3 locales, 2 × 308, HTTP 404); real form submission from the live site arrived in the inbox — Vera's phone look still open
+- [ ] A3 Analytics: confirm the project's Analytics page says *Enabled* (the code is live; the dashboard switch is the only thing left to confirm)
+- [x] A4 domains added, www primary, apex 308 → www
+- [x] A5 Webnode DNS edited: A → `216.198.79.1`, www CNAME → `f07e1d688aad7d56.vercel-dns-017.com.`
+- [x] A6 verified: certificates for apex (07:34 UTC) and www (07:39 UTC), 14/14 legacy URLs 200/308, HSTS + CSP; UptimeRobot monitor on `https://www.fiorevera.hu/` (free plan, owner's dashboard)
+- [x] A7 Search Console Domain property verified by DNS TXT, indexing requested — confirm the sitemap shows *Success* under Sitemaps
+- [ ] B1 cart = átregisztráció + 1 év (or the years the owner wants)
+- [ ] B2 registrant read on domain.hu *Részletes keresés* and entered unchanged at Rackhost
+- [ ] B3–B5 nameservers default, paid by card, Rackhost e-mail confirmed
+- [ ] **B7 right after B5, before the transfer completes:** Rackhost zone holds the Vercel A + CNAME, the Google TXT, null MX and `v=spf1 -all` — this is what keeps the site up through the nameserver switch
+- [ ] B6 authorisation: Rackhost ticket (path 1), or Vera at start.domain.hu (path 2), Webnode support only as path 3
+- [ ] B8 `dig NS` = dns24.hu, A6 commands green again
+- [ ] B9 auto-renewal on, calendar 2027-10-09, registrant e-mail reachable
+
+**Is there a rush for Track B?** No. The site is up and the Webnode zone keeps serving the Vercel records. Reasons to still do it within weeks, not months: the domain remains tied to a Webnode account whose plan has lapsed; the 2027-11-09 renewal would run through Webnode; the registry's notices may go to a Webnode contact address. **Downtime at the move:** none if B7 is done before the transfer completes; the two zones then answer identically while the nameserver change propagates (24–48 h). An empty Rackhost zone at switch time would take the site down until the records are entered.
 
 ---
 
@@ -188,7 +203,7 @@ One seat is enough: Gabor is the Developer, Vera can be a free Viewer. **[CONFIR
 2. Keep a card on file and know the upgrade path: Settings → Billing → Upgrade (minutes). An upgrade mid-pause is the documented resolution.
 3. Keep Webnode alive until the decision is final; a paused Vercel site can be rolled back by DNS within the TTL (§3).
 4. Re-read the fair-use page every few months; Vercel changed it on 2026-09-14.
-5. Monitoring that does not depend on anyone opening the site by hand: Vercel's own notifications on (Account → Notifications: deployment, domain and usage e-mails), plus a free external uptime check that requests `https://www.fiorevera.hu/` every few minutes and e-mails both Gabor and Vera on a non-200 answer. A `503 DEPLOYMENT_PAUSED` from Vercel is exactly what such a check catches; a DNS failure at Rackhost too. Add the monitor on cutover day (runbook R7).
+5. Monitoring that does not depend on anyone opening the site by hand: Vercel's own notifications on (Account → Notifications: deployment, domain and usage e-mails), plus a free external uptime check that requests `https://www.fiorevera.hu/` every few minutes and e-mails both Gabor and Vera on a non-200 answer. A `503 DEPLOYMENT_PAUSED` from Vercel is exactly what such a check catches; a DNS failure at Rackhost too. Add the monitor on cutover day (runbook R7). **Done 2026-11-16: UptimeRobot (free plan), monitor on `https://www.fiorevera.hu/`, dashboard [dashboard.uptimerobot.com/monitors](https://dashboard.uptimerobot.com/monitors) in the owner's account; alerts by e-mail. This is the detector for a Vercel fair-use pause (503) and for DNS trouble at Rackhost.**
 6. If Vercel pauses the site: upgrade the team to Pro (§1.3; one seat, both of Gabor's sites, no doubling — see D2) and reply to the notice. No other fall-back is needed while Webnode is alive; after R10 the upgrade is the only fall-back, which is fine.
 
 Alternative free hosts whose free tiers permit commercial sites exist, but they were **not** researched for this plan (out of scope: PRD D-15 fixes Vercel). If the owner wants "free and compliant", that is a separate research task, not a quiet switch.
