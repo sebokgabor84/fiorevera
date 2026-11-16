@@ -96,7 +96,9 @@ curl -I https://www.fiorevera.hu/nincs-ilyen/      # 404
 ```
 Vercel's **Settings → Domains** turns green and issues the Let's Encrypt certificate within minutes of the DNS change (§3.4). Check on a phone over mobile data too (different DNS cache). Then set up the **uptime monitor** (D1 monitoring, §1.4 item 5).
 
-**A7. Search Console, same day** (§5): Google Search Console → **Add property → Domain** `fiorevera.hu` → copy the `TXT` record → add it in the Webnode DNS editor (A5) or in the Rackhost zone (B7) → Verify. Then **Sitemaps → submit** `https://www.fiorevera.hu/sitemap.xml`, and **URL Inspection → Request indexing** on `/`, `/de/`, `/en/`. If the old Webnode property still exists, export its Performance report first (it keeps working for a while because the data is historical).
+**A7. Search Console, same day** (§5) — **done 2026-11-16:** Domain property `fiorevera.hu`, DNS TXT `google-site-verification=PAUvTE8j94p1e7yIPnOHCmNnOoObRmOY3l0ro1FyHi0` added as a second TXT row next to Webnode's SPF (never overwrite SPF; several TXT rows at the apex coexist). Carry this exact TXT into the Rackhost zone (B7) or the verification lapses.
+
+Original steps: Google Search Console → **Add property → Domain** `fiorevera.hu` → copy the `TXT` record → add it in the Webnode DNS editor (A5) or in the Rackhost zone (B7) → Verify. Then **Sitemaps → submit** `https://www.fiorevera.hu/sitemap.xml`, and **URL Inspection → Request indexing** on `/`, `/de/`, `/en/`. If the old Webnode property still exists, export its Performance report first (it keeps working for a while because the data is historical).
 
 ---
 
@@ -128,7 +130,7 @@ Vercel's **Settings → Domains** turns green and issues the Let's Encrypt certi
 |---|---|---|---|
 | A | *(empty)* | the Vercel A IP from A4 | 3600 |
 | CNAME | `www` | the Vercel CNAME target from A4 (trailing dot) | 3600 |
-| TXT | *(empty)* | `google-site-verification=…` from A7 | 3600 |
+| TXT | *(empty)* | `google-site-verification=PAUvTE8j94p1e7yIPnOHCmNnOoObRmOY3l0ro1FyHi0` (Search Console Domain property `fiorevera.hu`, added in Webnode 2026-11-16) | 3600 |
 | MX | *(empty)* | `0 .` (priority 0, target `.`) | 3600 |
 | TXT | *(empty)* | `v=spf1 -all` | 3600 |
 
@@ -138,19 +140,24 @@ Do this **before** the transfer completes (the zone can be prepared while the do
 
 **B9. Keep the domain alive:** in the Rackhost account switch on **automatic renewal** (card) if offered, put **2027-10-09** in both calendars, and make sure the registrant e-mail is one Vera reads — the registry's annual data-update mail and the 30-days-before-expiry notice go there ([annual data update](https://www.domain.hu/annual-data-update/)). This is the one way `fiorevera.hu` can still be lost (§9 item 3).
 
-### Fast-lane checklist
+### Fast-lane checklist (status 2026-11-16, end of day)
 
-- [ ] A1 Vercel project on `feature/site-build`, env vars set, build log says 21 pages + 404
-- [ ] A2 preview checked (3 locales, 2 × 301, HTTP 404, one real form submission)
-- [ ] A3 Analytics enabled
-- [ ] A4 domains added, www primary, A/CNAME values noted
-- [ ] A5 Webnode DNS edited (or support asked / B7 used instead)
-- [ ] A6 `curl`/`dig` green, certificate valid, phone check, uptime monitor on
-- [ ] A7 Search Console Domain property verified, sitemap submitted, 3 home pages requested
-- [ ] B1 cart = átregisztráció + 1 év (or the years the owner wants) · B2 registrant read on domain.hu and entered unchanged · B4 paid · B5 e-mail confirmed
-- [ ] B6 path chosen; Rackhost ticket opened (path 1) or code entered (path 2/3)
-- [ ] B7 Rackhost zone holds the Vercel records before the nameservers switch
-- [ ] B8 `dig NS` = dns24.hu, A6 commands green again · B9 renewal + calendar + registrant e-mail
+- [x] A1 Vercel project `fioreveraviragesdekor001` deployed from `main` (the branch was merged instead of switching the production branch), env vars as Config, build log 21 pages + 404
+- [x] A2 preview checked by curl (3 locales, 2 × 308, HTTP 404); real form submission from the live site arrived in the inbox — Vera's phone look still open
+- [ ] A3 Analytics: confirm the project's Analytics page says *Enabled* (the code is live; the dashboard switch is the only thing left to confirm)
+- [x] A4 domains added, www primary, apex 308 → www
+- [x] A5 Webnode DNS edited: A → `216.198.79.1`, www CNAME → `f07e1d688aad7d56.vercel-dns-017.com.`
+- [x] A6 verified: certificates for apex (07:34 UTC) and www (07:39 UTC), 14/14 legacy URLs 200/308, HSTS + CSP; UptimeRobot monitor on `https://www.fiorevera.hu/` (free plan, owner's dashboard)
+- [x] A7 Search Console Domain property verified by DNS TXT, indexing requested — confirm the sitemap shows *Success* under Sitemaps
+- [ ] B1 cart = átregisztráció + 1 év (or the years the owner wants)
+- [ ] B2 registrant read on domain.hu *Részletes keresés* and entered unchanged at Rackhost
+- [ ] B3–B5 nameservers default, paid by card, Rackhost e-mail confirmed
+- [ ] **B7 right after B5, before the transfer completes:** Rackhost zone holds the Vercel A + CNAME, the Google TXT, null MX and `v=spf1 -all` — this is what keeps the site up through the nameserver switch
+- [ ] B6 authorisation: Rackhost ticket (path 1), or Vera at start.domain.hu (path 2), Webnode support only as path 3
+- [ ] B8 `dig NS` = dns24.hu, A6 commands green again
+- [ ] B9 auto-renewal on, calendar 2027-10-09, registrant e-mail reachable
+
+**Is there a rush for Track B?** No. The site is up and the Webnode zone keeps serving the Vercel records. Reasons to still do it within weeks, not months: the domain remains tied to a Webnode account whose plan has lapsed; the 2027-11-09 renewal would run through Webnode; the registry's notices may go to a Webnode contact address. **Downtime at the move:** none if B7 is done before the transfer completes; the two zones then answer identically while the nameserver change propagates (24–48 h). An empty Rackhost zone at switch time would take the site down until the records are entered.
 
 ---
 
@@ -196,7 +203,7 @@ One seat is enough: Gabor is the Developer, Vera can be a free Viewer. **[CONFIR
 2. Keep a card on file and know the upgrade path: Settings → Billing → Upgrade (minutes). An upgrade mid-pause is the documented resolution.
 3. Keep Webnode alive until the decision is final; a paused Vercel site can be rolled back by DNS within the TTL (§3).
 4. Re-read the fair-use page every few months; Vercel changed it on 2026-09-14.
-5. Monitoring that does not depend on anyone opening the site by hand: Vercel's own notifications on (Account → Notifications: deployment, domain and usage e-mails), plus a free external uptime check that requests `https://www.fiorevera.hu/` every few minutes and e-mails both Gabor and Vera on a non-200 answer. A `503 DEPLOYMENT_PAUSED` from Vercel is exactly what such a check catches; a DNS failure at Rackhost too. Add the monitor on cutover day (runbook R7).
+5. Monitoring that does not depend on anyone opening the site by hand: Vercel's own notifications on (Account → Notifications: deployment, domain and usage e-mails), plus a free external uptime check that requests `https://www.fiorevera.hu/` every few minutes and e-mails both Gabor and Vera on a non-200 answer. A `503 DEPLOYMENT_PAUSED` from Vercel is exactly what such a check catches; a DNS failure at Rackhost too. Add the monitor on cutover day (runbook R7). **Done 2026-11-16: UptimeRobot (free plan), monitor on `https://www.fiorevera.hu/`, dashboard [dashboard.uptimerobot.com/monitors](https://dashboard.uptimerobot.com/monitors) in the owner's account; alerts by e-mail. This is the detector for a Vercel fair-use pause (503) and for DNS trouble at Rackhost.**
 6. If Vercel pauses the site: upgrade the team to Pro (§1.3; one seat, both of Gabor's sites, no doubling — see D2) and reply to the notice. No other fall-back is needed while Webnode is alive; after R10 the upgrade is the only fall-back, which is fine.
 
 Alternative free hosts whose free tiers permit commercial sites exist, but they were **not** researched for this plan (out of scope: PRD D-15 fixes Vercel). If the owner wants "free and compliant", that is a separate research task, not a quiet switch.
