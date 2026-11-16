@@ -1,6 +1,6 @@
 # fiorevera.hu — domain move to Rackhost and launch on Vercel
 
-> **Status:** plan, 2026-11-12; owner decisions D1–D8 recorded the same day (§8). **2026-11-16: Webnode Premium expired, the legacy site is offline → the fast lane in §0a replaces the runbook order in §6.** Nothing else in this document has been executed yet. Traces to `MASTER-PLAN.md` Phase 4 (4.1–4.5), PRD D-10, D-15, D-16, D-18, R-7.
+> **Status:** plan, 2026-11-12; owner decisions D1–D8 recorded the same day (§8). **2026-11-16: Webnode Premium expired, the legacy site is offline → the fast lane in §0a replaces the runbook order in §6.** **Track A executed 2026-11-16:** Vercel project `fioreveraviragesdekor001` (team `fiorevera`, Hobby) deployed from `main`; A/CNAME repointed in Webnode's DNS centre; certificates for `fiorevera.hu` (07:34 UTC) and `www.fiorevera.hu` (07:39 UTC); all 14 legacy page URLs verified 200 / 308 at 08:4x UTC → **the new site is live on https://www.fiorevera.hu**. Legacy zone snapshot: `docs/launch/legacy-webnode-dns-2026-11-16.md`. Track B (Rackhost transfer) still to do. Traces to `MASTER-PLAN.md` Phase 4 (4.1–4.5), PRD D-10, D-15, D-16, D-18, R-7.
 > **This is not legal advice.** The author is a build assistant, not a lawyer. Tags as in `docs/gdpr/`: **[INFO]** = taken from the cited source, **[CONFIRM]** = a lawyer, accountant or the provider's support should confirm, **[DECISION]** = the owner decides.
 > Every policy statement below links to the page it was read from on 2026-11-12. Pages change; re-check the Vercel fair-use page and the Rackhost price list on the day you act.
 
@@ -70,13 +70,19 @@ Everything in §2–§5 still applies; this section only changes the **order** (
 
 **A4. Add the domains in Vercel:** **Settings → Domains → Add** `www.fiorevera.hu`; when Vercel offers to add `fiorevera.hu` as well, accept, and set **`www.fiorevera.hu` as the primary, `fiorevera.hu` → Redirect to www** (§3.1). Both will show "Invalid Configuration" until DNS moves — that is expected. **Write down the two values Vercel shows**: the `A` IP for `fiorevera.hu` and the `CNAME` target for `www` (`xxxx.vercel-dns-0xx.com.`, with the trailing dot). If Vercel instead asks for a `TXT` verification record, the domain is attached to another Vercel account; add that TXT in step A5 too.
 
-**A5. Point the DNS at Vercel inside Webnode** ([Webnode DNS guide](https://www.webnode.com/support/setting-up-dns-records/); Vera's login):
-1. Webnode → the project → **Administration (Beállítások) → Domain management (Domainek)** → next to `fiorevera.hu` click **Manage DNS (DNS kezelése)**.
-2. The two `A` records for `fiorevera.hu` (`3.73.27.108`, `3.125.172.46`): **edit the first → Value = the Vercel A IP; delete the second.** (Webnode lets you change Name/Value, not the type; both stay `A`.)
-3. The `CNAME` for `www` (`fiorevera-hu.webnode.hu`): **edit → Value = the Vercel CNAME target** (with the trailing dot if the form accepts it; without it if Webnode refuses).
-4. Leave `MX`/`SPF` alone for now (D4: nothing uses domain mail; they die with the transfer anyway). Add a `TXT` `google-site-verification=…` record here if A7 is done in the same sitting.
-5. Save. Webnode's own guides say changes propagate in about an hour; the old records' TTL is 3600 s, so worst case 60 minutes.
-6. **If "Manage DNS" is missing** (Webnode hides it for free projects in some cases): try once with **Webnode support** via the contact form from the project-owner e-mail ("please set A fiorevera.hu → <IP> and CNAME www → <target>"), and in parallel treat Track B step B7 as the cutover.
+**A5. Point the DNS at Vercel inside Webnode** ([Webnode DNS guide](https://www.webnode.com/support/setting-up-dns-records/); Vera's login). Three rows change; nine stay.
+
+*Before you start:* have the two Vercel values from A4 in a text file: the **A record IP** (shown for `fiorevera.hu`) and the **CNAME target** (shown for `www.fiorevera.hu`, looks like `d1d4fc829fe7bc7c.vercel-dns-017.com.`). Copy them with the copy button in Vercel, never retype.
+
+1. Log in to Webnode with Vera's account → open the `fiorevera-hu` project → left menu **Adminisztráció → Domainek** → next to `fiorevera.hu` click **DNS kezelése**. The URL ends with `/dns-management/fiorevera.hu/` and the table lists Típus / Név/hosztnév / Érték / Műveletek.
+2. **First A row** (`A` · `fiorevera.hu` · `3.73.27.108`): click **Szerkesztés** → in the *Érték* field delete `3.73.27.108` and paste the Vercel A IP → **Mentés**. The row now shows the Vercel IP.
+3. **Second A row** (`A` · `fiorevera.hu` · `3.125.172.46`): click **Törlés** → confirm. The table has exactly one `A` row for `fiorevera.hu` afterwards. (Vercel needs a single A record on the apex; two IPs would send half the visitors to the dead Webnode front-end.)
+4. **www row** (`CNAME` · `www.fiorevera.hu` · `fiorevera-hu.webnode.hu.`): click **Szerkesztés** → *Érték*: delete the Webnode value and paste the Vercel CNAME target **with its trailing dot** → **Mentés**. If Webnode rejects the trailing dot, paste it without; both resolve.
+5. **Do not touch** the other nine rows (`_dmarc`, `mail._domainkey`, `key-wb001/002._domainkey`, `autoconfig`, `MX`, `TXT v=spf1`, `SRV _autodiscover`). They are Webnode's mail set-up, nothing uses it (D4), and they disappear when the domain moves to Rackhost.
+6. Re-read the table once: one `A fiorevera.hu → <Vercel IP>`, one `CNAME www.fiorevera.hu → <Vercel target>`. If a row shows the old value, the save did not go through; edit again.
+7. Optional, same sitting: if A7 (Search Console) is done, add a record: Típus **TXT**, Név `fiorevera.hu`, Érték the `google-site-verification=…` string → Mentés.
+8. Write down the time. The old records' TTL is 3600 s, so resolvers may keep the Webnode answer for up to **60 minutes**; Webnode's own guides say about an hour. Do not change the records again during that hour.
+9. **If the DNS kezelése page does not open or has no Szerkesztés buttons**: write to Webnode support via the contact form from the project-owner e-mail asking them to set exactly the two records, and in parallel do Track B step B7, which then becomes the cutover.
 
 **A6. Verify the cutover** (MASTER-PLAN 4.3 DoD), after ~1 hour:
 ```bash
