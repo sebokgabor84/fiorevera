@@ -1,0 +1,12 @@
+#!/bin/sh
+# Pre-push gate (AGENTS.md Definition of Done): lint → unit → production build → visual regression.
+# Installed by `npm run prepare` (git config core.hooksPath .githooks). Emergency bypass: FV_SKIP_HOOKS=1 git push
+if [ "$FV_SKIP_HOOKS" = "1" ]; then
+  echo "pre-push: FV_SKIP_HOOKS=1 — gates skipped (record why in the PR)"; exit 0
+fi
+set -e
+echo "pre-push: lint"; npm run lint
+echo "pre-push: unit"; npm test -- --run
+echo "pre-push: build"; npm run build
+echo "pre-push: visual regression + layout invariants"; npm run test:visual
+echo "pre-push: all gates green"

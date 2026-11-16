@@ -1,0 +1,20 @@
+#!/bin/sh
+# Pre-commit: when component code, styles, the HTML shell or the visual specs are staged, run the
+# visual regression suite against a fresh production build. A red run blocks the commit until the
+# diff was reviewed (npm run visual:review) and either the code is fixed or the owner approved the
+# new look (npm run test:visual:update -- --approved-by="<name>" --note="…").
+if [ "$FV_SKIP_HOOKS" = "1" ]; then exit 0; fi
+if git diff --cached --name-only | grep -Eq '^(src/|index\.html$|public/fonts/|tests/visual/)'; then
+  echo "pre-commit: UI files staged → build + visual regression"
+  npm run build >/dev/null 2>&1 || { echo "pre-commit: build failed"; exit 1; }
+  if ! npm run test:visual >/dev/null 2>&1; then
+    echo ""
+    echo "pre-commit: visual regression FAILED. Review the differences first:"
+    echo "    npm run visual:review        (expected / actual / diff per snapshot)"
+    echo "Then either fix the code, or — with the owner's GO on the new look —"
+    echo "    npm run test:visual:update -- --approved-by=\"<name>\" --note=\"<why>\""
+    echo "and stage tests/visual/__screenshots__ + docs/qa/visual-baselines-log.md with this commit."
+    exit 1
+  fi
+  echo "pre-commit: visual regression green"
+fi

@@ -37,5 +37,7 @@ export default defineConfig({
         command: 'npm run dev',
         url: 'http://localhost:5173',
         reuseExistingServer: !process.env.CI,
+        // Contact-form E2E: the app posts to this host, which the specs mock with page.route (success) / abort (failure).
+        env: { VITE_FORM_ENDPOINT: 'https://mock-form-endpoint.test/submit' },
     },
 });

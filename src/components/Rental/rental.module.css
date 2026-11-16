@@ -1,0 +1,117 @@
+.grid {
+  display: grid;
+  gap: var(--space-5);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  scroll-margin-top: calc(var(--header-h) + 1rem);
+}
+.img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: var(--color-surface-warm);
+}
+.body {
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.title {
+  font-size: var(--fs-xl);
+  margin: 0;
+}
+.desc {
+  margin: 0;
+}
+.specs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+  margin: 0;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-linen);
+  border: var(--border-hairline);
+}
+.spec dt {
+  font-size: var(--fs-xs);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: 0.15rem;
+}
+.spec dd {
+  margin: 0;
+  font-weight: 500;
+}
+.price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.3rem;
+  font-family: var(--font-heading);
+  font-size: var(--fs-xl);
+  color: var(--color-sage-deep);
+}
+.unit {
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+.notes {
+  margin: 0;
+  font-size: var(--fs-sm);
+}
+.howTo {
+  counter-reset: step;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+.howTo li {
+  position: relative;
+  padding-left: 2.6rem;
+}
+.howTo li::before {
+  counter-increment: step;
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: -0.1rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  color: var(--color-gold-deep);
+  border: 1px solid var(--color-gold-soft);
+  background: var(--color-surface);
+}
+.note {
+  display: inline-block;
+  margin: var(--space-4) 0 0;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  background: var(--color-blush-soft);
+  font-size: var(--fs-sm);
+}
+@media (min-width: 48rem) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .howTo {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

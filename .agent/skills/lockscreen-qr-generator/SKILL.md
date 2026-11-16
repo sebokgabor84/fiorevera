@@ -1,51 +1,85 @@
 ---
 name: lockscreen-qr-generator
-description: Generates highly detailed, thematic mobile lock screen backgrounds designed to frame functional QR codes and logos without overlapping mobile UI elements. Use when generating custom lock screen wallpapers or backgrounds specifically intended for scannable QR codes.
+description: >-
+  Produces the Fiore Vera iPhone lock-screen wallpapers (1179×2556) that frame a
+  scannable QR code — a website edition and an Instagram edition — by compositing
+  real painted/photographed material with sharp in scripts/lockscreen/designs.ts.
+  Use for QR, iPhone, lockscreen, visit-card or phone-wallpaper requests.
 ---
 
-# Lockscreen QR Generator
+# Lockscreen QR Generator — Fiore Vera
 
-Generates a highly detailed, thematic mobile lock screen background designed to perfectly frame a functional, pre-generated QR code and a brand favicon/logo. The design accommodates mobile OS UI elements (clock, notifications, quick actions) by intentionally leaving designated areas uncluttered.
+Vera's phone is her visit card: a guest scans the lock screen and lands on fiorevera.hu or Instagram. Everything renders deterministically from files in the repo — no image model, no manual compositing, no absolute paths.
 
 ## When to use this skill
-- When requested to generate a mobile wallpaper or lock screen.
-- When generating backgrounds specifically intended to hold scannable QR codes.
-- When creating branded marketing assets for mobile displays.
+- Regenerating the shipped lock screens after a URL, logo, frame or layout change
+- Proposing a new lock-screen design or a new QR target
+- Any "QR", "iPhone", "lockscreen", "visit card" request
 
-## How to use it
-To guarantee 100% scannability and perfect branding, use this two-step professional workflow:
+## What exists
 
-### Step 1: Background Generation
-Do not attempt to generate the complicated QR code directly via AI if it needs to be scannable. Instead, use an AI image generator (e.g., Nano Banana Pro) to generate the *frame* and *background*.
+| Item | Path / command |
+|---|---|
+| Shipped editions | `scripts/generate-lockscreen.ts` → `npm run lockscreen` |
+| Alternates (design-round losers) | `scripts/generate-lockscreen-variants.ts` → `npm run lockscreen:variants` → `public/assets/lockscreen/variants/` (generated on demand, folder absent until run) |
+| Designs + compositing | `scripts/lockscreen/designs.ts` — side-effect-free; exports `renderLinenClassic`, `renderInkEditorial`, `renderSageGarland`, `renderBlushMinimal`, `ASSETS`, `SITE_URL`, `VARIANTS_DIR` |
+| Libraries | `sharp` (keying, resize, composite, PNG), `qrcode` (`QRCode.create`, modules drawn as SVG rects) |
+| Canvas | 1179 × 2556 px (iPhone 15/16 @3x), PNG `compressionLevel: 9` |
 
-Use a prompt structured like "The Master Prompt" below. Modify the "Center Stage" instruction to simply generate an empty framed white square and an empty circular/hexagonal badge holder below it.
+Inputs, all committed in `public/assets/lockscreen/`:
 
-### Step 2: Asset Injection (Compositing)
-1. Drop the valid `[SOURCE_QR_IMAGE]` directly into the generated white square. Multiply the blending mode to remove any white edge artifacts.
-2. Drop the `[SOURCE_FAVICON]` into the generated badge holder below the QR code. Apply a slight drop shadow and match the lighting/color overlay of the surrounding background.
+| File | Role |
+|---|---|
+| `wreath-source.jpg` (700 × 667) | Painted rose + eucalyptus wreath on cream paper; keyed in code (`keyWreath`: flood-fill from the border + pink-gated closing, soft 1 px edge) |
+| `frame-gold.jpg` | Slender carved gold frame on white → linen-classic, blush-minimal |
+| `ornate-frame.jpg` | Baroque gold frame on white → ink-editorial |
+| `delicate-filigree-frame.jpg` | Openwork filigree frame on white → sage-garland |
+| `logo-badge.jpg` | Fiore Vera wordmark badge on white; placed with `multiply`, never redrawn |
 
-## The Master Prompt Framework
-Gather these variables before prompting the AI:
-- `[THEME_DESCRIPTION]`: The core aesthetic (e.g., "dark industrial steampunk workshop mixed with a modern QA coding terminal").
-- `[COLOR_PALETTE]`: Key colors (e.g., "dark wood, matte black steel, burnished copper, glowing terminal-green, warm amber light").
-- `[FRAME_MATERIAL]`: The material for the square frame enclosing the QR code (e.g., "riveted copper").
-- `[LOGO_DESCRIPTION]`: The emblem/logo style (e.g., "geometric hexagonal gear monogram GS").
+Outputs (same folder, committed):
 
-**Base Prompt Template:**
-> A pristine, high-end iPhone lock screen wallpaper, perfectly vertically oriented (9:16 aspect ratio). The aesthetic is a sophisticated blend of `[THEME_DESCRIPTION]`. Color palette features `[COLOR_PALETTE]`.
-> 
-> **Layout Constraints (CRITICAL):**
-> *Top 30%*: Keep completely clear of complex details, utilizing only smooth, dark background textures so a digital clock can be easily read.
-> *Bottom 20%*: Keep completely clear of complex details, utilizing only a simple floor or dark panel texture. Do NOT generate any UI icons, flashlights, camera buttons, or swipe bars.
-> *Center Stage*: A perfectly square, minimalist, elegant `[FRAME_MATERIAL]` frame. Inside this frame is a pure, stark white square canvas holding a sharp, high-contrast black-and-white QR code.
-> *Directly Below the Frame*: Seamlessly integrated into the machinery/background is a beautifully rendered, 3D emblem of a `[LOGO_DESCRIPTION]`.
-> 
-> **Lighting & Quality**: Cinematic lighting, volumetric shadows, highly detailed 8k resolution, Unreal Engine 5 render style. Ensure the pure white square for the QR code has zero shadows, zero dirt, and zero lighting artifacts to ensure perfect scannability.
-> 
-> **Negative Prompt (Crucial for clean results):**
-> text, watermarks, UI elements, fake clock, flashlight icon, camera icon, home bar, battery icon, status bar, dirty white space, distorted QR grid, messy background, low contrast, blurry.
+| File | QR target |
+|---|---|
+| `fiore-vera-lockscreen-final.png` | `https://www.fiorevera.hu` (`SITE_URL` in `designs.ts`) |
+| `fiore-vera-lockscreen-instagram.png` | `https://www.instagram.com/fioreveradekor/` (`INSTAGRAM_URL` in `generate-lockscreen.ts`) |
 
-## Best Practices & Constraints
-- **Scannability First**: AI image generators cannot reliably generate 100% functional, highly dense QR codes from scratch if stylized. The QR code must be composited afterward.
-- **UI Avoidance**: System elements (iOS clock, flashlight, camera, home indicator) must be explicitly excluded via negative prompts to prevent baking fake UI elements.
-- **Thematic Blending**: Blend steampunk elements with modern, sleek aesthetics (e.g., QA coding terminals) to avoid looking "old school".
+## Confirmed design: linen-classic (owner decision 2026-11-09, `BACKLOG.md`)
+
+`renderLinenClassic`: linen `#faf7f2` canvas, blush `#e8c5c8` radial wash (30 % → 0, ellipse 700 × 640) centred at y 1350, wreath at scale 1.8 behind a 760 px slender gold frame, QR filling the frame aperture, soft frame shadow, logo badge 300 px wide at y 1985 (`multiply`). It beat ink-editorial, sage-garland and blush-minimal.
+
+Owner feedback that shaped it: AI-collage renders, candles and flat code-drawn line art were rejected; only realistic material passed — the painted wreath, photographed frames and the untouched badge. It must read as a florist's printed piece, not a template.
+
+## QR rules (`qrSvg`, `framedQr`)
+- Generated at build time from the URL: `QRCode.create(url, { errorCorrectionLevel: 'H' })`, 2-module quiet zone, ink `#2c2825` modules on linen `#faf7f2`, `shape-rendering: crispEdges`, cells overdrawn by 0.3 px so no hairline gaps.
+- Sized to the frame aperture (plus a small overlap under the frame); the console prints the final QR pixel size.
+- Scannability is **not** automated: scan each PNG from a second phone and once more zoomed out to ~20 % — error-correction H gives headroom for the overlap and the wash.
+- Never paste a pre-rendered QR image.
+
+## iOS layout zones (1179 × 2556)
+
+| Zone | Rule |
+|---|---|
+| Top ≈ 0–600 px (time, date, widgets) | Plain linen + wash only; nothing the clock can collide with |
+| Centre ≈ 900–1800 px | Wreath, frame, QR |
+| ≈ 1985 px | Badge |
+| Bottom ≈ 2300–2556 px (flashlight, camera, home indicator) | Plain background |
+| Anywhere | Nothing that imitates UI (no fake clock, icons, bars) |
+
+## Brand tokens in the script
+`LINEN #faf7f2`, `SAGE #7a8b7b`, `BLUSH #e8c5c8`, `GOLD #d4af37`, `INK #2c2825` — identical to `src/styles/tokens.css` (`--color-bg-linen`, `--color-sage`, `--color-blush`, `--color-gold`, `--color-text-main`). Change tokens there first, mirror here.
+
+## Workflow
+1. Edit a constant or design in `scripts/lockscreen/designs.ts`, or the URL in `scripts/generate-lockscreen.ts`.
+2. `npm run lockscreen` (both editions) · `npm run lockscreen:variants` (alternates, only when comparing designs).
+3. Open the PNG at 100 %, then scan it (phone + 20 % zoom-out).
+4. Show the owner **one design at a time and name it** ("linen-classic"), never "option 2": a mislabelled button once promoted ink-editorial by mistake.
+5. Commit the PNGs. They are exempt from the site's ≤ 200 KB webp rule (`tests/unit/assets.test.ts` skips `lockscreen/`); the two finals are ~2.7 MB each.
+
+## Adding a design
+Export `renderX(out: string, url = SITE_URL)` in `designs.ts` using the existing helpers — `backgroundSvg(body, defs)`, `wreathLayer(scale, flop?)`, `frameLayer(FRAMES.gold | ornate | filigree, outerWidth)`, `badgeLayer(width)`, `framedQr(frame, cx, cy, url, { shadow?, card? })`, `place(layer, left, top, blend?)`, `render(out, background, overlays, qrSize)`. Register it in `generate-lockscreen-variants.ts` until the owner promotes it to the final.
+
+## Constraints
+- No new AI-generated imagery without asking the owner. New material = a real photograph or painting dropped into `public/assets/lockscreen/` and keyed in code, with its geometry added to `FRAMES` / `WREATH_CROP`.
+- Logo badge untouched: no recolour, redraw or crop.
+- Portrait only; the Mac wallpaper is `desktop-background-generator`.
+- Stale notes elsewhere: `CLAUDE.md` still describes the earlier pipeline (`BG_SOURCE` absolute path outside the repo, 768 px canvas, `qr-fiorevera.png`). That limitation was removed on 2026-11-08 (`BACKLOG.md`, "reproducible from repo-local inputs only") — the script runs on any machine after `npm install`. The header comment in `designs.ts` still calls ink-editorial "the shipped final"; the entry point and the owner decision say linen-classic.

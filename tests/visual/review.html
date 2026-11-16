@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fiore Vera — visual baseline contact sheet</title>
+<style>
+  :root { --linen:#faf7f2; --sage:#7a8b7b; --blush:#e8c5c8; --gold:#d4af37; --ink:#2c2825; --muted:#6b635b; --scale:0.5; }
+  * { box-sizing:border-box }
+  body { margin:0; background:var(--linen); color:var(--ink); font:15px/1.5 Inter, system-ui, sans-serif; }
+  header.top { position:sticky; top:0; z-index:2; background:rgba(250,247,242,.94); backdrop-filter:blur(6px); border-bottom:1px solid #e3ddd3; padding:12px 24px; display:flex; flex-wrap:wrap; gap:12px 24px; align-items:center; }
+  header.top h1 { font:600 20px/1.2 "Cormorant Garamond", Georgia, serif; margin:0; }
+  header.top .dim, .dim { color:var(--muted); font-size:13px; }
+  header.top label { font-size:13px; }
+  header.top select, header.top button { font:inherit; font-size:13px; padding:3px 8px; border:1px solid #cfc8bd; border-radius:6px; background:#fff; color:var(--ink); }
+  header.top button { cursor:pointer }
+  header.top button:hover { border-color:var(--sage) }
+  nav.toc { display:flex; flex-wrap:wrap; gap:6px 14px; font-size:13px; width:100% }
+  nav.toc a { color:var(--sage); text-decoration:none } nav.toc a:hover { text-decoration:underline }
+  main { padding:16px 24px 64px; max-width:1680px; margin:0 auto; }
+  .group { margin:32px 0 }
+  .group h2 { font:600 22px/1.2 "Cormorant Garamond", Georgia, serif; margin:0 0 6px; }
+  .note-text { margin:0 0 6px; color:var(--muted); font-size:13px }
+  ul.check { margin:0 0 14px; padding:0 0 0 18px; font-size:13px; color:var(--muted); columns:2; column-gap:32px }
+  ul.check li { break-inside:avoid; margin:2px 0 }
+  .grid { display:flex; flex-wrap:wrap; gap:20px 24px; align-items:flex-start }
+  .shot { margin:0; width:calc(var(--w) * 1px * var(--scale)); max-width:100%; }
+  .shot a { display:block; border:1px solid #d9d2c7; background:#fff; box-shadow:0 2px 10px rgba(44,40,37,.08); }
+  .shot img { display:block; width:100%; height:auto; }
+  .shot figcaption { margin-top:6px; font-size:12px; display:flex; flex-wrap:wrap; gap:4px 10px; align-items:center }
+  .shot code { font-size:12px; background:#f0ebe3; padding:1px 5px; border-radius:4px }
+  .verdict { display:flex; gap:8px; align-items:center; width:100% }
+  .verdict label { cursor:pointer }
+  .verdict .note { flex:1; min-width:120px; font:inherit; font-size:12px; padding:2px 6px; border:1px solid #d9d2c7; border-radius:4px; background:#fff }
+  .shot.ok a { outline:2px solid var(--sage) } .shot.issue a { outline:2px solid #c0392b }
+  #summary { width:100%; margin-top:8px; font:12px/1.4 ui-monospace, Menlo, monospace; min-height:0; height:0; padding:0; border:0; opacity:0; transition:height .2s }
+  #summary.open { height:180px; padding:8px; border:1px solid #cfc8bd; opacity:1; background:#fff }
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Fiore Vera — visual baselines</h1>
+  <span class="dim">27 PNGs · 9.2 MB · generated 2026-11-09 · Chromium on macOS, CSS pixels</span>
+  <label>Scale <select id="scale"><option value="0.33">33 %</option><option value="0.5" selected>50 %</option><option value="0.75">75 %</option><option value="1">100 %</option></select></label>
+  <span class="dim" id="progress"></span>
+  <button type="button" id="copy">Copy verdicts</button>
+  <button type="button" id="reset">Clear verdicts</button>
+  <nav class="toc"><a href="#g1">1. Hungarian pages</a><a href="#g2">2. German and English home</a><a href="#g3">3. Header strip</a><a href="#g4">4. Mobile menu open</a><a href="#g5">5. Gallery</a><a href="#g6">6. Language toast</a></nav>
+  <textarea id="summary" readonly aria-label="Verdict summary"></textarea>
+</header>
+<main>
+  <p class="dim">Click any image to open the PNG at natural size in a new tab. The pixel gate only proves "looks like before" — this page is where "before" gets a human look. Mark every image OK or Issue, then "Copy verdicts" and paste the text into the chat.</p>
+  
+  <section class="group" id="g1">
+    <h2>1. Hungarian pages — full-page clip at 375 and 1280 px <span class="dim">(16)</span></h2>
+    <p class="note-text">Clip height is intentional (1500 px, gallery 1100 px): the bottom edge cutting a section is NOT a defect.</p>
+    <ul class="check"><li>Hero photo: crop and focal point acceptable at both widths; no visible upscaling or blur</li><li>Headings render in the serif (Cormorant Garamond), body in Inter — no fallback font, no wordmark wrapping</li><li>Spacing between sections is even; no element touches the viewport edge without its gutter</li><li>No placeholder, lorem ipsum, missing-image box or legacy typo in the visible copy</li><li>Colours match the locked tokens (linen background, sage, blush, gold); nothing looks washed out or neon</li></ul>
+    <div class="grid">
+      <figure class="shot" data-name="home-1280.png" style="--w:1280;--h:1500">
+        <a href="__screenshots__/snapshots.spec.ts/home-1280.png" target="_blank" rel="noopener" title="Open home-1280.png at natural size"><img src="__screenshots__/snapshots.spec.ts/home-1280.png" alt="home-1280.png" loading="lazy" width="1280" height="1500"></a>
+        <figcaption>
+          <code>home-1280.png</code> <span class="dim">1280 × 1500 px · 1395 KB</span>
+          <span class="verdict">
+            <label><input type="radio" name="v-home-1280.png" value="ok"> OK</label>
+            <label><input type="radio" name="v-home-1280.png" value="issue"> Issue</label>
+            <input type="text" class="note" placeholder="what is off (optional)">
+          </span>
+        </figcaption>
+      </figure>
+      <figure class="shot" data-name="home-375.png" style="--w:375;--h:1500">
+        <a href="__screenshots__/snapshots.spec.ts/home-375.png" target="_blank" rel="noopener" title="Open home-375.png at natural size"><img src="__screenshots__/snapshots.spec.ts/home-375.png" alt="home-375.png" loading="lazy" width="375" height="1500"></a>
+        <figcaption>
+          <code>home-375.png</code> <span class="dim">375 × 1500 px · 427 KB</span>
+          <span class="verdict">
+            <label><input type="radio" name="v-home-375.png" value="ok"> OK</label>
+            <label><input type="radio" name="v-home-375.png" value="issue"> Issue</label>
+            <input type="text" class="note" placeholder="what is off (optional)">
+          </span>
+        </figcaption>
+      </figure>
+      <figure class="shot" data-name="services-1280.png" style="--w:1280;--h:1500">
+        <a href="__screenshots__/snapshots.spec.ts/services-1280.png" target="_blank" rel="noopener" title="Open services-1280.png at natural size"><img src="__screenshots__/snapshots.spec.ts/services-1280.png" alt="services-1280.png" loading="lazy" width="1280" height="1500"></a>
+        <figcaption>
+          <code>services-1280.png</code> <span class="dim">1280 × 1500 px · 336 KB</span>
+          <span class="verdict">
+            <label><input type="radio" name="v-services-1280.png" value="ok"> OK</label>
+            <label><input type="radio" name="v-services-1280.png" value="issue"> Issue</label>
+            <input type="text" class="note" placeholder="what is off (optional)">
+          </span>
+        </figcaption>
+      </figure>
+      <figure class="shot" data-name="services-375.png" style="--w:375;--h:1500">
+        <a href="__screenshots__/snapshots.spec.ts/services-375.png" target="_blank" rel="noopener" title="Open services-375.png at natural size"><img src="__screenshots__/snapshots.spec.ts/services-375.png" alt="services-375.png" loading="lazy" width="375" height="1500"></a>
+        <figcaption>
+          <code>services-375.png</code> <span class="dim">375 × 1500 px · 201 KB</span>
+          <span class="verdict">
+            <label><input type="radio" name="v-services-375.png" value="ok"> OK</label>
+            <label><input type="radio" name="v-services-375.png" value="issue"> Issue</label>
+            <input type="text" class="note" placeholder="what is off (optional)">
+          </span>
+        </figcaption>
+      </figure>
+      <figure class="shot" data-name="gallery-1280.png" style="--w:1280;--h:1100">
+        <a href="__screenshots__/snapshots.spec.ts/gallery-1280.png" target="_blank" rel="noopener" title="Open gallery-1280.png at natural size"><img src="__screenshots__/snapshots.spec.ts/gallery-1280.png" alt="gallery-1280.png" loading="lazy" width="1280" height="1100"></a>
+        <figcaption>
+          <code>gallery-1280.png</code> <span class="dim">1280 × 1100 px · 1077 KB</span>
+          <span class="verdict">
+            <label><input type="radio" name="v-gallery-1280.png" value="ok"> OK</label>
+            <label><input type="radio" name="v-gallery-1280.png" value="issue"> Issue</label>
+            <input type="text" class="note" placeholder="what is off (optional)">
+          </span>
+        </figcaption>
+      </figure>
+      <figure class="shot" data-name="gallery-375.png" style="--w:375;--h:1100">
+        <a href="__screenshots__/snapshots.spec.ts/gallery-375.png" target="_blank" rel="noopener" title="Open gallery-375.png at natural size"><img src="__screenshots__/snapshots.spec.ts/gallery-375.png" alt="gallery-375.png" loading="lazy" width="375" height="1100"></a>
+        <figcaption>
+          <code>gallery-375.png</code> <span class="dim">375 × 1100 px · 378 KB</span>
+          <span class="verdict">
+            <label><input type="radio" name="v-gallery-375.png" value="ok"> OK</label>
+            <label><input type="radio" name="v-gallery-375.png" value="issue"> Issue</label>
+            <input type="text" class="note" placeholder="what is off (optional)">
+          </span>
+        </figcaption>
+      </figure>
+      <figure class="shot" data-name="rental-1280.png" style="--w:1280;--h:1500">
+        <a href="__screenshots__/snapshots.spec.ts/rental-1280.png" target="_blank" rel="noopener" title="Open rental-1280.png at natural size"><img src="__screenshots__/snapshots.spec.ts/rental-1280.png" alt="rental-1280.png" loading="lazy" width="1280" height="1500"></a>
+        <figcaption>
+          <code>rental-1280.png</code> <span class="dim">1280 × 1500 px · 966 KB</span>
+          <span class="verdict">
+            <label><input type="radio" name="v-rental-1280.png" value="ok"> OK</label>
+            <label><input type="radio" name="v-rental-1280.png" value="issue"> Issue</label>
+            <input type="text" class="note" placeholder="what is off (optional)">
+          </span>
+        </figcaption>
+      </figure>
+      <figure class="shot" data-name="rental-375.png" style="--w:375;--h:1500">
+        <a href="__screenshots__/snapshots.spec.ts/rental-375.png" target="_blank" rel="noopener" title="Open rental-375.png at natural size"><img src="__screenshots__/snapshots.spec.ts/rental-375.png" alt="rental-375.png" loading="lazy" width="375" height="1500"></a>
+        <figcaption>
+          <code>rental-375.png</code> <span class="dim">375 × 1500 px · 304 KB</span>
+          <span class="verdict">
+            <label><input type="radio" name="v-rental-375.png" value="ok"> OK</label>
+            <label><input type="radio" name="v-rental-375.png" value="issue"> Issue</label>
+            <input type="text" class="note" placeholder="what is off (optional)">
+          </span>
+        </figcaption>
+      </figure>
+      <figure class="shot" data-name="about-1280.png" style="--w:1280;--h:1500">
+        <a href="__screenshots__/snapshots.spec.ts/about-1280.png" target="_blank" rel="noopener" title="Open about-1280.png at natural size"><img src="__screenshots__/snapshots.spec.ts/about-1280.png" alt="about-1280.png" loading="lazy" width="1280" height="1500"></a>
+        <figcaption>
+          <code>about-1280.png</code> <span class="dim">1280 × 1500 px · 661 KB</span>
+          <span class="verdict">
+            <label><input type="radio" name="v-about-1280.png" value="ok"> OK</label>
+            <label><input type="radio" name="v-about-1280.png" value="issue"> Issue</label>
+            <input type="text" class="note" placeholder="what is off (optional)">
+          </span>
+        </figcaption>
+      </figure>
+      <figure class="shot" data-name="about-375.png" style="--w:375;--h:1500">
+        <a href="__screenshots__/snapshots.spec.ts/about-375.png" target="_blank" rel="noopener" title="Open about-375.png at natural size"><img src="__screenshots__/snapshots.spec.ts/about-375.png" alt="about-375.png" loading="lazy" width="375" height="1500"></a>
+        <figcaption>
+          <code>about-375.png</code> <span class="dim">375 × 1500 px · 377 KB</span>
+          <span class="verdict">
+            <label><input type="radio" name="v-about-375.png" value="ok"> OK</label>
+            <label><input type="radio" name="v-about-375.png" value="issue"> Issue</label>
+            <input type="text" class="note" placeholder="what is off (optional)">
+          </span>
+        </figcaption>
+      </figure>
+      <figure class="shot" data-name="contact-1280.png" style="--w:1280;--h:1500">
+        <a href="__screenshots__/snapshots.spec.ts/contact-1280.png" target="_blank" rel="noopener" title="Open contact-1280.png at natural size"><img src="__screenshots__/snapshots.spec.ts/contact-1280.png" alt="contact-1280.png" loading="lazy" width="1280" height="1500"></a>
+        <figcaption>
+          <code>contact-1280.png</code> <span class="dim">1280 × 1500 px · 222 KB</span>
+          <span class="verdict">
+            <label><input type="radio" name="v-contact-1280.png" value="ok"> OK</label>
+            <label><input type="radio" name="v-contact-1280.png" value="issue"> Issue</label>
+            <input type="text" class="note" placeholder="what is off (optional)">
+          </span>
+        </figcaption>
+      </figure>
+      <figure class="shot" data-name="contact-375.png" style="--w:375;--h:1500">
+        <a href="__screenshots__/snapshots.spec.ts/contact-375.png" target="_blank" rel="noopener" title="Open contact-375.png at natural size"><img src="__screenshots__/snapshots.spec.ts/contact-375.png" alt="contact-375.png" loading="lazy" width="375" height="1500"></a>
+        <figcaption>
+          <code>contact-375.png</code> <span class="dim">375 × 1500 px · 130 KB</span>
+          <span class="verdict">
+            <label><input type="radio" name="v-contact-375.png" value="ok"> OK</label>
+            <label><input type="radio" name="v-contact-375.png" value="issue"> Issue</label>
+            <input type="text" class="note" placeholder="what is off (optional)">
+          </span>
+        </figcaption>
+      </figure>
+      <figure class="shot" data-name="privacy-1280.png" style="--w:1280;--h:1500">
+        <a href="__screenshots__/snapshots.spec.ts/privacy-1280.png" target="_blank" rel="noopener" title="Open privacy-1280.png at natural size"><img src="__screenshots__/snapshots.spec.ts/privacy-1280.png" alt="privacy-1280.png" loading="lazy" width="1280" height="1500"></a>
+        <figcaption>
+          <code>privacy-1280.png</code> <span class="dim">1280 × 1500 px · 301 KB</span>
+          <span class="verdict">
+            <label><input type="radio" name="v-privacy-1280.png" value="ok"> OK</label>
+            <label><input type="radio" name="v-privacy-1280.png" value="issue"> Issue</label>
+            <input type="text" class="note" placeholder="what is off (optional)">
+          </span>
+        </figcaption>
+      </figure>
+      <figure class="shot" data-name="privacy-375.png" style="--w:375;--h:1500">
+        <a href="__screenshots__/snapshots.spec.ts/privacy-375.png" target="_blank" rel="noopener" title="Open privacy-375.png at natural size"><img src="__screenshots__/snapshots.spec.ts/privacy-375.png" alt="privacy-375.png" loading="lazy" width="375" height="1500"></a>
+        <figcaption>
+          <code>privacy-375.png</code> <span class="dim">375 × 1500 px · 206 KB</span>
+          <span class="verdict">
+            <label><input type="radio" name="v-privacy-375.png" value="ok"> OK</label>
+            <label><input type="radio" name="v-privacy-375.png" value="issue"> Issue</label>
+            <input type="text" class="note" placeholder="what is off (optional)">
+          </span>
+        </figcaption>
+      </figure>
+      <figure class="shot" data-name="notfound-1280.png" style="--w:1280;--h:1196">
+        <a href="__screenshots__/snapshots.spec.ts/notfound-1280.png" target="_blank" rel="noopener" title="Open notfound-1280.png at natural size"><img src="__screenshots__/snapshots.spec.ts/notfound-1280.png" alt="notfound-1280.png" loading="lazy" width="1280" height="1196"></a>
+        <figcaption>
+          <code>notfound-1280.png</code> <span class="dim">1280 × 1196 px · 135 KB</span>
+          <span class="verdict">
+            <label><input type="radio" name="v-notfound-1280.png" value="ok"> OK</label>
+            <label><input type="radio" name="v-notfound-1280.png" value="issue"> Issue</label>
+            <input type="text" class="note" placeholder="what is off (optional)">
+          </span>
+        </figcaption>
+      </figure>
+      <figure class="shot" data-name="notfound-375.png" style="--w:375;--h:1500">
+        <a href="__screenshots__/snapshots.spec.ts/notfound-375.png" target="_blank" rel="noopener" title="Open notfound-375.png at natural size"><img src="__screenshots__/snapshots.spec.ts/notfound-375.png" alt="notfound-375.png" loading="lazy" width="375" height="1500"></a>
+        <figcaption>
+          <code>notfound-375.png</code> <span class="dim">375 × 1500 px · 90 KB</span>
+          <span class="verdict">
+            <label><input type="radio" name="v-notfound-375.png" value="ok"> OK</label>
+            <label><input type="radio" name="v-notfound-375.png" value="issue"> Issue</label>
+            <input type="text" class="note" placeholder="what is off (optional)">
+          </span>
+        </figcaption>
+      </figure></div>
+  </section>
+
+  <section class="group" id="g2">
+    <h2>2. German and English home — 375 px <span class="dim">(2)</span></h2>
+    <p class="note-text">Only the phone width is recorded until the DE/EN copy is signed off (R-1); inner DE/EN pages have no pixel baseline yet.</p>
+    <ul class="check"><li>Layout identical to the HU home at 375 px; only the copy differs</li><li>Copy is in the right language; no Hungarian text leaking into DE/EN sections</li><li>Umlauts and ß render; no line that wraps awkwardly because the translation is longer</li><li>The language switch and the toast are not visible (toast pre-dismissed by design)</li></ul>
+    <div class="grid">
+      <figure class="shot" data-name="home-de-375.png" style="--w:375;--h:1500">
+        <a href="__screenshots__/snapshots.spec.ts/home-de-375.png" target="_blank" rel="noopener" title="Open home-de-375.png at natural size"><img src="__screenshots__/snapshots.spec.ts/home-de-375.png" alt="home-de-375.png" loading="lazy" width="375" height="1500"></a>
+        <figcaption>
+          <code>home-de-375.png</code> <span class="dim">375 × 1500 px · 428 KB</span>
+          <span class="verdict">
+            <label><input type="radio" name="v-home-de-375.png" value="ok"> OK</label>
+            <label><input type="radio" name="v-home-de-375.png" value="issue"> Issue</label>
+            <input type="text" class="note" placeholder="what is off (optional)">
+          </span>
+        </figcaption>
+      </figure>
+      <figure class="shot" data-name="home-en-375.png" style="--w:375;--h:1500">
+        <a href="__screenshots__/snapshots.spec.ts/home-en-375.png" target="_blank" rel="noopener" title="Open home-en-375.png at natural size"><img src="__screenshots__/snapshots.spec.ts/home-en-375.png" alt="home-en-375.png" loading="lazy" width="375" height="1500"></a>
+        <figcaption>
+          <code>home-en-375.png</code> <span class="dim">375 × 1500 px · 432 KB</span>
+          <span class="verdict">
+            <label><input type="radio" name="v-home-en-375.png" value="ok"> OK</label>
+            <label><input type="radio" name="v-home-en-375.png" value="issue"> Issue</label>
+            <input type="text" class="note" placeholder="what is off (optional)">
+          </span>
+        </figcaption>
+      </figure></div>
+  </section>
+
+  <section class="group" id="g3">
+    <h2>3. Header strip — 1120, 1280, 1440, 1920 px (top 96 px of the home page) <span class="dim">(4)</span></h2>
+    <p class="note-text">These guard the wordmark-wrapping regression. Shown scaled to the column width; open a strip to see it 1:1.</p>
+    <ul class="check"><li>Wordmark on one line at every width</li><li>Nav items evenly spaced, nothing clipped at the 96 px bottom edge</li><li>Quote button visible from 1280 px; language switch visible</li><li>Glass bar readable over the hero; bar does not stretch past 90rem on 1920</li></ul>
+    <div class="grid">
+      <figure class="shot" data-name="header-1120.png" style="--w:1120;--h:96">
+        <a href="__screenshots__/snapshots.spec.ts/header-1120.png" target="_blank" rel="noopener" title="Open header-1120.png at natural size"><img src="__screenshots__/snapshots.spec.ts/header-1120.png" alt="header-1120.png" loading="lazy" width="1120" height="96"></a>
+        <figcaption>
+          <code>header-1120.png</code> <span class="dim">1120 × 96 px · 84 KB</span>
+          <span class="verdict">
+            <label><input type="radio" name="v-header-1120.png" value="ok"> OK</label>
+            <label><input type="radio" name="v-header-1120.png" value="issue"> Issue</label>
+            <input type="text" class="note" placeholder="what is off (optional)">
+          </span>
+        </figcaption>
+      </figure>
+      <figure class="shot" data-name="header-1280.png" style="--w:1280;--h:96">
+        <a href="__screenshots__/snapshots.spec.ts/header-1280.png" target="_blank" rel="noopener" title="Open header-1280.png at natural size"><img src="__screenshots__/snapshots.spec.ts/header-1280.png" alt="header-1280.png" loading="lazy" width="1280" height="96"></a>
+        <figcaption>
+          <code>header-1280.png</code> <span class="dim">1280 × 96 px · 98 KB</span>
+          <span class="verdict">
+            <label><input type="radio" name="v-header-1280.png" value="ok"> OK</label>
+            <label><input type="radio" name="v-header-1280.png" value="issue"> Issue</label>
+            <input type="text" class="note" placeholder="what is off (optional)">
+          </span>
+        </figcaption>
+      </figure>
+      <figure class="shot" data-name="header-1440.png" style="--w:1440;--h:96">
+        <a href="__screenshots__/snapshots.spec.ts/header-1440.png" target="_blank" rel="noopener" title="Open header-1440.png at natural size"><img src="__screenshots__/snapshots.spec.ts/header-1440.png" alt="header-1440.png" loading="lazy" width="1440" height="96"></a>
+        <figcaption>
+          <code>header-1440.png</code> <span class="dim">1440 × 96 px · 101 KB</span>
+          <span class="verdict">
+            <label><input type="radio" name="v-header-1440.png" value="ok"> OK</label>
+            <label><input type="radio" name="v-header-1440.png" value="issue"> Issue</label>
+            <input type="text" class="note" placeholder="what is off (optional)">
+          </span>
+        </figcaption>
+      </figure>
+      <figure class="shot" data-name="header-1920.png" style="--w:1920;--h:96">
+        <a href="__screenshots__/snapshots.spec.ts/header-1920.png" target="_blank" rel="noopener" title="Open header-1920.png at natural size"><img src="__screenshots__/snapshots.spec.ts/header-1920.png" alt="header-1920.png" loading="lazy" width="1920" height="96"></a>
+        <figcaption>
+          <code>header-1920.png</code> <span class="dim">1920 × 96 px · 117 KB</span>
+          <span class="verdict">
+            <label><input type="radio" name="v-header-1920.png" value="ok"> OK</label>
+            <label><input type="radio" name="v-header-1920.png" value="issue"> Issue</label>
+            <input type="text" class="note" placeholder="what is off (optional)">
+          </span>
+        </figcaption>
+      </figure></div>
+  </section>
+
+  <section class="group" id="g4">
+    <h2>4. Mobile menu open — 375 × 812 <span class="dim">(1)</span></h2>
+    
+    <ul class="check"><li>Panel covers the page; menu items in the agreed order; current page marked</li><li>Close control and language switch reachable; toast hidden while the menu is open</li><li>Typography and spacing in the panel match the rest of the site</li></ul>
+    <div class="grid">
+      <figure class="shot" data-name="menu-open-375.png" style="--w:375;--h:812">
+        <a href="__screenshots__/snapshots.spec.ts/menu-open-375.png" target="_blank" rel="noopener" title="Open menu-open-375.png at natural size"><img src="__screenshots__/snapshots.spec.ts/menu-open-375.png" alt="menu-open-375.png" loading="lazy" width="375" height="812"></a>
+        <figcaption>
+          <code>menu-open-375.png</code> <span class="dim">375 × 812 px · 34 KB</span>
+          <span class="verdict">
+            <label><input type="radio" name="v-menu-open-375.png" value="ok"> OK</label>
+            <label><input type="radio" name="v-menu-open-375.png" value="issue"> Issue</label>
+            <input type="text" class="note" placeholder="what is off (optional)">
+          </span>
+        </figcaption>
+      </figure></div>
+  </section>
+
+  <section class="group" id="g5">
+    <h2>5. Gallery — first carousel on slide 2, at 375 and 1280 px <span class="dim">(2)</span></h2>
+    
+    <ul class="check"><li>Slide 2 is a real album photo (not the cover); 3:2 centre crop acceptable for this photo</li><li>Arrows visible on top of the photo at both widths; counter or dots readable</li><li>Photo sharp at 1280 (1280 px image tier in use); no letterboxing</li></ul>
+    <div class="grid">
+      <figure class="shot" data-name="carousel-slide2-1280.png" style="--w:1072;--h:833">
+        <a href="__screenshots__/snapshots.spec.ts/carousel-slide2-1280.png" target="_blank" rel="noopener" title="Open carousel-slide2-1280.png at natural size"><img src="__screenshots__/snapshots.spec.ts/carousel-slide2-1280.png" alt="carousel-slide2-1280.png" loading="lazy" width="1072" height="833"></a>
+        <figcaption>
+          <code>carousel-slide2-1280.png</code> <span class="dim">1072 × 833 px · 806 KB</span>
+          <span class="verdict">
+            <label><input type="radio" name="v-carousel-slide2-1280.png" value="ok"> OK</label>
+            <label><input type="radio" name="v-carousel-slide2-1280.png" value="issue"> Issue</label>
+            <input type="text" class="note" placeholder="what is off (optional)">
+          </span>
+        </figcaption>
+      </figure>
+      <figure class="shot" data-name="carousel-slide2-375.png" style="--w:343;--h:395">
+        <a href="__screenshots__/snapshots.spec.ts/carousel-slide2-375.png" target="_blank" rel="noopener" title="Open carousel-slide2-375.png at natural size"><img src="__screenshots__/snapshots.spec.ts/carousel-slide2-375.png" alt="carousel-slide2-375.png" loading="lazy" width="343" height="395"></a>
+        <figcaption>
+          <code>carousel-slide2-375.png</code> <span class="dim">343 × 395 px · 110 KB</span>
+          <span class="verdict">
+            <label><input type="radio" name="v-carousel-slide2-375.png" value="ok"> OK</label>
+            <label><input type="radio" name="v-carousel-slide2-375.png" value="issue"> Issue</label>
+            <input type="text" class="note" placeholder="what is off (optional)">
+          </span>
+        </figcaption>
+      </figure></div>
+  </section>
+
+  <section class="group" id="g6">
+    <h2>6. Language toast — 375 and 1280 px (German browser on the HU home) <span class="dim">(2)</span></h2>
+    <p class="note-text">Approved by the owner on 2026-11-09 (log row 2); included so the whole set is reviewed in one place.</p>
+    <ul class="check"><li>CTA fills the action row, dismiss flush right — the approved layout</li><li>German copy correct (rendered in the target locale)</li></ul>
+    <div class="grid">
+      <figure class="shot" data-name="toast-1280.png" style="--w:448;--h:116">
+        <a href="__screenshots__/snapshots.spec.ts/toast-1280.png" target="_blank" rel="noopener" title="Open toast-1280.png at natural size"><img src="__screenshots__/snapshots.spec.ts/toast-1280.png" alt="toast-1280.png" loading="lazy" width="448" height="116"></a>
+        <figcaption>
+          <code>toast-1280.png</code> <span class="dim">448 × 116 px · 13 KB</span>
+          <span class="verdict">
+            <label><input type="radio" name="v-toast-1280.png" value="ok"> OK</label>
+            <label><input type="radio" name="v-toast-1280.png" value="issue"> Issue</label>
+            <input type="text" class="note" placeholder="what is off (optional)">
+          </span>
+        </figcaption>
+      </figure>
+      <figure class="shot" data-name="toast-375.png" style="--w:343;--h:113">
+        <a href="__screenshots__/snapshots.spec.ts/toast-375.png" target="_blank" rel="noopener" title="Open toast-375.png at natural size"><img src="__screenshots__/snapshots.spec.ts/toast-375.png" alt="toast-375.png" loading="lazy" width="343" height="113"></a>
+        <figcaption>
+          <code>toast-375.png</code> <span class="dim">343 × 113 px · 12 KB</span>
+          <span class="verdict">
+            <label><input type="radio" name="v-toast-375.png" value="ok"> OK</label>
+            <label><input type="radio" name="v-toast-375.png" value="issue"> Issue</label>
+            <input type="text" class="note" placeholder="what is off (optional)">
+          </span>
+        </figcaption>
+      </figure></div>
+  </section>
+</main>
+<script>
+(() => {
+  const KEY = 'fv-visual-review';
+  let state = {};
+  try { state = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { state = {}; }
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch {} };
+  const shots = Array.from(document.querySelectorAll('.shot'));
+  const progress = document.getElementById('progress');
+  const paint = (fig) => {
+    const s = state[fig.dataset.name] || {};
+    fig.classList.toggle('ok', s.verdict === 'ok');
+    fig.classList.toggle('issue', s.verdict === 'issue');
+    for (const r of fig.querySelectorAll('input[type=radio]')) r.checked = r.value === s.verdict;
+    fig.querySelector('.note').value = s.note || '';
+  };
+  const refresh = () => {
+    const done = shots.filter((f) => state[f.dataset.name]?.verdict).length;
+    const issues = shots.filter((f) => state[f.dataset.name]?.verdict === 'issue').length;
+    progress.textContent = done + ' / ' + shots.length + ' reviewed' + (issues ? ', ' + issues + ' with issues' : '');
+  };
+  for (const fig of shots) {
+    paint(fig);
+    fig.addEventListener('change', (e) => {
+      const name = fig.dataset.name;
+      state[name] = state[name] || {};
+      if (e.target.type === 'radio') state[name].verdict = e.target.value;
+      if (e.target.classList.contains('note')) state[name].note = e.target.value;
+      save(); paint(fig); refresh();
+    });
+    fig.querySelector('.note').addEventListener('input', (e) => { const n = fig.dataset.name; state[n] = state[n] || {}; state[n].note = e.target.value; save(); });
+  }
+  refresh();
+  const scale = document.getElementById('scale');
+  try { const s = localStorage.getItem(KEY + '-scale'); if (s) scale.value = s; } catch {}
+  document.documentElement.style.setProperty('--scale', scale.value);
+  scale.addEventListener('change', () => { document.documentElement.style.setProperty('--scale', scale.value); try { localStorage.setItem(KEY + '-scale', scale.value); } catch {} });
+  const summary = document.getElementById('summary');
+  document.getElementById('copy').addEventListener('click', async () => {
+    const lines = shots.map((f) => { const s = state[f.dataset.name] || {}; return (s.verdict === 'ok' ? 'OK    ' : s.verdict === 'issue' ? 'ISSUE ' : '      ') + f.dataset.name + (s.note ? ' — ' + s.note : ''); });
+    const text = 'Visual baseline review ' + new Date().toISOString().slice(0, 10) + '\n' + lines.join('\n');
+    summary.value = text; summary.classList.add('open');
+    try { await navigator.clipboard.writeText(text); } catch {}
+  });
+  document.getElementById('reset').addEventListener('click', () => { if (!confirm('Clear all verdicts on this page?')) return; state = {}; save(); shots.forEach(paint); refresh(); summary.classList.remove('open'); });
+})();
+</script>
+</body>
+</html>

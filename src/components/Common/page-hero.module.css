@@ -1,0 +1,15 @@
+.hero {
+  padding-block: var(--space-7) var(--space-6);
+  background:
+    radial-gradient(60rem 20rem at 10% 0%, var(--color-blush-soft) 0%, transparent 60%),
+    radial-gradient(50rem 20rem at 100% 100%, var(--color-sage-soft) 0%, transparent 60%);
+}
+.inner {
+  max-width: 50rem;
+}
+.title {
+  margin-bottom: var(--space-4);
+}
+.intro {
+  margin: 0;
+}
