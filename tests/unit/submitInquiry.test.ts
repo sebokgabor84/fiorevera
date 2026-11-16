@@ -54,7 +54,7 @@ describe('submitInquiry (PRD D-9, MASTER-PLAN 2.10)', () => {
 
     const body = sentBody(fetchImpl);
     expect(Object.keys(body).sort()).toEqual(
-      ['access_key', 'email', 'locale', 'message', 'name', 'phone', 'subject', 'venue', 'wedding_date'].sort()
+      ['access_key', 'email', 'from_name', 'locale', 'message', 'name', 'phone', 'subject', 'venue', 'wedding_date'].sort()
     );
     expect(body).toMatchObject({
       name: payload.name,
@@ -67,6 +67,7 @@ describe('submitInquiry (PRD D-9, MASTER-PLAN 2.10)', () => {
       access_key: ACCESS_KEY,
     });
     expect(body.subject).toBe('Árajánlatkérés – fiorevera.hu (Teszt Anna)');
+    expect(body.from_name).toBe('Fiore Vera weboldal');
     expect(body).not.toHaveProperty('website'); // the honeypot never reaches the provider
   });
 

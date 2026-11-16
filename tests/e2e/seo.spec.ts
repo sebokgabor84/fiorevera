@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { T } from './locales';
 import { allRoutes, LOCALES, ROUTES } from '../../src/data/routes';
 

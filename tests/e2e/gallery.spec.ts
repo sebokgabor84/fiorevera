@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { albums } from '../../src/data/albums';
 
 test.describe('gallery (PRD D-6/D-7)', () => {

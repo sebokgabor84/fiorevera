@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
 const ROUTES_UNDER_TEST = ['/', '/munkaim/', '/de/verleih/', '/en/contact/'];
 

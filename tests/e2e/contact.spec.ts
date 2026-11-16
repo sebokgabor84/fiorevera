@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, REAL_PROVIDER_HOSTS } from './fixtures';
 import { T, hu } from './locales';
 import { LOCALES, ROUTES } from '../../src/data/routes';
 
@@ -7,7 +7,7 @@ import { LOCALES, ROUTES } from '../../src/data/routes';
  * plus the real providers, in case the dev server under test was started with a real VITE_FORM_ENDPOINT
  * (e.g. from .env.local). Mocking all of them keeps these tests offline and never hits a real inbox.
  */
-const PROVIDER_HOSTS = ['**/mock-form-endpoint.test/**', '**/api.web3forms.com/**', '**/formspree.io/**'];
+const PROVIDER_HOSTS = ['**/mock-form-endpoint.test/**', ...REAL_PROVIDER_HOSTS];
 const mockProvider = async (page: import('@playwright/test').Page, handler: Parameters<typeof page.route>[1]) => {
   for (const host of PROVIDER_HOSTS) await page.route(host, handler);
 };
@@ -66,9 +66,22 @@ test.describe('contact form (PRD D-9, US-10)', () => {
       test.skip(!configured, 'dev server started without VITE_FORM_ENDPOINT (playwright.config.ts sets it for the managed webServer)');
       await fill(page, locale);
       await page.getByRole('button', { name: T[locale].contact.form.submit }).click();
-      await expect(page.getByTestId('inquiry-success')).toContainText(T[locale].contact.form.success);
+      const success = page.getByTestId('inquiry-success');
+      await expect(success).toContainText(T[locale].contact.form.success);
+      // The tall form is gone; the page must show the confirmation, not clamp to the footer.
+      await expect(success).toBeInViewport({ ratio: 1 });
+      await expect(success).toBeFocused();
     });
   }
+
+  test('never reaches a real provider: an un-mocked submission is blocked and shows the fallback', async ({ page }) => {
+    // No mockProvider() here on purpose — the auto fixture in ./fixtures must stop the request on its own.
+    await page.goto('/kapcsolat/');
+    await fill(page, 'hu');
+    await page.getByRole('button', { name: hu.contact.form.submit }).click();
+    await expect(page.getByRole('alert')).toContainText(hu.contact.form.error);
+    await expect(page.getByTestId('inquiry-success')).toHaveCount(0);
+  });
 
   test('failure path shows the error with the email fallback', async ({ page }) => {
     // Provider unreachable (no endpoint, or the mocked host aborted) → inline error + mailto fallback.
