@@ -6,7 +6,7 @@ Run: `npm run optimize:assets` (add `--force` to re-encode unchanged sources). R
 
 | Source folder | Output folder | Mode |
 |---|---|---|
-| `assets-src/brand/` | `public/assets/brand/` | lossless-ish webp q90, alpha kept, **one** file (`srcMedium`/`srcSmall` = `src`) |
+| `assets-src/brand/` | `public/assets/brand/` | alpha kept, **two** files: full mark webp q90 (`src` = `srcMedium`) and a 240 px header tier `-w240.webp` (q80, alpha q70, `srcSmall`) — the header shows the logo at ≤ 80 px, the full 810 px mark cost 16 KB per page view |
 | `assets-src/hero/` | `public/assets/hero/` | photo |
 | `assets-src/about/` | `public/assets/about/` | photo |
 | `assets-src/gallery/<album>/` | `public/assets/gallery/<album>/` | photo, one sub-folder per album slug |
@@ -16,13 +16,13 @@ Output names: `NN-<slugified-source-name>` where `NN` is the 1-based position in
 
 ## Tiers (photo mode)
 
-| Tier | File | Long edge | Budget | Picked by |
-|---|---|---|---|---|
-| full | `NN-name.webp` (`src`) | ≤ 1920 px | ≤ 200 KB | desktop, hero/OG |
-| medium | `NN-name-w1280.webp` (`srcMedium`) | ≤ 1280 px | ≤ 200 KB | phones at DPR 2–3 (QA M13) |
-| small | `NN-name-w800.webp` (`srcSmall`) | ≤ 800 px | ≤ 200 KB | narrow layouts, teaser grid |
+| Tier | File | Long edge | Budget | Quality ceiling (`TIER_QUALITY`) | Picked by |
+|---|---|---|---|---|---|
+| full | `NN-name.webp` (`src`) | ≤ 1920 px | ≤ 200 KB | 82 | desktop incl. a DPR-2 desktop with `sizes="100vw"`, hero/OG |
+| medium | `NN-name-w1280.webp` (`srcMedium`) | ≤ 1280 px | ≤ 200 KB | 76 | DPR-1 screens 1280 px wide, phones at DPR 2–3 (QA M13) |
+| small | `NN-name-w800.webp` (`srcSmall`) | ≤ 800 px | ≤ 200 KB | 70 | narrow layouts, teaser grid, Lighthouse's Moto G (DPR 1.75) |
 
-Encoder: `sharp().rotate().resize({ fit: 'inside', withoutEnlargement: true })`, webp quality stepping 82 → 34 in steps of 6; if still over budget the edge shrinks by 15 % and retries (max 6 rounds). Unchanged sources are skipped (mtime), orphaned outputs are deleted.
+Encoder: `sharp().rotate().resize({ fit: 'inside', withoutEnlargement: true })`, webp quality stepping from the tier's ceiling down to 34 in steps of 6; if still over budget the edge shrinks by 15 % and retries (max 6 rounds). Unchanged sources are skipped (mtime), orphaned outputs are deleted. `--force` re-encodes every tier of every photo — there is no per-tier flag (proposed, not built); after changing one ceiling restore the other tiers with `git checkout`. Before changing a ceiling, probe the candidate qualities with sharp on the hero (2026-11-16: 80.2 / 63.8 / 57.4 / 53.8 KB at q82 / 76 / 70 / 64 for the 800 px tier).
 
 ## Manifest — `src/data/generated/imageMeta.ts` (generated, never hand-edited)
 

@@ -14,10 +14,10 @@
  *   logo-badge.jpg              — Fiore Vera wordmark badge on white
  *
  * Designs:
- *   renderInkEditorial  — THE SHIPPED FINAL: ink background, wreath, ornate gold
+ *   renderInkEditorial  — an earlier candidate (superseded): ink background, wreath, ornate gold
  *                         frame glowing against the dark, QR on linen inside,
  *                         badge on a linen disc
- *   renderLinenClassic  — the previous final: linen + blush wash, wreath behind
+ *   renderLinenClassic  — THE CONFIRMED FINAL (owner, 2026-11-09): linen + blush wash, wreath behind
  *                         the slender carved frame, badge multiplied below
  *   renderSageGarland   — sage background, wreath flopped and pushed low,
  *                         filigree frame on a linen card, badge above
@@ -533,7 +533,7 @@ async function render(outputPath: string, background: Buffer, overlays: (Overlay
   console.log(`✅ ${path.relative(process.cwd(), outputPath)} (${W}×${H}); QR ${qrSize}px`);
 }
 
-// ── Ink editorial (shipped final) ───────────────────────────────────────────────────────
+// ── Ink editorial (earlier candidate) ─────────────────────────────────────────────────────
 export async function renderInkEditorial(out: string, url = SITE_URL): Promise<void> {
   const centreY = 1330;
   const background = backgroundSvg(
@@ -571,7 +571,7 @@ export async function renderInkEditorial(out: string, url = SITE_URL): Promise<v
   );
 }
 
-// ── Linen classic (previous final) ───────────────────────────────────────────
+// ── Linen classic (confirmed final) ──────────────────────────────────────────
 export async function renderLinenClassic(out: string, url = SITE_URL): Promise<void> {
   const wreathCentreY = 1350;
   const frameCentreY = wreathCentreY - 4;

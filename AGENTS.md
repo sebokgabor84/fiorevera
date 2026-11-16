@@ -152,23 +152,29 @@ Vera tracks the project against these gates. She will not skip a gate.
 
 ✅ DONE    PRD + Master Plan (iteration 2a) — see MASTER-PLAN.md for the 34-item build contract
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   Gate C  → design-system-expert reshaped (palette + typography confirmed)
-   Gate D  → all domain skills reshaped
+   Gate C  → design-system-expert reshaped (palette + typography confirmed)   ✅ 2026-11-09
+   Gate D  → all domain skills reshaped                                     ✅ 2026-11-09 (MASTER-PLAN 0.3)
 
-   Skills Reshaped (iteration 2b)
+✅ DONE    Skills Reshaped (iteration 2b)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   Gate E  → real photography in public/assets/ (webp ≤ 200 KB)
+   Gate E  → real photography in public/assets/ (webp ≤ 200 KB)             ✅ 2026-11-09 (legacy set, MASTER-PLAN 0.2)
 
-   Content Sourced (iteration 2c)
+✅ DONE    Content Sourced (iteration 2c)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    Gate F  → (per slice) lint ✅ + unit ✅ + e2e ✅ + visual regression ✅ + browser check ✅
+             stays in force for every change after launch; axe is not a hard gate yet (MASTER-PLAN 3.1)
 
-   Build — Incremental Slices (iteration 3+)
+✅ MERGED  Build — Incremental Slices (iteration 3+) — pull request 6 on main, 2026-11-16; Vera's sign-offs still open
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    Gate G  → new site live at fiorevera.hu + legacy retired
+             ✅ live 2026-11-16 (Vercel, production deploys from main; DNS repointed in Webnode's DNS centre)
+             ⏳ legacy retired: the Webnode plan expired on its own; the domain still sits at Webnode's
+                registrar until the Rackhost transfer (MASTER-PLAN 4.5, launch plan §0a Track B)
 
-   🚀 LAUNCH on Vercel
+   🚀 LAUNCHED on Vercel — 2026-11-16
 ```
+
+**Project state (2026-11-16):** the site is live on https://www.fiorevera.hu. Every push to `main` deploys production, so code never lands on `main` without a pull request the owner merges. Still open from the master plan: 1.3, 2.3/2.4 sign-off, 3.1, 3.3, 3.4, 4.2, 4.4, 4.5. Open work, in-flight branches and owner decisions: `BACKLOG.md`; operational facts: `docs/operations/runbook.md`.
 
 ---
 
@@ -176,6 +182,8 @@ Vera tracks the project against these gates. She will not skip a gate.
 
 **URL:** [www.fiorevera.hu](https://www.fiorevera.hu) — baseline to replicate
 and dramatically improve. Do not copy verbatim — eliminate all known bugs.
+
+> **State 2026-11-16:** that URL now serves the new site. The legacy Webnode site went offline when its plan expired (it answered 404 from about 2026-11-12); its pages, images and manifest are archived under `references/legacy/`, and its DNS zone is recorded in `docs/launch/legacy-webnode-dns-2026-11-16.md`.
 
 ### Page Map (PRD D-2/D-3 — legacy platform: Webnode 2)
 
@@ -193,6 +201,8 @@ and dramatically improve. Do not copy verbatim — eliminate all known bugs.
 
 Single source in code: `src/data/routes.ts` (router, `SeoHead`, hreflang, sitemap, prerender all read it).
 
+Live behaviour (verified 2026-11-16): all 14 legacy HU + DE page URLs answer 200 or the permanent redirect on https://www.fiorevera.hu. Vercel sends the two permanent redirects as HTTP **308**, not 301 (Google treats both as permanent); whether the wording changes or `vercel.json` forces a literal 301 is an owner decision in `BACKLOG.md`. Unknown URLs answer HTTP 404 with one `dist/404.html`; the client renders the 404 page in the path's locale.
+
 ### Confirmed Visual Design Direction (from live site audit, 2026-09-26)
 
 The existing aesthetic is **correct and should be elevated, not replaced**:
@@ -207,12 +217,12 @@ The existing aesthetic is **correct and should be elevated, not replaced**:
 | **Photography** | Professional, warm-toned weddings/florals | Same — her own real photography |
 | **Overall** | WordPress-level execution | Premium SPA-level execution |
 
-> The palette and typography are **open questions** until confirmed. The above is the working direction derived from the live site audit.
+> The palette and typography are **confirmed and locked** (2026-11-09): linen `#faf7f2`, sage `#7a8b7b`, blush `#e8c5c8`, gold `#d4af37`, text `#2c2825` / `#6b635b`, Cormorant Garamond headings, Inter body — see the brand tokens in `CLAUDE.md` and `design-system-expert`. The table above is the audit that led there.
 
 ### Known Legacy Bugs — Never Carry Over
 
 1. German CTAs link to Hungarian URLs (broken routing)
-2. `design-system-expert` still Steampunk — needs full reshape for floral domain
+2. ~~`design-system-expert` still Steampunk~~ — resolved 2026-11-09: every skill was rewritten code-first for Fiore Vera (MASTER-PLAN 0.3)
 3. Cookie consent untranslated in DE
 4. Region typo "Burgendland" → "Burgenland" (multiple DE pages)
 5. Button typos: "REferenzen", "FRag nach einen Angebot"
@@ -241,21 +251,25 @@ Schema: `- [STATUS] **[CATEGORY]** Description — \`reference\` _(added: YYYY-M
 | 1 | Brand palette & typography | `design-system-expert` reshape | ✅ Resolved (`design-system-expert`) |
 | 2 | Full confirmed page list (incl. EN variants) | PRD / IA | ✅ Resolved (`docs/PRD.md` D-2/D-3 — 7 pages, Flower Garden dropped) |
 | 3 | Photography — does she have a usable set? | Content step (build blocker) | ✅ Resolved (`docs/PRD.md` D-5 — reuse legacy CDN set) |
-| 4 | Vercel project setup | Launch | ⚠️ Task pending |
+| 4 | Vercel project setup | Launch | ✅ Resolved 2026-11-16 (project `fioreveraviragesdekor001`, team `fiorevera`, Hobby plan by owner decision D1 of 2026-11-12, production deploys from `main`; `docs/operations/runbook.md`) |
 | 5 | EN locale — confirm inclusion in final locale set | i18n-guardian | ✅ Confirmed (PRD D-3) |
 | 6 | `to-prd` publish target — local markdown confirmed? | to-prd skill | ✅ Local markdown (`docs/PRD.md`); GitHub Issues → BACKLOG |
+| 7 | Form provider for the inquiry form | MASTER-PLAN 2.10 | ✅ Resolved (Web3Forms free plan, chosen 2026-11-11; env vars set on Vercel and a real submission from the live site delivered 2026-11-16) |
+| 8 | Launch / DNS cutover date | MASTER-PLAN 4.3 | ✅ Resolved (live 2026-11-16 via Webnode's DNS centre; `docs/launch/domain-and-hosting-plan.md` §0a) |
+| 9 | Registrar: who is the registrant on domain.hu, and the move to Rackhost | MASTER-PLAN 4.5 | ⚠️ Open (Track B; DNS stays at Webnode until the transfer completes) |
+| 10 | Copy sign-off per locale (R-1) and Vera's 15 cover picks | MASTER-PLAN 1.3, 2.3, 2.4, 3.4, 4.2 | ⚠️ Open (waits for Vera) |
 
 ---
 
 ## Honest Critique of This Agent
 
 1. **Risk:** Vera definition could be bypassed if session start was manual or habit-based.
-   **Status: Resolved ✅** `.agent/hooks.json` mechanically auto-injects `.agent/last-session-handover.md` and `AGENTS.md` context at session boot, ensuring zero reliance on memory or habit.
+   **Status: open again (2026-11-16).** `.agent/hooks.json` is honoured by the Antigravity IDE only; Claude Code ignores it, and the handover note stayed at 2026-11-09 for a week because sessions ended on "we pause" without the goodbye ritual. Until the Claude Code session-start hook lands (branch `branch-guardrails`), read `.agent/last-session-handover.md` by hand at boot and check its date against the last commit; `goodbye` now treats a pause as a session end.
 
-2. **Risk:** Harness gates require `src/` to have code before lint/test/e2e
-   are meaningful. Until iteration 3, POST-1 through POST-3 will trivially pass
-   or are skipped. **Mitigation:** The visual gate (POST-4) is the meaningful
-   gate until then — treat it as the primary signal.
+2. **Risk:** Harness gates were meaningless while `src/` was empty.
+   **Status: Resolved ✅ (2026-11-09).** `src/` exists and every gate is real: POST-1 lint, POST-2 unit,
+   POST-3 e2e, POST-4 build + visual regression, POST-5 the real-browser check at four widths.
+   The git hooks in `.githooks/` re-run them on commit and push.
 
 3. **Risk:** Skill registry in this file could drift from actual skill contents on disk.
    **Status: Resolved ✅** Standardized with `src/types/skills.ts` (strict TypeScript `SkillName` union type) and `tests/unit/skills.test.ts`. Runs on `npm test` and `npm run lint` — 100% type-checked and validated against drift.

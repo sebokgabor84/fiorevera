@@ -8,17 +8,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Session close goes through the `goodbye` skill (`.agent/skills/goodbye/SKILL.md`): it syncs `BACKLOG.md`, appends learnings to `.agent/memory.md`, and rewrites `.agent/last-session-handover.md`.
 
-## Project state (as of 2026-11-09)
+## Project state (as of 2026-11-16)
 
-**Fiore Vera** — a multilingual (HU primary / DE / EN) wedding decoration, floristry and prop-rental site, prerendered to static HTML per route (PRD D-18), replacing the Webnode legacy site www.fiorevera.hu. Hosting target: Vercel (not set up yet).
+**Fiore Vera** — a multilingual (HU primary / DE / EN) wedding decoration, floristry and prop-rental site, prerendered to static HTML per route (PRD D-18). **Live on https://www.fiorevera.hu since 2026-11-16**; it replaced the Webnode legacy site, whose plan had expired (content archived under `references/legacy/`). Hosting: Vercel, team `fiorevera`, project `fioreveraviragesdekor001`, Hobby plan by owner decision D1 (Pro is the fall-back on a pause). **Production deploys from `main` on every push**; pull requests get a Vercel preview check. DNS is still served from Webnode's DNS centre (Register.it nameservers) until the Rackhost transfer (launch plan Track B). Operational facts (hosting settings, DNS, uptime monitor, Search Console, form quota, rollback, who can do what): `docs/operations/runbook.md`; launch record: `docs/launch/domain-and-hosting-plan.md` (§0a, §1.4) and `docs/launch/legacy-webnode-dns-2026-11-16.md`.
 
-The scope contract is **`MASTER-PLAN.md`** (34 numbered items, frozen from `docs/PRD.md`). Every build action traces to an item; new ideas go to `BACKLOG.md`. As of the first build pass (`feature/site-build`):
+The scope contract is **`MASTER-PLAN.md`** (34 numbered items, frozen from `docs/PRD.md`). Every build action traces to an item; new ideas go to `BACKLOG.md`. As of 2026-11-16 (the first build pass, the QA fixes and the launch work are all merged to `main`):
 
-- **Done:** Phase 0.1 archive (`scripts/archive-legacy.ts` → `references/legacy/`), 0.2 image pipeline (`assets-src/<slot>/` → `public/assets/**.webp` + generated `src/data/generated/imageMeta.ts`), 0.4 page map; Phase 1 (tokens, locale router, i18n parity gate, header + mobile menu, language toast, footer, `SeoHead`, prerender + sitemap); all Phase 2 pages render in all 3 locales with the archived legacy photography.
-- **Open:** 1.3 Vera's 15 cover picks, 2.3/2.4 copy sign-off (R-1), 2.10 form provider endpoint, Phase 3: axe as a hard gate (the 4-browser e2e run, Lighthouse and the visual-regression gate are in place; QA session report in `docs/qa/`), Phase 4 Vercel + cutover.
+- **Done:** Phase 0.1 archive (`scripts/archive-legacy.ts` → `references/legacy/`), 0.2 image pipeline (`assets-src/<slot>/` → `public/assets/**.webp` + generated `src/data/generated/imageMeta.ts`), 0.4 page map; Phase 1 (tokens, locale router, i18n parity gate, header + mobile menu, language toast, footer, `SeoHead`, prerender + sitemap); all Phase 2 pages render in all 3 locales with the archived legacy photography; 2.10 contact form on Web3Forms (a real submission from the live site was delivered); 3.2 e2e suite green on all 4 browsers; 4.1 Vercel project; 4.3 DNS cutover. The visual-regression gate is in place (QA reports in `docs/qa/`).
+- **Open:** 1.3 Vera's 15 cover picks, 2.3/2.4 copy sign-off (R-1), 3.1 axe as a hard gate (no e2e spec runs axe yet), 3.3 Lighthouse ≥ 90 on every route, 3.4 Vera's review checklist, 4.2 Vera's phone sign-off, 4.4 Search Console follow-up (day 7 / day 30), 4.5 Webnode retirement, which ends with the Rackhost transfer. Open work, in-flight branches and owner decisions: `BACKLOG.md`.
 - **Heavy folders are git-ignored** (`references/legacy/images/`, `references/legacy/raw/`, `assets-src/`, ~155 MB each side); regenerate with `npm run archive:legacy -- --seed-assets` then `npm run optimize:assets`. `references/legacy/manifest.json` + Markdown pages are committed.
 
-Key source facts: `src/data/routes.ts` is the single route source (router, `SeoHead`, hreflang, sitemap, prerender). `src/i18n/config.ts` creates one pre-initialised i18next instance per locale from the pathname — no language detection, no `changeLanguage`, nothing reads `window` during render (hydration-safe). `src/entry-client.tsx` hydrates when `#root` has element children, else renders (dev). `src/entry-server.tsx` is used by `scripts/prerender.ts` and by `tests/unit/render.test.tsx`. Data lives in `src/data/*.ts` with Zod contracts in `src/data/types.ts`; image lists come only from the generated `imageMeta.ts` (data references slots/album slugs, never filenames — PRD D-5).
+Key source facts: `src/data/routes.ts` is the single route source (router, `SeoHead`, hreflang, sitemap, prerender). `src/i18n/config.ts` creates one pre-initialised i18next instance per locale from the pathname — no language detection, no `changeLanguage`, nothing reads `window` during render (hydration-safe). `src/entry-client.tsx` hydrates when `#root` has element children, else renders (dev). `src/entry-server.tsx` is used by `scripts/prerender.ts` and by `tests/unit/render.test.tsx`. Data lives in `src/data/*.ts` with Zod contracts in `src/data/types.ts`; image lists come only from the generated `imageMeta.ts` (data references slots/album slugs, never filenames — PRD D-5). `src/lib/analytics.ts` starts Vercel Web Analytics only on `fiorevera.hu`, `www.fiorevera.hu` and `*.vercel.app` (never in dev, `vite preview`, Playwright or the visual suite); `src/entry-client.tsx` calls it once after hydration. `src/lib/submitInquiry.ts` is the single place that talks to the form provider (Web3Forms, endpoint and access key from `VITE_FORM_ENDPOINT` / `VITE_FORM_ACCESS_KEY`).
+
+Deploy facts: `vercel.json` (redirects, security headers incl. CSP, `trailingSlash`) may contain only keys of Vercel's schema — the import validator rejects anything else, a `_comment_*` pseudo-key broke the first import on launch day (`dcd491e`); explanations go in `docs/`. The two permanent redirects answer HTTP 308 on Vercel. Unknown URLs get a native HTTP 404 with the single `dist/404.html`; the client renders the localized page (curl therefore sees the HU shell on `/de/<unknown>/`, by design). The Vercel project overrides the install command with `npm ci --ignore-scripts` because `prepare` runs `git config`. `VITE_*` values are inlined into the bundle and therefore public; they are stored on Vercel as plain config, never as secrets.
 
 ## Stack & commands
 
@@ -27,29 +29,40 @@ React 19 + TypeScript + Vite 7, Vitest 4 (jsdom, globals on, setup file `src/set
 ```bash
 npm install
 npm run dev              # Vite dev server (http://localhost:5173) — CSR in dev; prerendered HTML only in the build
+npm run dev:form         # fake form provider + Vite dev server wired to it: test the contact form locally without spending real submissions
+npm run form:fake        # only the fake provider (logs JSON POSTs, answers CORS preflight; port FAKE_FORM_PORT, default 8787; add -- --status=500 to test the failure path)
 npm run build            # sitemap → tsc -b → vite build → vite build --ssr → scripts/prerender.ts (dist/<route>/index.html)
 npm run preview          # serve dist/
 npm run lint             # eslint . — 0 errors AND 0 warnings before any commit
-npm test -- --run        # vitest (54 tests: routes, data, i18n parity, server render of every route, archive, assets)
-npm run test:e2e         # playwright — reuses a running dev server locally; specs in tests/e2e/
+npm run format           # prettier --write .
+npm test -- --run        # vitest (77 tests in 11 files: routes, data, i18n parity, server render of every route, archive, assets, skills registry, analytics gate, submitInquiry, inquiry mailto, inquiry validation)
+npm run test:e2e         # playwright, 4 projects — reuses a running dev server locally; specs in tests/e2e/ (280 passed / 4 skipped on 2026-11-16: compare the total, a piped `| tail` hides the exit code)
+npm run test:vitals      # only tests/e2e/vitals.spec.ts
 npm run test:visual      # visual regression + layout invariants vs the PRODUCTION build (vite preview :4173); chromium; baselines in tests/visual/__screenshots__/
-npm run test:visual:update  # re-baseline — ONLY after the owner approved the new look
+npm run visual:review    # the same run with the HTML report (expected / actual / diff per snapshot) — show this to the owner on a red run
+npm run test:visual:update  # re-baseline — ONLY after the owner approved the new look (scripts/visual-approve.mjs, needs -- --approved-by="<name>")
 npm run prepush          # lint → unit → build → visual (what .githooks/pre-push runs)
+npm run prepare          # git config core.hooksPath .githooks (runs on npm install; Vercel skips it via --ignore-scripts)
 npm run archive:legacy -- --seed-assets   # Webnode archive → references/legacy/ + assets-src/
 npm run optimize:assets  # assets-src/ → public/assets/**.webp + src/data/generated/imageMeta.ts
+npm run sitemap          # regenerates public/sitemap.xml (also the first step of the build)
 npm run validate:i18n    # key-parity gate on the three locale files
 npm run audit:gdpr       # every data sink in src/, index.html and the CSP must be declared in docs/gdpr/data-register.json
 npm run lockscreen       # regenerates the QR lockscreen PNGs
+npm run lockscreen:variants  # regenerates the three alternate lockscreen designs
 npm run favicon          # public/favicon.svg → favicon-16/32, apple-touch-icon, android-chrome PNGs (add -- --from <variant-id> to ship a design-round variant first)
 npm run favicon:variants # regenerates docs/design/favicon-variants.html (the favicon design round, with 16 px raster proof)
+node scripts/visual-contact-sheet.mjs   # no npm script yet: regenerates tests/visual/review.html, the baseline contact sheet (serve it with the `visual-review` entry in .claude/launch.json)
 ```
 
 Run a single unit test: `npm test -- --run tests/unit/render.test.tsx` (or `-t "test name"`).
-Run a single e2e spec: `npx playwright test tests/e2e/<name>.spec.ts`. Playwright reuses an already-running dev server locally (`reuseExistingServer`), uses 1 worker + 2 retries on CI.
+Run a single e2e spec: `npx playwright test tests/e2e/<name>.spec.ts`. Playwright reuses an already-running dev server locally (`reuseExistingServer`), uses 1 worker + 2 retries on CI. A reused server belongs to whichever checkout started it and carries that checkout's `.env.local`; the same holds for the visual suite on :4173.
 
 ## Definition of Done (enforced before every commit/push)
 
-Run in order, stop on first failure, **fix the code not the test**: `npm run lint` → `npm test -- --run` → `npm run test:e2e` → `npm run build` (prerender must succeed) → `npm run test:visual` (layout invariants + pixel baselines against the production build). A build slice is additionally not "done" until it has been **visually verified** in a real browser at 375, 768, 1280 and 1920 px with the menu open and the toast visible (README step 9 / `AGENTS.md` POST-4) — the automated gates catch regressions, not taste. The git pre-push hook (`.githooks/pre-push`, installed by `npm run prepare`) runs lint → unit → build → visual; `FV_SKIP_HOOKS=1` bypasses it only in an emergency and must be recorded in the PR. Re-baseline (`npm run test:visual:update`) only after an explicit owner GO on the new look — never to make a red run green. No commit without an explicit user "GO".
+Run in order, stop on first failure, **fix the code not the test**: `npm run lint` → `npm test -- --run` → `npm run test:e2e` → `npm run build` (prerender must succeed) → `npm run test:visual` (layout invariants + pixel baselines against the production build). A build slice is additionally not "done" until it has been **visually verified** in a real browser at 375, 768, 1280 and 1920 px with the menu open and the toast visible (README step 9 / `AGENTS.md` POST-5) — the automated gates catch regressions, not taste. The git pre-push hook (`.githooks/pre-push`, installed by `npm run prepare`) runs lint → unit → build → visual; `FV_SKIP_HOOKS=1` bypasses it only in an emergency and must be recorded in the PR. Re-baseline (`npm run test:visual:update`) only after an explicit owner GO on the new look — never to make a red run green. No commit without an explicit user "GO".
+
+**Code-writing agents never commit on `main`.** `main` deploys production on Vercel with every push; work happens on a `feature/<short-desc>` branch (in its own worktree when several sessions run at once) and reaches `main` only through a pull request the owner merges.
 
 ## Conventions that will trip you up
 
@@ -62,7 +75,8 @@ Run in order, stop on first failure, **fix the code not the test**: `npm run lin
   ESLint runs on every `*.ts`/`*.tsx` in the repo (`scripts/`, `tests/` included); only `dist` is ignored. `tsc -b` type-checks `src/` and `vite.config.ts` only, so `scripts/` and `tests/` are linted but not part of the build type-check.
 - **TS is strict**: `noUnusedLocals`, `noUnusedParameters`, `verbatimModuleSyntax` (type-only imports must use `import type`), `erasableSyntaxOnly`, `noUncheckedSideEffectImports`. No `any` (qa-specialist vetoes it, even in temp scripts).
 - **Zod DTOs**: data structures are validated against schemas in `src/data/types.ts` before tests. If validation fails, fix the data, not the schema.
-- **Semantic HTML / a11y**: `jsx-a11y` recommended rules are on; interactive elements must be native (`<button>`, `<a>`), no `onClick` on `<div>`. `index.html` already ships the skip link targeting `#main-content`.
+- **Semantic HTML / a11y**: `jsx-a11y` recommended rules are on; interactive elements must be native (`<button>`, `<a>`), no `onClick` on `<div>`. The skip link targeting `#main-content` is rendered by `src/components/Layout/Layout.tsx` in the page's language (`common.skipToContent`), as the first focusable element; `index.html` does not ship one.
+- **E2E fixture rule**: every spec in `tests/e2e/` imports `test` and `expect` from `./fixtures` (`tests/e2e/fixtures.ts`), never from `@playwright/test`. The auto fixture aborts every request to the real form providers (`api.web3forms.com`, `formspree.io`) in every test; a spec with the bare import loses that guard and can spend real submissions (250 a month) and reach the business inbox. Tests that need a provider answer mock it with `page.route()`. The visual specs still use the bare import and never press submit.
 - **Images**: site assets go in `public/assets/` as `webp`, ≤ 200 KB. (The `lockscreen/` folder is exempt — it is a generated-asset workspace, not shipped site imagery.)
 - **i18n**: all copy is keyed (HU/DE/EN) in `src/i18n/locales/*.json`; `tests/unit/i18n.test.ts` fails on a missing key, an empty string, or an identical value in all three locales (whitelist in `scripts/validate-i18n.ts`), on legacy typos, on garden mentions outside `about.garden.*` (PRD D-16) and on SEO titles > 60 / descriptions > 160 chars. The toast strings are rendered in the *target* locale via `getI18n(target)`.
 - **Hydration safety (PRD D-18)**: no `window`/`document`/`localStorage`/`Intl`/`Date` in render paths — effects only (`react-hooks/set-state-in-effect` is an error: use a callback such as `requestAnimationFrame` inside the effect). `formatHuf` and `PRIVACY_UPDATED` are hand-formatted for this reason.
