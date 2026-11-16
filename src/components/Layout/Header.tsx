@@ -78,7 +78,17 @@ export const Header = () => {
       <div className={`container ${styles.bar}`}>
         {/* No aria-label: the accessible name must contain the visible text (WCAG 2.5.3, QA M8). */}
         <LocalizedLink page="home" className={styles.logo}>
-          {logo && <img src={logo.src} width={logo.width} height={logo.height} alt="" className={styles.logoImg} />}
+          {logo && (
+            <img
+              src={logo.srcSmall}
+              srcSet={`${logo.srcSmall} 240w, ${logo.src} ${logo.width}w`}
+              sizes="80px"
+              width={logo.width}
+              height={logo.height}
+              alt=""
+              className={styles.logoImg}
+            />
+          )}
           <span className={styles.wordmark}>
             <span className={styles.brand}>Fiore Vera</span>
             <span className={styles.tagline}>{t('meta.tagline')}</span>

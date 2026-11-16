@@ -45,7 +45,7 @@ export const IMAGE_META: ImageMeta = {
     {
       "src": "/assets/brand/01-logo-fiore-vera.webp",
       "srcMedium": "/assets/brand/01-logo-fiore-vera.webp",
-      "srcSmall": "/assets/brand/01-logo-fiore-vera.webp",
+      "srcSmall": "/assets/brand/01-logo-fiore-vera-w240.webp",
       "width": 810,
       "height": 842
     }

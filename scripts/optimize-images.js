@@ -9,9 +9,11 @@
  *   assets-src/rental/<item>/*        → public/assets/rental/<item>/*.webp
  *   assets-src/brand/*                → public/assets/brand/*.webp (alpha kept)
  *
- * Every photo gets a full variant (long edge ≤ 1920 px, ≤ 200 KB), a medium
- * variant (≤ 1280 px, suffix -w1280 — what phones at DPR 2–3 should pick, QA M13)
- * and a small variant (≤ 800 px, suffix -w800). Outputs whose source is
+ * Every photo gets a full variant (long edge ≤ 1920 px, ≤ 200 KB, quality ≤ 82), a medium
+ * variant (≤ 1280 px, suffix -w1280, quality ≤ 76 — what phones at DPR 2–3 should pick, QA M13)
+ * and a small variant (≤ 800 px, suffix -w800, quality ≤ 70 — PageSpeed 2026-11-16 flagged the
+ * 800 w tier as under-compressed). Brand marks keep their alpha and additionally get a -w240
+ * variant for the header (displayed at ≤ 80 px; the full 810 px mark cost 16 KB per page view). Outputs whose source is
  * gone are deleted, so re-running after swapping one album only changes that
  * album. The dimension manifest src/data/generated/imageMeta.ts is rewritten
  * on every run. Idempotent: unchanged sources are skipped (mtime check).
@@ -30,6 +32,9 @@ const MAX_BYTES = 200 * 1024;
 const FULL_EDGE = 1920;
 const MEDIUM_EDGE = 1280;
 const SMALL_EDGE = 800;
+/** Per-tier quality ceilings: the smaller the tier, the less a lower quality shows on a phone. */
+const TIER_QUALITY = { full: 82, medium: 76, small: 70 };
+const BRAND_SMALL_EDGE = 240;
 const FORCE = process.argv.includes('--force');
 const IMAGE_RE = /\.(jpe?g|png|webp|tiff?|heic)$/i;
 
@@ -59,13 +64,13 @@ const isFresh = async (src, out) => {
 };
 
 /** Encodes to webp under MAX_BYTES: steps quality down, then shrinks the long edge. Returns final metadata. */
-const encodePhoto = async (src, out, edge) => {
+const encodePhoto = async (src, out, edge, maxQuality) => {
   let currentEdge = edge;
   for (let attempt = 0; attempt < 6; attempt++) {
     const base = sharp(src)
       .rotate()
       .resize({ width: currentEdge, height: currentEdge, fit: 'inside', withoutEnlargement: true });
-    for (let quality = 82; quality >= 34; quality -= 6) {
+    for (let quality = maxQuality; quality >= 34; quality -= 6) {
       const buf = await base.clone().webp({ quality, effort: 5 }).toBuffer();
       if (buf.length <= MAX_BYTES) {
         await writeFile(out, buf);
@@ -83,6 +88,15 @@ const encodeBrand = async (src, out) => {
   await writeFile(out, buf);
   const meta = await sharp(buf).metadata();
   return { width: meta.width, height: meta.height };
+};
+
+/** Header-sized brand mark: alpha kept, long edge 240 px (3× the 80 px display size). */
+const encodeBrandSmall = async (src, out) => {
+  const buf = await sharp(src)
+    .resize({ width: BRAND_SMALL_EDGE, height: BRAND_SMALL_EDGE, fit: 'inside', withoutEnlargement: true })
+    .webp({ quality: 80, alphaQuality: 70, effort: 6 })
+    .toBuffer();
+  await writeFile(out, buf);
 };
 
 const dims = async (file) => {
@@ -106,8 +120,22 @@ const processSlot = async (slotRel, { brand = false } = {}) => {
     expected.add(path.basename(full));
     const publicFull = `/assets/${slotRel}/${name}.webp`;
     if (brand) {
-      const m = (await isFresh(src, full)) ? await dims(full) : await encodeBrand(src, full);
-      entries.push({ src: publicFull, srcMedium: publicFull, srcSmall: publicFull, width: m.width, height: m.height });
+      const small = path.join(outDir, `${name}-w${BRAND_SMALL_EDGE}.webp`);
+      expected.add(path.basename(small));
+      let m;
+      if ((await isFresh(src, full)) && (await isFresh(src, small))) m = await dims(full);
+      else {
+        m = await encodeBrand(src, full);
+        await encodeBrandSmall(src, small);
+        done++;
+      }
+      entries.push({
+        src: publicFull,
+        srcMedium: publicFull,
+        srcSmall: `/assets/${slotRel}/${name}-w${BRAND_SMALL_EDGE}.webp`,
+        width: m.width,
+        height: m.height,
+      });
       continue;
     }
     const medium = path.join(outDir, `${name}-w1280.webp`);
@@ -117,9 +145,9 @@ const processSlot = async (slotRel, { brand = false } = {}) => {
     let m;
     if ((await isFresh(src, full)) && (await isFresh(src, medium)) && (await isFresh(src, small))) m = await dims(full);
     else {
-      m = await encodePhoto(src, full, FULL_EDGE);
-      await encodePhoto(src, medium, MEDIUM_EDGE);
-      await encodePhoto(src, small, SMALL_EDGE);
+      m = await encodePhoto(src, full, FULL_EDGE, TIER_QUALITY.full);
+      await encodePhoto(src, medium, MEDIUM_EDGE, TIER_QUALITY.medium);
+      await encodePhoto(src, small, SMALL_EDGE, TIER_QUALITY.small);
       done++;
     }
     entries.push({
