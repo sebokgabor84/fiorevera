@@ -1,0 +1,68 @@
+# Fiore Vera — CI gates for every pull request. PREPARED, NOT ACTIVE.
+#
+# This file does nothing while it lives in docs/ci/. To switch it on (owner's decision):
+#     mkdir -p .github/workflows && git mv docs/ci/github-actions-ci.yml .github/workflows/ci.yml
+# then commit and push; GitHub runs it on the next pull request. See docs/ci/README.md.
+#
+# What it runs (same commands as the local Definition of Done, on Linux, chromium only):
+#   lint + type-check of scripts and tests → unit (incl. GDPR audit, sitemap, gate self-tests)
+#   → production build + prerender → e2e in chromium (incl. axe on every route × locale)
+#   → layout invariants of the visual suite (no pixels: those baselines are macOS-only, see README)
+name: CI
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  gates:
+    name: lint · unit · build · e2e (chromium) · axe · layout
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint (ESLint, 0 warnings) + type-check scripts and tests
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm test -- --run
+
+      - name: Production build + prerender
+        run: npm run build
+
+      - name: Install Chromium for Playwright
+        run: npx playwright install --with-deps chromium
+
+      # CI=true is set by GitHub: Playwright starts its own dev server (never reuses one), runs one
+      # worker with two retries, and the contact success path fails instead of skipping.
+      - name: E2E in chromium, including axe on every route and locale
+        run: npx playwright test --project=chromium
+
+      - name: Layout invariants against the production build (no pixel comparison)
+        run: npx playwright test -c playwright.visual.config.ts tests/visual/layout.spec.ts
+
+      - name: Keep the evidence of a red run
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-evidence
+          path: |
+            test-results/
+            playwright-report-visual/
+          retention-days: 7

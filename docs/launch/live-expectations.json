@@ -1,0 +1,16 @@
+{
+  "$comment": "What `npm run verify:live` (scripts/verify-live.ts) expects from the live site's DNS. Source: docs/launch/domain-and-hosting-plan.md §0a (A5, A7, B7). Update this file when the DNS is changed on purpose (for example after the move to Rackhost, when the nameservers become *.dns24.hu); a red check after an unplanned change is the alarm this file exists for.",
+  "apex": "fiorevera.hu",
+  "www": "www.fiorevera.hu",
+  "apexA": ["216.198.79.1"],
+  "wwwCname": "f07e1d688aad7d56.vercel-dns-017.com",
+  "nameserverFamilies": {
+    "register.it": "Register.it (via Webnode) — where the zone lives until the registrar transfer",
+    "dns24.hu": "Rackhost — where the zone lives after the registrar transfer (Track B)"
+  },
+  "txtMustInclude": [
+    { "startsWith": "google-site-verification=PAUvTE8j94p1e7yIPnOHCmNnOoObRmOY3l0ro1FyHi0", "why": "Search Console Domain property; losing it drops the property's verification" },
+    { "startsWith": "v=spf1", "why": "SPF record; without it anyone can send mail that claims to be from the domain" }
+  ],
+  "certificateMinDaysLeft": 10
+}

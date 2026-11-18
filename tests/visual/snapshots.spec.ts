@@ -1,5 +1,5 @@
-import { test, expect } from '@playwright/test';
-import { HEADER_WIDTHS, PAGES, SNAPSHOT_HEIGHT, SNAPSHOT_WIDTHS, expectFullyInViewport, openStable } from './helpers';
+import { test, expect } from './fixtures';
+import { HEADER_WIDTHS, PAGES, SNAPSHOT_HEIGHT, SNAPSHOT_WIDTHS, expectFullyInViewport, openStable, snapshotElement } from './helpers';
 
 /**
  * Pixel baselines (chromium, css pixels, animations off, toast dismissed).
@@ -35,7 +35,7 @@ test.describe('language toast (German browser on the HU home)', () => {
       await openStable(page, PAGES[0].path, width, 812, { keepToast: true });
       const toast = page.getByTestId('language-toast');
       await expect(toast).toBeVisible();
-      await expect(toast).toHaveScreenshot(`toast-${width}.png`);
+      await snapshotElement(toast, `toast-${width}.png`);
     });
   }
 });
@@ -45,19 +45,21 @@ test.describe('interactive states', () => {
     await openStable(page, PAGES[0].path, 375, 812);
     await page.getByRole('button', { name: /men/i }).first().click();
     await page.waitForTimeout(150);
+    // A viewport shot of an overlay: the panel must lie inside the viewport, or the shot shows only part of it.
+    await expectFullyInViewport(page.getByRole('dialog'));
     await expect(page).toHaveScreenshot('menu-open-375.png');
   });
 
   for (const width of SNAPSHOT_WIDTHS) {
     test(`gallery first carousel on slide 2 @ ${width}`, async ({ page }) => {
-      // The first album section (heading + carousel) is 832 px tall at 1280: it must fit the viewport,
-      // otherwise the element screenshot freezes a half-painted frame (see expectFullyInViewport).
+      // The carousel is 715 px tall at 1280: it must fit the viewport, otherwise the element screenshot
+      // freezes a half-painted frame (snapshotElement checks that). The target is the carousel itself,
+      // not the album section around it (`getByRole('region').first()` resolves to the labelled <section>).
       await openStable(page, PAGES[2].path, width, width >= 1024 ? 1200 : 900);
-      const region = page.getByRole('region').first();
-      await region.getByRole('button').nth(1).click();
+      const carousel = page.locator('[aria-roledescription="carousel"]').first();
+      await carousel.getByRole('button').nth(1).click();
       await page.waitForTimeout(400);
-      await expectFullyInViewport(region);
-      await expect(region).toHaveScreenshot(`carousel-slide2-${width}.png`);
+      await snapshotElement(carousel, `carousel-slide2-${width}.png`);
     });
   }
 });

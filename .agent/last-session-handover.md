@@ -1,5 +1,7 @@
 # 🌸 Fiore Vera — Session Handover Report
-> **Last Updated:** 2026-11-16 · the site is **live** on https://www.fiorevera.hu · harvest consolidation on `chore/goodbye-harvest` (docs only) — **uncommitted, awaiting GO**
+> **Last Updated:** 2026-11-18 · the site is **live** on https://www.fiorevera.hu · harvest consolidation on `chore/goodbye-harvest` is pull request 8 (open, `main` merged in)
+>
+> **Update 2026-11-18 (read first):** pull request 9 (`claude/quality-gates-e8a654`) is merged: axe gate, server identity, GDPR audit and register seal in the unit run, scripts type-check, `verify:live`, sitemap `lastmod`, contact-sheet diffs. Gates on `main` now: unit 116 (15 files), e2e 397 passed / 7 skipped. Open pull requests: 8 (this harvest), 7 (`perf/web-vitals`: fonts 243 → 93 KB, inlined stylesheet; its script needs the dev dependency `subset-font`, not yet in `package.json`). `claude/branch-guardrails-805745` is pushed (`8e245a8`), stacked on the harvest branch. `claude/site-polish-5354c6` waits for the owner's second look at 13 screens. `claude/vera-concierge-7826b5` waits for the owner's design interview. Known live defect until pull request 7 merges: the "→" after the home service-card links is drawn in a system font (outside the declared `unicode-range`). Three Vercel projects build this repo (`fioreveraviragesdekor001` = production; `fioreveraviragesdekor` and `fiorevera` look like leftovers, owner to check). The five finished sub chats are deleted; their notes are in `.agent/harvest/`.
 
 ---
 
@@ -45,7 +47,7 @@
 1. Owner GO → commit the consolidation on `chore/goodbye-harvest`, push, open the pull request (compare link + drafted body), merge. Docs only, but the merge still triggers a production deploy.
 2. Pull requests in the merge order above; before each: rebase on `main`, full DoD (`npm run lint` → `npm test -- --run` → `npm run test:e2e` → `npm run build` → `npm run test:visual` → `npm run audit:gdpr`), Review Brief, GO.
 3. Re-run PageSpeed mobile on https://www.fiorevera.hu now that `2f97d84` is on `main`, and start `docs/qa/web-vitals-log.md` with both runs (SEO Webvitals chat). Then font subsetting — the 800 ms render delay is the remaining LCP lever (`BACKLOG.md` `[PERF]`).
-4. Gate hardening without owner input: axe as a hard gate (MASTER-PLAN 3.1), `audit:gdpr` inside `npm test` or the pre-push hook, the provider guard for `tests/visual/`, a lint rule against bare `@playwright/test` imports in `tests/e2e/` (Quality gates chat).
+4. ~~Gate hardening~~ done with pull request 9 (2026-11-18). Left from that chat: the font-coverage test (`tests/unit/fonts.test.ts`), held back until `perf/web-vitals` is on `main`, and switching on the prepared CI workflow (`docs/ci/README.md`, owner decision).
 5. Search Console: hreflang report and index coverage on day 7 (2026-11-23) and day 30 (2026-12-16) — MASTER-PLAN 4.4.
 6. After the owner's steps below: privacy page lines (Web3Forms recipient + hosting section, `hosting` register entry, `PRIVACY_UPDATED` bump), Rackhost zone pre-fill and post-transfer sweep (plan §0a B7–B9), DE/EN inner-page baselines after copy sign-off.
 

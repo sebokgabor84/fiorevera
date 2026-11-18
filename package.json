@@ -8,7 +8,7 @@
     "dev:form": "tsx scripts/fake-form-provider.ts --dev",
     "form:fake": "tsx scripts/fake-form-provider.ts",
     "build": "tsx scripts/generate-sitemap.ts && tsc -b && vite build && vite build --ssr src/entry-server.tsx --outDir dist-ssr && tsx scripts/prerender.ts",
-    "lint": "eslint .",
+    "lint": "eslint . && tsc -p tsconfig.scripts.json",
     "format": "prettier --write .",
     "test": "vitest",
     "test:e2e": "playwright test",
@@ -25,11 +25,13 @@
     "sitemap": "tsx scripts/generate-sitemap.ts",
     "test:visual": "playwright test -c playwright.visual.config.ts",
     "test:visual:update": "node scripts/visual-approve.mjs",
-    "prepush": "npm run lint && npm test -- --run && npm run audit:gdpr && npm run build && npm run test:visual",
+    "prepush": "npm run lint && npm test -- --run && npm run build && npm run test:visual",
     "prepare": "git config core.hooksPath .githooks || true",
     "release:status": "node scripts/release/status.mjs",
     "release:cleanup": "node scripts/release/cleanup.mjs",
     "release:selftest": "bash scripts/release/selftest.sh",
+    "visual:sheet": "node scripts/visual-contact-sheet.mjs",
+    "verify:live": "tsx scripts/verify-live.ts",
     "visual:review": "playwright test -c playwright.visual.config.ts --reporter=html; playwright show-report playwright-report-visual"
   },
   "dependencies": {

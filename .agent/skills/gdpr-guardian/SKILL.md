@@ -57,24 +57,32 @@ Test sends: a real submission costs quota and lands in the owner's inbox — ask
 ## 1. The gate — run on every change in scope
 
 ```bash
-npm run audit:gdpr   # = tsx .agent/skills/gdpr-guardian/scripts/audit-personal-data.ts
+npm run audit:gdpr             # = tsx .agent/skills/gdpr-guardian/scripts/audit-personal-data.ts
+npm run audit:gdpr -- --seal   # after an intended register change: stamps today's date as `version`, records the fingerprint
 ```
 
+The same checks run inside `npm test` (`tests/unit/gdpr.test.ts`, so also in the pre-push hook): nobody has to remember the command.
+
 Fails on: an `<input|textarea|select name>` not in `formFields`; a storage key (literal or `*_KEY` constant) not in `storage`;
+a cookie write (`document.cookie = …`, `cookieStore.set`) whose name is not declared with kind `cookie`, or cannot be read from the source;
 an `import.meta.env.VITE_*` not in `env`; a file with `fetch`/`sendBeacon`/`XMLHttpRequest`/`WebSocket` not in `networkSinks`;
-an `https://` host in `src/`, `index.html` or the CSP that is neither a declared processor (`hosts`) nor an `outboundLinks` entry;
+an `https://` host in `src/` (code and CSS), `index.html` or the CSP that is neither a declared processor (`hosts`) nor an `outboundLinks` entry;
+**anything the browser loads without a click** — `<script src>`, `<iframe>`, `<embed>`, `<object>`, a resource `<link>` (preconnect, dns-prefetch, preload, stylesheet), media with a literal external source, CSS `@import` / `url()` — from a host that is not in `hosts` (an `outboundLinks` entry is not enough: the host sees the visitor's IP before any click);
 `navigator.*` signals not in `browserSignals`; any register entry whose `privacyKey` does not exist in `hu.json`.
+
+Two more rules live in the tests: the request sent to the form provider carries **exactly** the keys listed under `inquiryPayload`
+(`tests/unit/gdpr.test.ts`, `tests/e2e/contact.spec.ts`; the honeypot and the consent flag are never sent), and **a register change needs a new seal**:
+`docs/gdpr/data-register.seal.json` holds the register's fingerprint and version, and the unit test fails until `npm run audit:gdpr -- --seal` was run.
 **Fix by declaring the sink with a purpose and a privacy key — never by widening the regexes.** If the purpose cannot be
 written in one line, the sink should not exist. The script strips comments before matching (`code()`), so a host or key
 mentioned only in a comment is not a sink.
 
 **Version rule:** every edit of `docs/gdpr/data-register.json` sets `version` to the date of the edit, in the same commit.
-Nothing enforces it yet (a test is a proposal), so check it in review.
+Enforced since 2026-11-18: `npm run audit:gdpr -- --seal` stamps the date and writes `docs/gdpr/data-register.seal.json`; `tests/unit/gdpr.test.ts` fails on a register change without a new seal.
 
 **What the gate does not see (verified in the script, 2026-11-16) — review these by hand:**
-- It is **not part of `npm test` or either git hook**; it runs only when someone runs it. Run it before every Review Brief in scope and say so.
-- Only `https://` hosts are detected: a same-origin or package-injected script (`@vercel/analytics` `inject()` talks to `/_vercel/insights/*`) passes without a `networkSinks` entry; a `<script src>`, `<iframe>` or `<link rel="preconnect">` is caught as a host at best, never as a sink.
-- `document.cookie` is checked for presence only, not per cookie name.
+- It runs inside `npm test` (`tests/unit/gdpr.test.ts`) and therefore in the pre-push hook; still say in the Review Brief that the slice touched visitor data.
+- An iframe, an external `<script src>`, a `<link rel="preconnect">`, a web font and a cookie write are caught since 2026-11-18 (see the cases in `tests/unit/gdpr.test.ts`). Still invisible: a same-origin or package-injected script (`@vercel/analytics` `inject()` talks to `/_vercel/insights/*`) passes without a `networkSinks` entry.
 - `privacyKey` existence is checked in `hu.json` only (parity with DE/EN comes from the i18n gate).
 - It does not check that the privacy page **names** a processor, nor the register's `version`.
 
@@ -122,4 +130,4 @@ Legal statements are tagged **[INFO]** / **[CONFIRM]** / **[DECISION]** in the c
 - `i18n-guardian`: three-locale parity for every consent/privacy string; DE addresses the couple as *ihr* (owner decision 2026-11-10), HU te/ti follows the surrounding strings.
 - `accessibility-expert`: checkbox has a visible label, `aria-describedby` for helper and error, error `role="alert"`.
 - `seo-expert`: CSP hosts in `vercel.json`, no third-party script in the head without this skill's sign-off.
-- `qa-specialist`: the audit script runs before the Review Brief (it is not in the hooks); the e2e provider guard (`tests/e2e/fixtures.ts`) keeps tests away from the real inbox. Not built yet: an e2e assertion for the unticked consent default and the exact payload fields.
+- `qa-specialist`: the audit runs inside `npm test`; e2e asserts the unticked consent box in all three locales, that nothing is sent without consent, and the payload keys (`tests/e2e/contact.spec.ts`).

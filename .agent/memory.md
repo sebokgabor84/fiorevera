@@ -56,7 +56,7 @@
 
 ### Testing
 
-- **Gate numbers measured 2026-11-16 (re-measure, do not quote): lint 0/0 · unit 77 passed in 11 files · e2e 280 passed / 4 skipped (71 tests × 4 projects) · build 21 pages + 404 · visual 109 checks · 27 baseline PNGs** — [firefox-e2e] §1, `find tests/visual/__screenshots__ -name '*.png'`. [testing]
+- **Gate numbers measured 2026-11-16 (re-measure, do not quote): lint 0/0 · unit 77 passed in 11 files · e2e 280 passed / 4 skipped (71 tests × 4 projects) · build 21 pages + 404 · visual 109 checks · 27 baseline PNGs; after pull request 9 on 2026-11-18: unit 116 in 15 files · e2e 397 passed / 7 skipped (101 tests × 4 projects, axe included)** — [firefox-e2e] §1, `find tests/visual/__screenshots__ -name '*.png'`. [testing]
 - **`.env.local` leaks into every running dev server, and e2e reuses that server; tests must never depend on the server's env** — a real endpoint in `.env.local` un-skipped 3 success tests and posted to the real provider: 12 failures on 2026-11-09 — `playwright.config.ts:56-58`. [contact-form]. [testing]
 - **Every e2e spec imports `test, expect` from `./fixtures`, never from `@playwright/test`** — the auto fixture aborts `api.web3forms.com` and `formspree.io` at context level (`page.route()` mocks override it); a bare import silently loses the guard and can spend real submissions — `tests/e2e/fixtures.ts`, `a22e629`. The visual specs still use the bare import (safe only because none presses submit). [contact-form]. [testing]
 - **Run the full e2e suite at session start** — Firefox stopped launching after the macOS update and it was noticed only at commit time. [contact-form]. [testing]

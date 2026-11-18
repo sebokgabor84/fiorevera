@@ -12,3 +12,12 @@ export const T: Record<Locale, LocaleJson> = { hu: load('hu'), de: load('de'), e
 export const hu = T.hu;
 export const de = T.de;
 export const en = T.en;
+
+/** Keys of the request the form may send to the provider, as declared in the personal-data register. */
+interface DeclaredPayloadKey {
+  key: string;
+  optional?: boolean;
+}
+export const INQUIRY_PAYLOAD: DeclaredPayloadKey[] = (
+  JSON.parse(readFileSync(path.resolve('docs/gdpr/data-register.json'), 'utf8')) as { inquiryPayload: DeclaredPayloadKey[] }
+).inquiryPayload;

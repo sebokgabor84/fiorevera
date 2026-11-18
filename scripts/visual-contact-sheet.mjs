@@ -4,12 +4,18 @@
  * a short list of what a human must check in that group. The pixel gate only proves "looks like
  * before"; this sheet is how the owner reviews "before" once, and after every re-baseline.
  *
- *   node scripts/visual-contact-sheet.mjs        # then open tests/visual/review.html
+ *   npm run visual:sheet        # then open tests/visual/review.html (serve it: .claude/launch.json → visual-review)
  *
+ * After a RED visual run the sheet opens with one row per failed snapshot: expected (the approved
+ * baseline), actual (what the build renders now) and the diff, copied from test-results/ into
+ * tests/visual/review-diffs/. Playwright empties test-results/ at the start of every run, so the
+ * rows always describe the last run; after a green run the section is gone.
+ *
+ * review.html and review-diffs/ are generated and git-ignored: regenerate, never commit.
  * Verdicts (OK / issue + note) are kept in the browser's localStorage and can be copied as text.
  * No dependencies: PNG sizes are read from the IHDR chunk.
  */
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
 const root = new URL('..', import.meta.url).pathname;
@@ -26,6 +32,27 @@ const files = readdirSync(shotDir)
   .filter((f) => f.endsWith('.png'))
   .sort()
   .map((name) => ({ name, src: relative(join(root, 'tests/visual'), join(shotDir, name)), ...pngSize(join(shotDir, name)) }));
+
+/**
+ * Snapshots that differed in the last visual run: Playwright leaves <name>-expected.png, -actual.png and
+ * -diff.png in test-results/<test>/ (a snapshot without a baseline leaves only -actual.png).
+ */
+const resultsDir = join(root, 'test-results');
+const diffDir = join(root, 'tests/visual/review-diffs');
+rmSync(diffDir, { recursive: true, force: true });
+const walk = (dir) => (existsSync(dir) ? readdirSync(dir).flatMap((e) => (statSync(join(dir, e)).isDirectory() ? walk(join(dir, e)) : [join(dir, e)])) : []);
+const failures = new Map();
+for (const file of walk(resultsDir)) {
+  const m = /([^/]+)-(expected|actual|diff)\.png$/.exec(file);
+  if (!m) continue;
+  const entry = failures.get(m[1]) ?? { name: `${m[1]}.png` };
+  mkdirSync(diffDir, { recursive: true });
+  const copy = `${m[1]}-${m[2]}.png`;
+  copyFileSync(file, join(diffDir, copy));
+  entry[m[2]] = { src: `review-diffs/${copy}`, ...pngSize(join(diffDir, copy)) };
+  failures.set(m[1], entry);
+}
+const red = [...failures.values()].sort((a, b) => a.name.localeCompare(b.name));
 
 const PAGE_IDS = ['home', 'services', 'gallery', 'rental', 'about', 'contact', 'privacy', 'notfound'];
 const match = (re) => files.filter((f) => re.test(f.name));
@@ -114,6 +141,37 @@ const itemHtml = (f) => `
         </figcaption>
       </figure>`;
 
+const paneHtml = (label, shot, hint) =>
+  shot
+    ? `<figure class="pane"><figcaption><strong>${label}</strong> <span class="dim">${shot.width} × ${shot.height} px</span></figcaption><a href="${esc(shot.src)}" target="_blank" rel="noopener"><img src="${esc(shot.src)}" alt="${label}" loading="lazy" width="${shot.width}" height="${shot.height}"></a></figure>`
+    : `<figure class="pane missing"><figcaption><strong>${label}</strong></figcaption><p class="dim">${hint}</p></figure>`;
+
+const redHtml = red.length
+  ? `
+  <section class="group red" id="red">
+    <h2>Last visual run: ${red.length} snapshot${red.length === 1 ? '' : 's'} differ from the approved baseline</h2>
+    <p class="note-text">Left: the approved baseline. Middle: what the current build renders. Right: the changed pixels in red. A size change (different px numbers) means the element itself got taller, shorter or narrower. Decide per row: a regression is fixed in the code; an intended change needs the owner's GO, then <code>npm run test:visual:update -- --approved-by="&lt;name&gt;" --note="&lt;why&gt;"</code>.</p>
+    ${red
+      .map(
+        (f) => `
+    <div class="triplet shot" data-name="RED ${esc(f.name)}">
+      <h3><code>${esc(f.name)}</code>${f.expected && f.actual && (f.expected.width !== f.actual.width || f.expected.height !== f.actual.height) ? ` <span class="size-change">size changed: ${f.expected.width} × ${f.expected.height} → ${f.actual.width} × ${f.actual.height} px</span>` : ''}</h3>
+      <div class="panes">
+        ${paneHtml('Expected (approved baseline)', f.expected, 'No baseline yet: this is a new snapshot.')}
+        ${paneHtml('Actual (current build)', f.actual, 'No actual image was written.')}
+        ${paneHtml('Diff', f.diff, 'No diff image: sizes differ too much to compare, or the baseline is missing.')}
+      </div>
+      <span class="verdict">
+        <label><input type="radio" name="v-RED ${esc(f.name)}" value="ok"> Approve the new look</label>
+        <label><input type="radio" name="v-RED ${esc(f.name)}" value="issue"> Regression / not OK</label>
+        <input type="text" class="note" placeholder="what is off (optional)">
+      </span>
+    </div>`
+      )
+      .join('')}
+  </section>`
+  : '';
+
 const groupHtml = (g, i) => `
   <section class="group" id="g${i + 1}">
     <h2>${i + 1}. ${esc(g.title)} <span class="dim">(${g.items.length})</span></h2>
@@ -157,6 +215,16 @@ const html = `<!doctype html>
   .verdict label { cursor:pointer }
   .verdict .note { flex:1; min-width:120px; font:inherit; font-size:12px; padding:2px 6px; border:1px solid #d9d2c7; border-radius:4px; background:#fff }
   .shot.ok a { outline:2px solid var(--sage) } .shot.issue a { outline:2px solid #c0392b }
+  .red { border:2px solid #c0392b; border-radius:10px; padding:16px 20px; background:#fff }
+  .red h2 { color:#c0392b }
+  .triplet { width:auto; margin:20px 0 0; padding-top:14px; border-top:1px solid #e3ddd3 }
+  .triplet h3 { margin:0 0 8px; font:600 14px/1.3 Inter, system-ui, sans-serif }
+  .size-change { color:#c0392b; font-weight:600; margin-left:8px }
+  .panes { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:16px; align-items:start }
+  .pane { margin:0 } .pane figcaption { font-size:12px; margin-bottom:4px }
+  .pane a { display:block; border:1px solid #d9d2c7; background:#fff } .pane img { display:block; width:100%; height:auto }
+  .pane.missing p { border:1px dashed #cfc8bd; padding:24px 12px; margin:0 }
+  .triplet.ok { outline:2px solid var(--sage); outline-offset:6px } .triplet.issue { outline:2px solid #c0392b; outline-offset:6px }
   #summary { width:100%; margin-top:8px; font:12px/1.4 ui-monospace, Menlo, monospace; min-height:0; height:0; padding:0; border:0; opacity:0; transition:height .2s }
   #summary.open { height:180px; padding:8px; border:1px solid #cfc8bd; opacity:1; background:#fff }
 </style>
@@ -164,16 +232,17 @@ const html = `<!doctype html>
 <body>
 <header class="top">
   <h1>Fiore Vera — visual baselines</h1>
-  <span class="dim">${files.length} PNGs · ${(totalBytes / 1048576).toFixed(1)} MB · generated ${generated} · Chromium on macOS, CSS pixels</span>
+  <span class="dim">${files.length} PNGs · ${(totalBytes / 1048576).toFixed(1)} MB · generated ${generated} · Chromium on macOS, CSS pixels${red.length ? ` · <strong style="color:#c0392b">${red.length} differ in the last run</strong>` : ''}</span>
   <label>Scale <select id="scale"><option value="0.33">33 %</option><option value="0.5" selected>50 %</option><option value="0.75">75 %</option><option value="1">100 %</option></select></label>
   <span class="dim" id="progress"></span>
   <button type="button" id="copy">Copy verdicts</button>
   <button type="button" id="reset">Clear verdicts</button>
-  <nav class="toc">${groups.map((g, i) => `<a href="#g${i + 1}">${i + 1}. ${esc(g.title.split(' — ')[0])}</a>`).join('')}</nav>
+  <nav class="toc">${red.length ? `<a href="#red" style="color:#c0392b">Last run: ${red.length} differ</a>` : ''}${groups.map((g, i) => `<a href="#g${i + 1}">${i + 1}. ${esc(g.title.split(' — ')[0])}</a>`).join('')}</nav>
   <textarea id="summary" readonly aria-label="Verdict summary"></textarea>
 </header>
 <main>
   <p class="dim">Click any image to open the PNG at natural size in a new tab. The pixel gate only proves "looks like before" — this page is where "before" gets a human look. Mark every image OK or Issue, then "Copy verdicts" and paste the text into the chat.</p>
+  ${redHtml}
   ${groups.map(groupHtml).join('\n')}
 </main>
 <script>
@@ -214,8 +283,11 @@ const html = `<!doctype html>
   scale.addEventListener('change', () => { document.documentElement.style.setProperty('--scale', scale.value); try { localStorage.setItem(KEY + '-scale', scale.value); } catch {} });
   const summary = document.getElementById('summary');
   document.getElementById('copy').addEventListener('click', async () => {
-    const lines = shots.map((f) => { const s = state[f.dataset.name] || {}; return (s.verdict === 'ok' ? 'OK    ' : s.verdict === 'issue' ? 'ISSUE ' : '      ') + f.dataset.name + (s.note ? ' — ' + s.note : ''); });
-    const text = 'Visual baseline review ' + new Date().toISOString().slice(0, 10) + '\\n' + lines.join('\\n');
+    const lines = shots.map((f) => { const s = state[f.dataset.name] || {}; return (s.verdict === 'ok' ? 'OK      ' : s.verdict === 'issue' ? 'ISSUE   ' : 'NO VERDICT ') + f.dataset.name + (s.note ? ' — ' + s.note : ''); });
+    const blank = shots.filter((f) => !(state[f.dataset.name] || {}).verdict).length;
+    const head = blank ? 'INCOMPLETE: ' + blank + ' of ' + shots.length + ' images have no verdict (marked NO VERDICT below).' : 'Complete: all ' + shots.length + ' images have a verdict.';
+    const text = 'Visual baseline review ' + new Date().toISOString().slice(0, 10) + '\\n' + head + '\\n' + lines.join('\\n');
+    if (blank) alert(blank + ' image(s) have no verdict yet. The copied text marks them as NO VERDICT.');
     summary.value = text; summary.classList.add('open');
     try { await navigator.clipboard.writeText(text); } catch {}
   });
@@ -228,4 +300,5 @@ const html = `<!doctype html>
 
 writeFileSync(outFile, html);
 console.log(`visual-contact-sheet: ${files.length} baselines (${(totalBytes / 1048576).toFixed(1)} MB) in ${groups.length} groups → ${relative(root, outFile)}`);
+console.log(red.length ? `  last visual run: ${red.length} snapshot(s) differ — shown first on the sheet: ${red.map((f) => f.name).join(', ')}` : '  last visual run: no differing snapshots in test-results/ (green run, or the suite has not been run).');
 if (orphans.length) console.log('  ungrouped: ' + orphans.map((f) => f.name).join(', '));

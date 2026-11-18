@@ -89,7 +89,7 @@ readers can navigate by region.
 |---|---|---|---|
 | Static | `eslint-plugin-jsx-a11y` (recommended set, `eslint.config.js`) | `npm run lint` → 0 errors and 0 warnings | **In place**, hard gate |
 | Unit | `vitest-axe` | `expect(results).toHaveNoViolations()` after `axe(container)` | **Not installed**, no test |
-| E2E | `@axe-core/playwright` | `expect(violations).toEqual([])` with `wcag2a/aa/21a/21aa` tags | Package is a devDependency, **no spec uses it** — axe as a hard gate on every route × locale is MASTER-PLAN 3.1, open |
+| E2E | `@axe-core/playwright` | zero violations with axe's full default rule set, no rule disabled, no element excluded | **In place**, hard gate since 2026-11-18: `tests/e2e/a11y.spec.ts` (21 routes, 3 localized 404s, form with errors, open mobile menu, HU home with the toast; 4 browsers). A new page or state gets a scan there. The manual VoiceOver run of MASTER-PLAN 3.1 is still open |
 | E2E — skip link | Playwright | focus `.skip-link` → Enter → `#main-content` focused | **In place**: `tests/e2e/navigation.spec.ts` (desktop projects) |
 | E2E — menu | Playwright | dialog opens, first link focused, Escape closes, focus back on the toggle | **In place**: `navigation.spec.ts` (Mobile Chrome) |
 | E2E — landmarks | Playwright | Assert `main`, `banner`, `contentinfo` exist; no duplicate `main` | Not written; `tests/unit/render.test.tsx` only asserts `#main-content` on every route |
