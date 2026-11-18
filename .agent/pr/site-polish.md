@@ -1,6 +1,6 @@
 # Site polish: privacy, footer, icons, mail labels, QA minors, visual review as code
 
-Branch `claude/site-polish-5354c6` → `main`. **Merge after** `chore/goodbye-harvest`, `branch-guardrails` and `quality-gates`; this branch is rebased on `main` once they are in (see "Before merging").
+Branch `claude/site-polish-5354c6` → `main`, rebased on `main` after the Quality gates merge (PR 9). `chore/goodbye-harvest` (PR 8) rewrites the same skill files, `AGENTS.md` and `BACKLOG.md`: whichever of the two merges second needs a doc-only conflict resolution.
 
 ## What changes for visitors
 
@@ -26,25 +26,24 @@ Branch `claude/site-polish-5354c6` → `main`. **Merge after** `chore/goodbye-ha
 - `docs/qa/2026-11-16-minor-triage.md`: every QA minor with its outcome (33 fixed, 5 already fixed, 12 not changed with a reason, 4 handed over, 7 decided by the owner).
 - 20 visual baselines re-recorded through the approval script, approved by Gabor Sebők after three review rounds (`docs/qa/visual-baselines-log.md`).
 
-## Gates on this branch
+## Gates on this branch (after the rebase, 2026-11-18)
 
 | Gate | Result |
 |---|---|
-| `npm run lint` | 0 errors, 0 warnings |
-| `npm test -- --run` | 103 of 103 |
+| `npm run lint` (ESLint + scripts type-check) | 0 errors, 0 warnings |
+| `npm test -- --run` | 142 of 142 (incl. GDPR audit + seal, sitemap dates, favicon drift, review-page answers) |
 | `npm run build` | 21 pages + 404 |
-| `npm run audit:gdpr`, `npm run validate:i18n` | green |
-| `npm run test:visual` | 109 of 109 after the approved re-record |
-| `npm run test:e2e` | 272 pass, 4 skipped, **8 fail** |
+| `npm run test:e2e` (4 browsers, axe on every route) | 397 passed, 7 intended skips |
+| `npm run test:visual` | 110 of 110 |
 
-The 8 e2e failures are two assertions in `tests/e2e/contact.spec.ts` × four browsers that still expect one alert per field. The Quality gates branch already selects the field messages by id (works with both markups); with that change the contact spec is 28 of 28. **Do not merge this branch before that one.**
+One e2e run showed two Firefox timeouts in `a11y.spec.ts` (`waitForLoadState('networkidle')` on the contact page, 30 s); 20 repeats and the next full run were clean. A flake in waiting for the page to settle, not an accessibility finding.
 
-## Before merging
+## Done before this pull request
 
-- [ ] `quality-gates`, `branch-guardrails`, `chore/goodbye-harvest` are on `main`; this branch is rebased on it (expect conflicts in the skill files, `AGENTS.md`, `BACKLOG.md`, and one line in `AlbumSection.tsx` — keep the keyed `gallery.carousel.labelWithVenue`).
-- [ ] After the rebase: `inquiryPayload` in the data register switched to the 11 new keys, `npm run audit:gdpr -- --seal`, `npm run sitemap`, full e2e green.
-- [ ] **One real inquiry from the Vercel preview of this branch**, from an address that is not Fiore Vera's: the mail shows the Hungarian labels and Reply goes to the visitor. The labels follow the provider's documentation and are not yet proven by a delivered mail.
-- [ ] Owner has read `docs/gdpr/processing-record.md`.
+- [x] Rebased on `main` (Quality gates in): data register `inquiryPayload` switched to the 11 new keys and re-sealed, sitemap dates refreshed, carousel baselines taken from `main`.
+- [x] Owner sent a real inquiry from the Vercel preview on 2026-11-18: Hungarian labels arrive, Reply goes to the visitor.
+- [x] Owner read `docs/gdpr/processing-record.md` and accepted the Web3Forms DPA (2026-11-18).
+- [x] Visual review: three rounds on the review page, 20 baselines re-recorded under the owner's name.
 
 ## Reviewer checklist
 

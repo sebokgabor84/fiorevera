@@ -59,7 +59,7 @@ Playwright suite in four browsers; *unit* = Vitest; *visual* = the pixel baselin
 | 36 | `/DE/kontakt/` answers the Hungarian 404 | **Fixed** | Route matching and the locale prefix ignore letter case (`routes.ts`, unit-tested). Probe: German contact page, canonical in lower case. On Vercel the HTTP status of such a URL stays 404 (static host, no file with that name). |
 | 37 | Phone field accepts any string | **Already fixed** | Validation slice `f4feae3`. |
 | 38 | Error banner below the fold after a failed submit, not focused | **Fixed** | The failure box scrolls into view and takes focus, like the success card. |
-| 39 | Six simultaneous `role=alert` on an empty submit | **Fixed** | One summary alert ("6 mezőt még javítani kell."); field messages stay linked by `aria-describedby`. Probe: 1 alert, 6 field messages, focus on "name". **Two assertions in `tests/e2e/contact.spec.ts` (Quality gates' file) still expect the old markup** — see "Gates" in the review brief. |
+| 39 | Six simultaneous `role=alert` on an empty submit | **Fixed** | One summary alert ("6 mezőt még javítani kell."); field messages stay linked by `aria-describedby`. Probe: 1 alert, 6 field messages, focus on "name". The contact spec on `main` selects the field messages by id since the Quality gates merge (2026-11-18), so it is green with this markup. |
 | 40 | Form lacks an accessible name | **Fixed** | `aria-labelledby` the form heading. Probe: `getByRole('form')` → "Árajánlatkérés". |
 | 41 | Date input has no `min` | **Fixed** | Set to today after mount (not in the prerendered HTML, D-18). Guidance only: the owner chose "minimum only" validation, so a typed past date still sends. |
 | 42 | Text lines of 120–150 characters at 1280 (BACKLOG `[UI]`) | **Fixed** | Privacy sections stop at 42rem, service steps and the rental pillar at 46rem. `.prose` on a `.container` never worked (same cascade bug as #21). Visual diff: privacy, services. |
@@ -99,7 +99,7 @@ Playwright suite in four browsers; *unit* = Vitest; *visual* = the pixel baselin
 |---|---|---|
 | Privacy: hosting section, Web3Forms named, date, register, Art. 30 record | **Fixed** | See the review brief; two statements of the launch-plan proposal were wrong and are not shipped. |
 | `/favicon.ico`, maskable icon, drift guard, Python dependency | **Fixed** | `npm run favicon`, `tests/unit/favicon.test.ts`, script header + skill. |
-| Hungarian field labels in the inquiry mail | **Fixed** | Needs one real test submission on the Vercel preview before merge. |
+| Hungarian field labels in the inquiry mail | **Fixed** | Confirmed by the owner with a real inquiry from the Vercel preview on 2026-11-18. |
 | Services eyebrow repeats the heading | **Fixed (D3 = B)** | The eyebrow is the pillar's position, "1 / 3" … "3 / 3"; the three eyebrow keys are gone from the locale files. |
 | Hyphenation policy | **Fixed (D5 = B)** | No automatic hyphenation at any width. |
 | Speed Insights host in the CSP | **Fixed (D9a = A)** | `vitals.vercel-insights.com` removed from `vercel.json` and the register; it comes back with the change that enables Speed Insights. |

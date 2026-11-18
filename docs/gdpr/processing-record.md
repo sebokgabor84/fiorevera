@@ -1,7 +1,7 @@
 # Record of processing activities (GDPR Art. 30) — fiorevera.hu
 
-> **Status: DRAFT — owner to confirm.** Prepared by `gdpr-guardian` on 2026-11-16 from the code and
-> `docs/gdpr/data-register.json` (version 2026-11-16). Not legal advice: the owner decided on 2026-11-12 (launch plan D8)
+> **Status: read by the owner on 2026-11-18** (reported as done in the site-polish review); the points at the end that are still open are marked. Prepared by `gdpr-guardian` on 2026-11-16 from the code and
+> `docs/gdpr/data-register.json` (version 2026-11-18). Not legal advice: the owner decided on 2026-11-12 (launch plan D8)
 > that no lawyer is involved, so the `[CONFIRM]` marks show what nobody with legal training has checked.
 > The under-250-employees exemption of Art. 30(5) probably does not apply, because answering inquiries is not occasional
 > processing `[CONFIRM]` — hence this page. Keep it with the business papers; the authority (NAIH) may ask for it.
@@ -10,7 +10,7 @@
 |---|---|
 | **Controller** | Sebőkné Antalics Veronika (Fiore Vera), 8749 Zalakaros, Rózsa utca 53., Hungary · info.fiorevera@gmail.com · +36 30 865 9108 |
 | **Data protection officer** | none appointed (not required for this scale of processing `[CONFIRM]`) |
-| **Record last reviewed** | 2026-11-16 — *owner signature / date of confirmation: ______________________* |
+| **Record last reviewed** | 2026-11-18, read by the owner — *signature on the printed copy: ______________________* |
 
 ## Processing activities
 
@@ -37,9 +37,11 @@ Answer within one month. Complaints: Nemzeti Adatvédelmi és Információszabad
 
 ## What the owner has to confirm or decide
 
+Read on 2026-11-18. Points 1, 2, 4 and 5 still need an explicit answer; point 3 is done.
+
 1. The table above describes what really happens (in particular: nobody else reads the mailbox; nothing is copied into a spreadsheet or a phone contact list that outlives the quote).
 2. The retention period for inquiries in the mailbox, as a concrete rule, and that old threads are actually deleted.
-3. Web3Forms: open the dashboard once and accept the DPA if it is presented (it becomes binding by continued use, but an explicit acceptance is the cleaner record).
+3. ~~Web3Forms: open the dashboard once and accept the DPA if it is presented.~~ **Done by the owner on 2026-11-18.**
 4. Gmail without a DPA: keep, or move to Google Workspace / a Hungarian provider (recommended after the Rackhost transfer).
 5. Vercel Hobby without a written processor contract: accept, or upgrade to Pro.
 6. Not yet in this record on purpose: the opt-in greetings list (`docs/gdpr/newsletter-consent-concept.md`) — add a row before it goes live.
