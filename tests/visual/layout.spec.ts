@@ -1,5 +1,5 @@
-import { test, expect } from '@playwright/test';
-import { LAYOUT_WIDTHS, PAGES, openStable, rootRemVar } from './helpers';
+import { test, expect } from './fixtures';
+import { LAYOUT_WIDTHS, PAGES, openStable, rootRemVar, wrappedSingleTokenLinks } from './helpers';
 
 /**
  * Layout invariants — structural assertions that are stable across machines (no pixels).
@@ -8,10 +8,11 @@ import { LAYOUT_WIDTHS, PAGES, openStable, rootRemVar } from './helpers';
  *  - .container losing its max-width (safety layer) → 185-character lines, oversized carousel
  *  - sticky image column pinning under the header on phones (text scrolled behind the image)
  *  - toast / scroll-to-top covering controls; menu panel trapped by backdrop-filter
+ *  - a single-token link (the footer e-mail) breaking mid-word because its column was 6 px short
  */
 for (const { id, path } of PAGES) {
   for (const width of LAYOUT_WIDTHS) {
-    test(`${id} @ ${width}: no overflow, capped container, readable header, no oversized sticky`, async ({ page }) => {
+    test(`${id} @ ${width}: no overflow, capped container, readable header, no oversized sticky, no broken link`, async ({ page }) => {
       // Desktop widths use a 768 px tall viewport (1366×768 laptops): the harshest common case for sticky columns.
       await openStable(page, path, width, width >= 1024 ? 768 : 812);
       const contentMax = await rootRemVar(page, '--content-max');
@@ -87,10 +88,29 @@ for (const { id, path } of PAGES) {
         },
         { contentMax }
       );
+      // 7. A link that is one token (e-mail, phone number, single word) stays on one line.
+      r.push(...(await wrappedSingleTokenLinks(page)));
       expect(r, r.join('\n')).toEqual([]);
     });
   }
 }
+
+test.describe('the invariants catch what they claim to catch', () => {
+  test('a single-token link in a column that is too narrow is reported', async ({ page }) => {
+    await openStable(page, PAGES[0].path, 1280, 768);
+    expect(await wrappedSingleTokenLinks(page)).toEqual([]);
+    // Squeeze the footer e-mail link the way the 1fr footer column did before the 2026-11-09 fix.
+    const mail = page.locator('footer a[href^="mailto:"]').first();
+    await expect(mail).toBeVisible();
+    await mail.evaluate((a) => {
+      a.style.display = 'inline-block';
+      a.style.width = `${a.getBoundingClientRect().width - 12}px`;
+    });
+    const wrapped = await wrappedSingleTokenLinks(page);
+    expect(wrapped, 'the squeezed e-mail link must be reported').toHaveLength(1);
+    expect(wrapped[0]).toMatch(/@.*wraps onto 2 lines/);
+  });
+});
 
 test.describe('overlays never cover primary controls', () => {
   for (const width of [375, 1280] as const) {

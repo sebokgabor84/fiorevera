@@ -1,0 +1,5 @@
+{
+  "$comment": "Written by `npm run audit:gdpr -- --seal`; never edit by hand. tests/unit/gdpr.test.ts fails when docs/gdpr/data-register.json changes without a new seal, so a register change always carries a new version date.",
+  "version": "2026-11-16",
+  "sha256": "2cdf99e2fc8485b5c53a1175086122835ab4f66d3d79833cabd6060f471fa872"
+}
