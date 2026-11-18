@@ -1,0 +1,22 @@
+# Web-vitals log
+
+One row per measurement of **https://www.fiorevera.hu/** (or a local production build), so every performance change is compared against a number taken the same way. Lab numbers vary run to run: record three runs and quote the **median**. Field data (CrUX) appears in Search Console once the domain has enough traffic.
+
+How to add a row:
+
+- PageSpeed Insights (what Google shows): https://pagespeed.web.dev/analysis?url=https%3A%2F%2Fwww.fiorevera.hu%2F&form_factor=mobile — copy the scores, the five metrics, the LCP breakdown and the "Insights" list.
+- Local Lighthouse, same engine, scriptable: `npm exec --yes -- lighthouse <url> --preset=perf --form-factor=mobile --screenEmulation.mobile --throttling-method=simulate --only-categories=performance --output=json --output-path=<file> --chrome-flags="--headless=new"` three times; summarise with the median. Local builds: `npm run build && npm run preview`, measure `http://localhost:4173/`.
+- Always note the commit under test and what changed since the previous row.
+
+## Home page, mobile (Moto G Power emulation, slow-4G simulated throttling)
+
+| Date | Target · commit | Tool | Perf | FCP | LCP | TBT | CLS | SI | Fonts transferred | LCP breakdown (TTFB / load delay / load / render delay) | Note |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 2026-11-09 | local preview · QA session | Lighthouse 12.8 | 82–92 (home median 85) | – | 4.2 s | 0–1100 ms (outlier) | 0 | – | 200 KB (4 preloads) | – | `docs/qa/2026-11-09-qa-session.md`; before the 1280 tier |
+| 2026-11-16 10:15 | live · before `2f97d84` | PageSpeed Insights, LH 13.6.0 | 90 | 0.9 s | 3.6 s | 30 ms | 0 | 2.2 s | ~200 KB | 0 / 150 / 410 / **800 ms** | A11y 100 · BP 100 · SEO 100. Image delivery est. 108 KiB (hero −54, card −38, logo −16.5); unused JS 56 KiB; 2 long tasks; render-blocking 100 ms. No field data. |
+| 2026-11-16 11:05 | live · after `2f97d84` (image tiers + logo) | Lighthouse 12.8.2 ×3, median | 92 (92 / 92 / 98) | 1.83 s | 3.18 s (3.18 / 3.18 / 2.28) | 0 | 0 | 1.83 s | **225 KB** (6 woff2) | 630 / 290–1731 / 164–332 / 261–2096 | Logo now 6.8 KB, hero 800 w 58.8 KB on the wire. Fonts are the largest transfer on the critical path. |
+| 2026-11-16 11:40 | local `vite preview` · `2f97d84` + original fonts | Lighthouse 12.8.2 ×3, median | 86 (87 / 86 / 86) | 1.80 s | 3.98 s (3.90 / 3.98 / 3.98) | 0 | 0 | 1.80 s | 225 KB | 452 / 84–735 / 150–260 / 2558–3295 | Control run for the font step, same machine and minute as the row below. |
+| 2026-11-16 11:45 | local `vite preview` · `perf/web-vitals` fonts subset (`scripts/subset-fonts.mjs`) | Lighthouse 12.8.2 ×3, median | **92** (92 / 92 / 92) | 1.81 s | **3.16 s** (3.23 / 3.16 / 3.15) | 0 | 0 | 1.81 s | **93 KB** | 452 / 0–483 / 108–183 / 2071–2595 | Fonts 243 → 93 KB on disk, preloads 200 → 73 KB; variable weight axis kept; HU/DE glyphs verified in the browser. Stylesheet (7 KB gz) still render-blocking (est. 300 ms FCP), 145 KB gz script competes with the hero. |
+| 2026-11-16 12:05 | local · subset fonts + stylesheet inlined into the HTML | Lighthouse 12.8.2 ×3, median | 93 | 1.65 s | 3.15 s | 0 | 0 | 1.65 s | 93 KB | – | Variant test on the built files. One render-blocking request fewer. |
+| 2026-11-16 12:10 | local · as above, but only the Cormorant latin face preloaded | Lighthouse 12.8.2 ×3, median | 92 | 2.10 s | 3.08 s | 0 | **0.019** | 2.10 s | 93 KB | – | **Rejected:** Inter swaps in late and shifts the hero copy (`_heroContent`), FCP worse. All four preloads stay. |
+| 2026-11-16 12:20 | local · subset fonts + inlined CSS + `fetchpriority="low"` on the module script, 4 preloads | Lighthouse 12.8.2 ×3, median | **95** (94 / 95 / 95) | **0.90 s** | **3.01 s** (3.08 / 3.01 / 3.01) | 0 | 0 | 0.90 s | 93 KB | 452 / 0–860 / 10–147 / 1549–2545 | **Adopted** (`scripts/prerender.ts`). Time-to-interactive 3.05 s, same as before the script change. Remaining LCP is "element render delay": the image is on the device by ~0.7 s and paints at ~3 s — next lever is the 145 KB gz bundle (route-level code splitting, locale JSON per locale). |
