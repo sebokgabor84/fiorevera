@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { FaInstagram, FaFacebookF } from 'react-icons/fa';
 import { useLocale } from '../i18n/localeContext';
-import { contact } from '../data/contact';
+import { contact, displayAddress } from '../data/contact';
 import { SeoHead } from '../components/Seo/SeoHead';
+import { EmailLink } from '../components/Common/EmailLink';
 import { PageHero } from '../components/Common/PageHero';
 import { InquiryForm } from '../components/Contact/InquiryForm';
 import styles from './pages.module.css';
@@ -11,7 +12,7 @@ import styles from './pages.module.css';
 export const ContactPage = () => {
   const { t } = useTranslation();
   const { locale } = useLocale();
-  const address = `${contact.address.postalCode} ${contact.address.city}, ${contact.address.street}`;
+  const address = displayAddress();
   return (
     <>
       <SeoHead locale={locale} page="contact" />
@@ -34,7 +35,7 @@ export const ContactPage = () => {
                 <div>
                   <dt>{t('common.email')}</dt>
                   <dd>
-                    <a href={`mailto:${contact.email}`}>{contact.email}</a>
+                    <EmailLink email={contact.email} />
                   </dd>
                 </div>
                 <div>

@@ -132,7 +132,7 @@ export const Testimonials = () => {
             <li key={item.id}>
               <figure className={styles.quote}>
                 <blockquote className={styles.quoteText}>
-                  <p>“{t(item.quoteKey)}”</p>
+                  <p>{t('home.testimonials.quote', { text: t(item.quoteKey) })}</p>
                 </blockquote>
                 <figcaption className={styles.quoteAuthor}>
                   <cite>{item.author}</cite>

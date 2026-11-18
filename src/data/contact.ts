@@ -16,13 +16,17 @@ export const contact: Contact = {
 
 /** Privacy notice revision date, pre-formatted per locale (deterministic for SSR). */
 export const PRIVACY_UPDATED: Record<Locale, string> = {
-  hu: '2026. november 9.',
-  de: '9. November 2026',
-  en: '9 November 2026',
+  hu: '2026. november 16.',
+  de: '16. November 2026',
+  en: '16 November 2026',
 };
 
 const NARROW_NBSP = '\u202f';
 const NBSP = '\u00a0';
+
+/** One-line address for display: the house number stays on the street's line ("Rózsa utca 53." never ends with a lone "53."). */
+export const displayAddress = (address: Contact['address'] = contact.address): string =>
+  `${address.postalCode} ${address.city}, ${address.street.replace(/ (?=\d)/, NBSP)}`;
 
 /** Deterministic HUF formatting (no Intl, identical on server and client): "19 990 Ft". */
 export const formatHuf = (amount: number): string =>

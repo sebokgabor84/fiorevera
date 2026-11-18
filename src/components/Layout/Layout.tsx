@@ -1,5 +1,5 @@
-import { useEffect, type ReactNode } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useEffect, useRef, type ReactNode } from 'react';
+import { useLocation, useNavigationType } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from '../../i18n/localeContext';
 import { Header } from './Header';
@@ -12,6 +12,8 @@ export const Layout = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation();
   const { locale } = useLocale();
   const { pathname, hash } = useLocation();
+  const navigationType = useNavigationType();
+  const lastPathname = useRef(pathname);
 
   useEffect(() => {
     document.documentElement.lang = locale;
@@ -25,8 +27,19 @@ export const Layout = ({ children }: { children: ReactNode }) => {
         return;
       }
     }
-    window.scrollTo({ top: 0 });
-  }, [pathname, hash]);
+    // Back/forward (and the first load): the browser restores the position itself — forcing the
+    // top here raced that restore. A followed link starts the new page at the top.
+    if (navigationType !== 'POP') window.scrollTo({ top: 0 });
+  }, [pathname, hash, navigationType]);
+
+  // A new page was rendered without a document load: move focus to <main>, so keyboard and
+  // screen-reader users continue from the new content instead of the link they activated.
+  // Compared with the previous pathname (not "first effect run") to stay correct under StrictMode.
+  useEffect(() => {
+    if (lastPathname.current === pathname) return;
+    lastPathname.current = pathname;
+    document.getElementById('main-content')?.focus({ preventScroll: true });
+  }, [pathname]);
 
   return (
     <>

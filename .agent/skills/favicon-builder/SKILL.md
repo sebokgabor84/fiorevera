@@ -23,11 +23,12 @@ The favicon is the smallest piece of the brand ecosystem (site → lockscreen QR
 |---|---|
 | Crest builder (side-effect-free) | `scripts/favicon/crest.ts` — `TOKENS`, `COLOURWAYS`, `frame()`, `monogram()`, `clefLetter()`, `crestSvg()` |
 | Design-round catalogue | `scripts/favicon/variants.ts` — every variant with id, rationale, critique, SVG |
-| Letter outlines | `scripts/favicon/glyphs.ts` (generated) ← `scripts/favicon/extract-glyphs.py` (fontTools + brotli, from `public/fonts/cormorant-garamond-latin.woff2`) |
+| Letter outlines | `scripts/favicon/glyphs.ts` (generated) ← `scripts/favicon/extract-glyphs.py`, from `public/fonts/cormorant-garamond-latin.woff2`. **Python dependency, not part of `npm install`:** `python3 -m pip install fonttools brotli` (brotli opens `.woff2`); run `python3 scripts/favicon/extract-glyphs.py /tmp/glyphs.json` and copy the needed entries into `glyphs.ts`. Only for a new letter or weight — the script header has the details |
 | Review page | `npm run favicon:variants` → `docs/design/favicon-variants.html` (inline SVG 16/32/48/180 on light + dark tab strips, sharp 16 px rasters ×6, critique per variant) |
-| Ship the icon set | `npm run favicon [-- --from <variant-id>]` → `public/favicon.svg` + `favicon-16x16/32x32.png` (alpha) + `apple-touch-icon.png`, `android-chrome-192/512.png` (opaque, flattened on the tile colour) |
+| Ship the icon set | `npm run favicon [-- --from <variant-id>]` → `public/favicon.svg` + `favicon-16x16/32x32.png` (alpha) + `favicon.ico` (16 + 32 + 48, for clients that request `/favicon.ico` blindly) + `apple-touch-icon.png`, `android-chrome-192/512.png` (opaque, flattened on the tile colour) + `android-chrome-maskable-512x512.png` (square tile, crest scaled to 80 % around its centre so every mark stays inside Android's safe circle; `purpose: maskable` in `site.webmanifest`) |
+| Drift guard | `scripts/favicon/icon-set.json` (generated: sha256 of the SVG and of every output) ↔ `tests/unit/favicon.test.ts` — editing `favicon.svg` without re-running `npm run favicon`, or touching an icon by hand, fails `npm test`; the test also checks the ICO structure and the maskable safe zone |
 | HTML links | `index.html` `<!-- Favicons -->` block — SVG, 32, 16, apple-touch, manifest, theme-color |
-| **Shipped (2026-11-09)** | F3 `crest-fv-sage` — sage tile, linen arc and FV (Cormorant 700), gold/blush/gold dots; owner's pick over the clef (G1–G3) and E. Manifest + `theme-color` kept linen (browser chrome) |
+| **Shipped (2026-11-09)** | F3 `crest-fv-sage` — sage tile, linen arc and FV (Cormorant 700), gold/blush/gold dots; owner's pick, against the recommendation (E / F1 / G3) — record the pick, do not re-argue. The clef family G1–G3 is **parked, not rejected** (the owner's own letter idea; a candidate for print where 16 px does not apply). Manifest + `theme-color` kept linen (browser chrome) |
 
 ## How to use it
 
@@ -43,7 +44,7 @@ The favicon is the smallest piece of the brand ecosystem (site → lockscreen QR
 - Gate: every stroke ≥ 4 units of 64 (≈ 1 px at 16), no gradients, filters, live fonts, opacity; check both strips (`#f1f3f4`, `#202124`). Accents that vanish at 16 px are dropped, and the drop is written on the page.
 
 ### 3. Ship (only after the owner's pick)
-`npm run favicon -- --from <id>` → verify the five PNGs visually → keep `index.html` links valid → `site.webmanifest` colours stay linen unless the owner wants the browser chrome tinted → DoD (`npm run lint`, `npm test -- --run`, `npm run build`, `npm run test:visual` — baselines do not include the favicon) → Review Brief → commit only on "GO".
+`npm run favicon -- --from <id>` → verify the PNGs, the ICO and the maskable icon visually (a new crest geometry may need a new `MASKABLE_SCALE` / `CREST_CENTRE` in `scripts/generate-favicons.ts`; the safe-zone test tells) → commit `scripts/favicon/icon-set.json` with the icons → keep `index.html` links valid → `site.webmanifest` colours stay linen unless the owner wants the browser chrome tinted → DoD (`npm run lint`, `npm test -- --run`, `npm run build`, `npm run test:visual` — baselines do not include the favicon) → Review Brief → commit only on "GO".
 
 ## Sparring Manifesto (veto rules)
 - **Crest veto**: a favicon without the arc-and-dots frame or without a letter is a different brand — stop and ask.

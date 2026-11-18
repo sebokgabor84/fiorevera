@@ -29,7 +29,7 @@ Dev look: `npm run dev` (CSR, :5173). Production look: `npm run build && npm run
 
 ```js
 document.querySelector('.container').getBoundingClientRect().width; // 1152 at ≥ 1280
-getComputedStyle(document.querySelector('main p')).hyphens;        // 'manual' above 48rem, 'auto' at/below
+getComputedStyle(document.querySelector('main p')).hyphens;        // 'manual' at every width (no automatic hyphenation since 2026-11-18)
 [...document.querySelectorAll('body *')].filter((e) => e.getBoundingClientRect().right > innerWidth + 1); // []
 document.body.classList.contains('toast-visible');                  // true when the toast is up
 ```

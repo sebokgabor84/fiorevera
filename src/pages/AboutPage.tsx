@@ -26,7 +26,7 @@ export const AboutPage = () => {
                 <dd>{t('about.facts.based')}</dd>
               </div>
               <div>
-                <dt>{t('home.about.eyebrow')}</dt>
+                <dt>{t('about.facts.styleLabel')}</dt>
                 <dd>{t('about.facts.style')}</dd>
               </div>
             </dl>

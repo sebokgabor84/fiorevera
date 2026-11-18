@@ -65,11 +65,7 @@
     "phone": "Phone",
     "email": "Email",
     "address": "Address",
-    "instagram": "Instagram",
-    "facebook": "Facebook",
-    "readMore": "Read more",
     "backToTop": "Back to top",
-    "openInMaps": "Open in Maps",
     "newTab": "(opens in a new tab)",
     "skipToContent": "Skip to content",
     "noscript": "Please enable JavaScript in your browser for the full site."
@@ -90,7 +86,7 @@
       "reasons": {
         "budget": {
           "title": "Seasonal flowers and props for rent",
-          "body": "With seasonal flowers that are blooming right now and my ever-growing rental range, the decoration turns out beautiful without the costs running away."
+          "body": "With seasonal flowers that are blooming right now and my ever-growing rental range, the decoration turns out beautiful without the costs spiralling."
         },
         "planning": {
           "title": "I take the load off your shoulders",
@@ -127,12 +123,13 @@
     "gallery": {
       "eyebrow": "Portfolio",
       "title": "Real weddings, real venues",
-      "intro": "From Zala county across Lake Balaton to Austria – a few of the couples whose big day I had the pleasure of decorating.",
+      "intro": "From Zala County across Lake Balaton to Austria – a few of the couples whose big day I had the pleasure of decorating.",
       "cta": "All weddings"
     },
     "testimonials": {
       "eyebrow": "Kind words",
-      "title": "Couples who trusted me"
+      "title": "Couples who trusted me",
+      "quote": "“{{text}}”"
     },
     "about": {
       "eyebrow": "About",
@@ -154,7 +151,6 @@
       "intro": "There are three ways I can help: I take over the whole decoration, I create the floral pieces, or I lend you the props if you'd like to decorate yourselves. Each service can be booked on its own."
     },
     "full": {
-      "eyebrow": "1 · Full-service wedding decoration",
       "title": "Full-service wedding decoration",
       "intro": "If you'd rather not handle the wedding decoration yourselves, choose my full-service package. It covers everything from planning through floristry to styling the venue and taking it all down the next day. The perfect choice if you dream of a stress-free morning on your big day.",
       "scope": "You can ask for the decoration of the civil ceremony site, the floral styling of the church ceremony and the festive dressing of the reception venue. Don't need all three? No problem – each part can be booked separately.",
@@ -194,7 +190,6 @@
       }
     },
     "floristry": {
-      "eyebrow": "2 · Wedding floristry",
       "title": "Wedding floristry with seasonal flowers",
       "intro": "Romantic, colourful, fragrant floral pieces from the seasonal flowers in bloom right now – in a natural palette, tailored to the venue and to you.",
       "body": "I source the flowers from local growers and wholesalers right before the big day, so they go into bouquets and arrangements fresh and long-lasting. If you'd like to decorate yourselves, I'm still happy to make your bouquets and floral pieces – floristry can be booked on its own.",
@@ -203,7 +198,6 @@
       "cta": "Request a quote for flowers"
     },
     "rental": {
-      "eyebrow": "3 · Prop rental",
       "title": "Prop rental",
       "intro": "Want to decorate your wedding yourselves without investing a lot in props or worrying about where to store them afterwards? I can help with that too.",
       "body": "Wedding arches, a light curtain, vases, tea lights, candle holders, crates, planters, a red carpet and other decoration pieces are available. Let's go through what you might need!",
@@ -223,7 +217,8 @@
     },
     "albumAlt": "Wedding decoration – {{title}}, {{venue}}, photo {{n}}",
     "albumAltNoVenue": "Wedding decoration – {{title}}, photo {{n}}",
-    "photoCount": "{{count}} photos",
+    "photoCount_one": "{{count}} photo",
+    "photoCount_other": "{{count}} photos",
     "albumTitles": {
       "eskuvo-classic-magazin-fotozas": "Photo shoot for Esküvő Classic magazine",
       "teli-fotozas-2022": "Winter photo shoot 2022"
@@ -234,6 +229,7 @@
     },
     "carousel": {
       "label": "Photos: {{title}}",
+      "labelWithVenue": "Photos: {{title}}, {{venue}}",
       "prev": "Previous photo",
       "next": "Next photo",
       "status": "Photo {{n}} of {{total}}",
@@ -255,7 +251,7 @@
       "title": "How it works",
       "steps": {
         "choose": "Choose from my rental items.",
-        "reserve": "Reserve them by email for your big day – the earlier, the safer. Or just call me and we will sort it out 🙂 {{phone}}",
+        "reserve": "Reserve them by email for your big day – the earlier, the safer. Or just call me and we will sort it out 🙂 <0>{{phone}}</0>",
         "pickup": "Collect them in person in Zalakaros at an agreed time.",
         "ask": "Any questions? Feel free to call."
       }
@@ -269,10 +265,12 @@
       "pickup": "Collection",
       "pickupOnly": "collection in person only",
       "pickupZalakaros": "collection in person only, in Zalakaros",
-      "pieces": "{{count}} pcs",
-      "sets": "{{count}} sets",
-      "walls": "{{count}} pcs",
-      "available": "{{count}} available"
+      "pieces_one": "{{count}}\u00a0pc",
+      "pieces_other": "{{count}}\u00a0pcs",
+      "sets_one": "{{count}}\u00a0set",
+      "sets_other": "{{count}}\u00a0sets",
+      "walls_one": "{{count}}\u00a0pc",
+      "walls_other": "{{count}}\u00a0pcs"
     },
     "units": {
       "occasion": "occasion",
@@ -294,17 +292,17 @@
       "gold-flower-stands": {
         "name": "Gold flower stands",
         "description": "Our metal flower stands suit round tables best but look great on long tables too. Any floral piece can go on top: fresh, dried or artificial.",
-        "notes": "Height 70 cm, gold finish."
+        "notes": "Height 70\u00a0cm, gold finish."
       },
       "cylinder-vase-set": {
         "name": "Cylinder vase set",
         "description": "Our three-piece glass cylinder set is a perfect table centrepiece and works as an accent almost anywhere. For candlelight, use floating candles.",
-        "notes": "Please don't light pillar candles inside: the wax runs into the vase and can't be cleaned out – in that case the vases have to be purchased. Sizes: 28×8 cm, 23×10 cm, 17×12 cm (height × diameter)."
+        "notes": "Please don't light pillar candles inside: the wax runs into the vase and can't be cleaned out – in that case the vases have to be purchased. Sizes: 28×8\u00a0cm, 23×10\u00a0cm, 17×12\u00a0cm (height × diameter)."
       },
       "gold-candle-holder-set": {
         "name": "Gold metal candle holder set",
         "description": "If you want truly exclusive footed candle holders in your decoration, this set won't disappoint. Slim design, for taper candles, ideal for round and long tables alike.",
-        "notes": "Comes apart into three pieces for easy transport. Heights: 23, 28 and 33 cm; inner diameter 2.2 cm."
+        "notes": "Comes apart into three pieces for easy transport. Heights: 23, 28 and 33\u00a0cm; inner diameter 2.2\u00a0cm."
       },
       "champagne-wall": {
         "name": "Champagne wall",
@@ -332,7 +330,7 @@
       "greeting": "Welcome!"
     },
     "intro": "I'm Veronika Sebőkné Antalics – wedding decorator, florist and mum.",
-    "story1": "The idea of working as a wedding decorator came to me while I was creating the decoration for my own wedding. I loved the months of planning and the styling before the day – I was completely on fire. The world of weddings and creating with flowers has always drawn me in. This is what I can truly do with heart and soul.",
+    "story1": "The idea of working as a wedding decorator came to me while I was creating the decoration for my own wedding. I loved the months of planning and the styling before the day – I was buzzing with excitement. The world of weddings and creating with flowers has always drawn me in. This is what I can truly do with heart and soul.",
     "story2": "A wedding is a special, deeply meaningful day in everyone's life. Every girl secretly dreams of feeling like a princess on her big day and saying “I do” surrounded by loved ones in beautifully decorated surroundings.",
     "story3": "That's what I'm here for: to lift the whole weight of the decoration off your shoulders – from the preparations through the setup to the take-down the next day. My work helps make your wedding a lasting memory you'll love looking back on in the photos. Let the decoration of your big day be unforgettable!",
     "garden": {
@@ -340,7 +338,8 @@
       "body": "For several seasons I grew the cut flowers for my weddings in my own garden – it shaped the natural, seasonal style that is still my signature today. Because of the increasingly dry summers the garden is resting for now, but as soon as the weather allows I'll return to it. Until then I work with fresh, seasonal flowers from local growers and wholesalers."
     },
     "facts": {
-      "based": "Zalakaros, Zala county (Hungary)",
+      "based": "Zalakaros, Zala County (Hungary)",
+      "styleLabel": "Style",
       "style": "Natural, seasonal, romantic"
     },
     "cta": {
@@ -377,6 +376,8 @@
       "success": "Thank you for your message! I'll get back to you soon using the contact details you provided.",
       "error": "The message could not be sent. Please try again or email me directly.",
       "mailFallback": "Open in your mail app",
+      "errorSummary_one": "One field still needs correcting.",
+      "errorSummary_other": "{{count}} fields still need correcting.",
       "errors": {
         "required": "This field is required.",
         "email": "Please enter a valid email address.",
@@ -393,7 +394,12 @@
     "sections": {
       "form": {
         "title": "Contact form",
-        "body": "The details you enter in the form (name, email address, optionally phone number, wedding date, venue, message) are used solely to answer your enquiry and prepare a quote. The form service forwards the data to info.fiorevera@gmail.com, where I keep it in my mailbox no longer than the validity of the quote, or until the end of our contractual relationship if you book. The legal basis is your consent, which you can withdraw at any time."
+        "body": "The details you enter in the form (name, email address, optionally phone number, wedding date, venue, message) are used solely to answer your enquiry and prepare a quote. The form service Web3Forms forwards the data to info.fiorevera@gmail.com, where I keep it in my mailbox no longer than the validity of the quote, or until the end of our contractual relationship if you book. The legal basis is your consent, which you can withdraw at any time.",
+        "processor": "Web3Forms (operated by Web3Creative, India) acts as my data processor. It keeps the submitted details and the IP address recorded on submission in its own system for up to three years; for spam filtering its partners (CleanTalk, Akismet – USA) also receive your IP address and email address. Transfers outside the European Union are covered by the European Commission's Standard Contractual Clauses (SCC), which are part of the service's data processing agreement (DPA)."
+      },
+      "hosting": {
+        "title": "Hosting",
+        "body": "The site is served by Vercel Inc. (USA). While a page is served, your IP address and the requested URL are kept for a short time in technical logs; the logs I can access are kept for one day at most. Vercel is certified under the EU-US Data Privacy Framework; the legal basis is my legitimate interest in running the site securely."
       },
       "storage": {
         "title": "Language preference",
@@ -426,7 +432,7 @@
     "socialLabel": "Social media"
   },
   "testimonials": {
-    "nagy-orsolya": "Thank you so much for your incredibly wonderful, conscientious, kind, helpful, beautiful, precise, personal and humble work!! We wholeheartedly recommend you to everyone.",
+    "nagy-orsolya": "Thank you so much for your incredibly wonderful, conscientious, kind, helpful, beautiful, precise, personal and dedicated work!! We wholeheartedly recommend you to everyone.",
     "hajnal-durgo-adrienn": "Many thanks to Vera and her small team for their precise work. I recommend her to every bride who dreams of wedding decoration in natural colours for her big day. Vera will do everything to make your wedding decoration beautiful too.",
     "borbely-antalics-csilla": "Absolutely professional! We received work that met every one of our expectations. Fair value for money. We can only recommend her.",
     "toth-szabo-klaudia": "One of the defining moments of our wedding for me was when we walked into the restaurant where the reception was held and I saw the decoration. What Vera created exceeded all my imagination – it was simply beautiful."

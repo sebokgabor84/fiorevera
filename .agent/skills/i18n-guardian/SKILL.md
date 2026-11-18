@@ -29,7 +29,7 @@ text on DE, HU couple names on the DE gallery). The language is decided by the U
 |---|---|
 | **One pre-initialised i18next instance per locale**, `getI18n(locale)`, `initImmediate: false`, `fallbackLng: 'hu'`, `escapeValue: false`, `returnNull: false`. No detector, no `changeLanguage`, nothing async. `i18next-browser-languagedetector` sits in `package.json` **unused — never wire it in** (D-4). | `src/i18n/config.ts` |
 | Locale comes from the pathname (`localeFromPath`, `matchRoute`) and is passed down via `LocaleContext { locale, page }` | `src/data/routes.ts`, `src/i18n/localeContext.ts` |
-| Three files, same tree, **267 keys each**, 15 namespaces: `meta nav lang toast common home services gallery rental about privacy notFound footer testimonials` | `src/i18n/locales/{hu,de,en}.json` |
+| Three files, same tree, **274 keys each**, 15 namespaces: `meta nav lang toast common home services gallery rental about privacy notFound footer testimonials` | `src/i18n/locales/{hu,de,en}.json` |
 | Data files hold **keys and proper nouns only** (`nameKey`, `descriptionKey`, `titleKey`, `partners`, venue names); Zod rejects anything else | `src/data/*.ts`, `src/data/types.ts` |
 | `<html lang>` is set by `scripts/prerender.ts` per route and by a `Layout` effect on client navigation | `scripts/prerender.ts`, `Layout.tsx` |
 
@@ -52,17 +52,17 @@ text on DE, HU couple names on the DE gallery). The language is decided by the U
 |---|---|
 | Add key | write HU → DE → EN in the same namespace position; `npm run validate:i18n`; use via `t('ns.key')` |
 | Rename key | update every `t()` / `*Key` field / `tests/e2e/locales.ts` consumer + all three files; grep the old key: `grep -rn "old.key" src tests scripts` |
-| Remove key | delete from all three; grep proves zero consumers. Known dead keys (QA minor): `common.instagram|facebook|readMore|openInMaps`, `rental.labels.available` |
+| Remove key | delete from all three; grep proves zero consumers (the five dead keys of the 2026-11-09 QA report were removed on 2026-11-16) |
 | Identical by design | add to `IDENTICAL_WHITELIST` with a reason in the PR; never for CTAs or labels |
 | Placeholder | `{{name}}` identical in all three (`{{count}}`, `{{title}}`, `{{venue}}`, `{{n}}`, `{{total}}`, `{{date}}`, `{{areas}}`); word order may change, names may not |
 
 ## 2. Plurals
 
-i18next resolves `key_one` / `key_other` from `{{count}}` for all three locales (HU, DE and EN all have `one`/`other` rules). The locale files currently have **no plural suffixes**: `rental.labels.pieces = "{{count}} pcs"` renders **"1 pcs"** on EN (QA minor, open). Fix pattern: replace `pieces` with `pieces_one` + `pieces_other` in **all three** files (HU/DE do not inflect but need both keys for parity), same for `sets`, `walls`, `photoCount`; the parity gate flattens suffixed keys like any other.
+i18next resolves `key_one` / `key_other` from `{{count}}` for all three locales (HU, DE and EN all have `one`/`other` rules). Counted strings carry both suffixes in **all three** files (HU does not inflect but needs both keys for parity): `gallery.photoCount`, `rental.labels.pieces|sets|walls`, `contact.form.errorSummary`. Call them with the bare key, `t('rental.labels.pieces', { count })`; the parity gate flattens suffixed keys like any other. A new counted string follows the same pattern — never `"{{count}} pcs"` alone ("1 pcs").
 
 ## 3. Language follows the URL
 
-- `LanguageSwitch` links to `pathFor(page ?? 'home', code)` with `hrefLang` + `lang` attributes; accessible name starts with the visible code: `"DE – Deutsch"`, active one `"HU – Magyar (jelenlegi nyelv)"` (`lang.current`). Clicking calls `rememberLanguageChoice` (localStorage `fv-lang` + `fv-lang-toast-dismissed`). The switch keeps the page but drops `#album` hashes (QA minor).
+- `LanguageSwitch` links to `pathFor(page ?? 'home', code)` with `hrefLang` + `lang` attributes; accessible name starts with the visible code: `"DE – Deutsch"`, active one `"HU – Magyar (jelenlegi nyelv)"` (`lang.current`). Clicking calls `rememberLanguageChoice` (localStorage `fv-lang` + `fv-lang-toast-dismissed`). The switch keeps the page and the `#anchor` (`useLanguageLink`: the hash is read at click time, never rendered into the `href`, D-18).
 - **No redirect anywhere**, no `Accept-Language` logic, no root bounce (the legacy site bounced non-HU browsers to `/de/`).
 - Tests: `tests/e2e/locale.spec.ts` (switch lands on the same page, `lang` attribute), `tests/e2e/navigation.spec.ts` (`HU_LEAKS` list, DE CTAs only to `/de/…`, localized 404s).
 
@@ -95,7 +95,7 @@ Gate: `tests/unit/render.test.tsx` renders all 21 routes + 3 404s with `renderTo
 
 ## 7. Register — owner decision, not yours
 
-D-12 says informal first-person (HU *te*, DE *du*, EN *you*), but the shipped copy mixes HU singular/plural (*Álmaid … figyelnetek*) and DE *du* (4 strings) with *ihr* (~40). The decision is listed under `BACKLOG.md` `[CONTENT]` "Owner decisions from the QA session" and `docs/qa/2026-11-09-qa-session.md#owner-decisions-needed`. Until it is made: keep the register of the surrounding strings when editing, flag inconsistencies in the Review Brief, **do not pick a side**. Testimonials are verbatim (typo fixes only).
+D-12 says informal first-person (HU *te*, DE *du*, EN *you*). **DE is decided (owner, 2026-11-10): the couple is addressed as *ihr***; the last five *du* strings were aligned on 2026-11-16. HU still mixes singular and plural (*Álmaid … figyelnetek*). The decision is listed under `BACKLOG.md` `[CONTENT]` "Owner decisions from the QA session" and `docs/qa/2026-11-09-qa-session.md#owner-decisions-needed`. Until it is made: keep the register of the surrounding strings when editing, flag inconsistencies in the Review Brief, **do not pick a side**. Testimonials are verbatim (typo fixes only).
 
 ## 8. Typography and formatting per locale
 
@@ -103,10 +103,10 @@ D-12 says informal first-person (HU *te*, DE *du*, EN *you*), but the shipped co
 |---|---|---|---|
 | Quotes | „…” | „…“ | “…” |
 | Dash in titles / ranges | spaced en dash ` – ` (never em dash) | same | same |
-| Decimal / units | `2,8 m`, NBSP before units | `2,8 m` | `2.8 m` (open minor: rental sizes are a shared `size` string with commas) |
+| Decimal / units | `2,8 m`, NBSP before units | `2,8 m` | `2.8 m` (`src/lib/rentalSize.ts` converts the shared `size` string) |
 | Apostrophe | — | — | typographic `’` preferred; the files use `'` today, keep one style per file |
 
-Open minor: testimonials use English curly quotes in all three locales. Hyphenation is CSS-side (`global.css`, mobile body text only) — not a copy concern.
+Testimonials take their quotation marks from `home.testimonials.quote` (`„{{text}}”` / `„{{text}}“` / `“{{text}}”`). Number and unit are joined by `\u00a0` in the locale files (rental notes, counts) and by `formatSize()` for rental sizes, which also gives EN a decimal point. There is no automatic hyphenation (owner decision 2026-11-18) — long HU/DE compounds wrap as whole words, so check new copy at 320 px.
 
 **Length budgets**: DE runs ~30 % longer than HU/EN. Nav labels must fit the desktop header at 1024 px and the mobile menu at 320 px without wrapping; CTA buttons (`nav.quote`, `toast.cta`, form submit) stay single-line at 320 px; eyebrows/pills (`home.hero.eyebrow`) must not hyphenate at 320 px (QA: "ZALA ME-GYE"). Check at 320 / 375 / 1024 in the browser before sign-off.
 

@@ -2,6 +2,8 @@ import { useTranslation } from 'react-i18next';
 import type { RentalItem } from '../../data/types';
 import { IMAGE_META } from '../../data/generated/imageMeta';
 import { formatHuf } from '../../data/contact';
+import { useLocale } from '../../i18n/localeContext';
+import { formatSize } from '../../lib/rentalSize';
 import { Picture } from '../Common/Picture';
 import styles from './rental.module.css';
 
@@ -15,6 +17,7 @@ const QUANTITY_KEY: Record<RentalItem['unit'], string> = {
 /** Data-driven catalog card (PRD D-8, MASTER-PLAN 2.6). */
 export const RentalCard = ({ item }: { item: RentalItem }) => {
   const { t } = useTranslation();
+  const { locale } = useLocale();
   const images = IMAGE_META.rental[item.id] ?? [];
   const img = images[0];
   const name = t(item.nameKey);
@@ -30,14 +33,16 @@ export const RentalCard = ({ item }: { item: RentalItem }) => {
           {item.size && (
             <div className={styles.spec}>
               <dt>{t('rental.labels.size')}</dt>
-              <dd>{item.size}</dd>
+              <dd>{formatSize(item.size, locale)}</dd>
             </div>
           )}
           <div className={styles.spec}>
             <dt>{t('rental.labels.quantity')}</dt>
             <dd>{t(QUANTITY_KEY[item.unit], { count: item.quantity })}</dd>
           </div>
-          <div className={styles.spec}>
+          {/* Phones: first and on its own row (CSS order), the same place on every card. From 48rem it stays in
+              the grid in this source order — the owner preferred that on desktop (review round 2, 2026-11-18). */}
+          <div className={`${styles.spec} ${styles.specPrice}`}>
             <dt>{t('rental.labels.price')}</dt>
             <dd className={styles.price}>
               {formatHuf(item.priceHuf)}

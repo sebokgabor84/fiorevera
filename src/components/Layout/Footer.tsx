@@ -2,10 +2,11 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { FaInstagram, FaFacebookF } from 'react-icons/fa';
 import { LOCALES, NAV_PAGE_IDS, pathFor } from '../../data/routes';
-import { contact } from '../../data/contact';
+import { contact, displayAddress } from '../../data/contact';
 import { serviceAreas } from '../../data/serviceAreas';
 import { useLocale } from '../../i18n/localeContext';
-import { rememberLanguageChoice } from '../../lib/languagePreference';
+import { useLanguageLink } from '../../lib/useLanguageLink';
+import { EmailLink } from '../Common/EmailLink';
 import { LocalizedLink } from '../Common/LocalizedLink';
 import styles from './footer.module.css';
 
@@ -15,7 +16,8 @@ export const Footer = () => {
   const { locale, page } = useLocale();
   // Build-time constant (vite `define`): no Date in render paths (PRD D-18, QA M6).
   const year = __BUILD_YEAR__;
-  const address = `${contact.address.postalCode} ${contact.address.city}, ${contact.address.street}`;
+  const address = displayAddress();
+  const onLanguageClick = useLanguageLink();
 
   return (
     <footer className={styles.footer}>
@@ -50,7 +52,7 @@ export const Footer = () => {
               <a href={contact.phoneHref}>{contact.phoneDisplay}</a>
             </p>
             <p>
-              <a href={`mailto:${contact.email}`}>{contact.email}</a>
+              <EmailLink email={contact.email} />
             </p>
             <p>
               <a href={contact.mapsUrl} target="_blank" rel="noopener noreferrer">
@@ -85,7 +87,7 @@ export const Footer = () => {
                   hrefLang={code}
                   lang={code}
                   aria-current={code === locale ? 'true' : undefined}
-                  onClick={() => rememberLanguageChoice(code)}
+                  onClick={onLanguageClick(code, pathFor(page ?? 'home', code))}
                 >
                   {t(`lang.${code}`)}
                 </Link>

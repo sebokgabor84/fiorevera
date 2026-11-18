@@ -1,6 +1,12 @@
 .prose {
   max-width: var(--prose-max);
 }
+/* On a `.container` the rule above loses to the container's own max-width (global.css loads later),
+   so the readable measure is given to the content instead: the container keeps the page gutters,
+   its children stop at --prose-max. Without this the privacy text ran ~150 characters per line at 1280. */
+.prose > * {
+  max-width: var(--prose-max);
+}
 .twoCol {
   display: grid;
   gap: var(--space-6);
@@ -17,9 +23,6 @@
     top: calc(var(--header-h) + 1rem);
   }
 }
-.anchor {
-  scroll-margin-top: calc(var(--header-h) + 1rem);
-}
 .steps {
   counter-reset: step;
   list-style: none;
@@ -27,6 +30,8 @@
   padding: 0;
   display: grid;
   gap: var(--space-4);
+  /* Same measure as .pillarHead above it: step text ran ~140 characters per line at 1280. */
+  max-width: 46rem;
 }
 .step {
   position: relative;
@@ -154,9 +159,6 @@
   margin: 0;
   font-size: var(--fs-lg);
   font-family: var(--font-heading);
-}
-.contactCard dd a {
-  text-decoration: none;
 }
 .socialRow {
   display: flex;

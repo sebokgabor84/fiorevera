@@ -25,6 +25,9 @@ export const InquiryForm = () => {
   /** The payload of the last failed submission — feeds the prefilled mailto fallback. */
   const [failed, setFailed] = useState<InquiryPayload | null>(null);
   const successRef = useRef<HTMLDivElement>(null);
+  const failureRef = useRef<HTMLDivElement>(null);
+  const dateRef = useRef<HTMLInputElement>(null);
+  const titleId = `${id}-title`;
 
   // The tall form is replaced by a short card, so the document shrinks and the browser clamps the scroll
   // position to the new bottom. Bring the card to the top (global scroll-padding keeps it under the
@@ -36,6 +39,24 @@ export const InquiryForm = () => {
     el.scrollIntoView({ block: 'start' });
     el.focus({ preventScroll: true });
   }, [status]);
+
+  // A failed submission: bring the error box (with the mail fallback) into view and move focus to it,
+  // so it is neither below the fold on a phone nor silent for a screen reader.
+  useEffect(() => {
+    if (status !== 'error') return;
+    const el = failureRef.current;
+    if (!el) return;
+    el.scrollIntoView({ block: 'nearest' });
+    el.focus({ preventScroll: true });
+  }, [status]);
+
+  // Weddings are in the future: the date picker starts today. Set after mount, because "today" must
+  // not be part of the prerendered HTML (PRD D-18); the picker only guides, a typed past date still sends.
+  useEffect(() => {
+    const now = new Date();
+    const pad = (n: number) => String(n).padStart(2, '0');
+    if (dateRef.current) dateRef.current.min = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  }, []);
 
   const message = (err: InquiryError): string =>
     err.code === 'tooLong' ? t('contact.form.errors.tooLong', { max: err.max }) : t(`contact.form.errors.${err.code}`);
@@ -92,12 +113,16 @@ export const InquiryForm = () => {
   };
 
   const describedBy = (f: Field) => (errors[f] ? `${id}-${f}-error` : undefined);
+  // Field messages are tied to their input (aria-describedby) and read when it gets focus — the first
+  // invalid field is focused on submit. They are not live regions: six alerts at once on an empty
+  // submit drowned each other out; the single summary below is the one announcement.
   const errorEl = (f: Field) =>
     errors[f] ? (
-      <p id={`${id}-${f}-error`} className={styles.error} role="alert">
+      <p id={`${id}-${f}-error`} className={styles.error} data-field-error={f}>
         {errors[f]}
       </p>
     ) : null;
+  const errorCount = Object.keys(errors).length;
 
   if (status === 'success') {
     return (
@@ -121,18 +146,21 @@ export const InquiryForm = () => {
       noValidate
       data-testid="inquiry-form"
       data-endpoint={ENDPOINT_STATE}
+      aria-labelledby={titleId}
     >
-      <h2 className={styles.title}>{t('contact.form.title')}</h2>
+      <h2 id={titleId} className={styles.title}>
+        {t('contact.form.title')}
+      </h2>
       <p className={`muted ${styles.hint}`}>{t('contact.form.intro')}</p>
 
       <div className={styles.row}>
         <div className={styles.field}>
-          <label htmlFor={`${id}-name`}>{t('contact.form.name')} *</label>
+          <label htmlFor={`${id}-name`}>{t('contact.form.name')}{'\u00a0*'}</label>
           <input id={`${id}-name`} name="name" type="text" autoComplete="name" required aria-invalid={!!errors.name} aria-describedby={describedBy('name')} />
           {errorEl('name')}
         </div>
         <div className={styles.field}>
-          <label htmlFor={`${id}-email`}>{t('contact.form.email')} *</label>
+          <label htmlFor={`${id}-email`}>{t('contact.form.email')}{'\u00a0*'}</label>
           <input id={`${id}-email`} name="email" type="email" autoComplete="email" required aria-invalid={!!errors.email} aria-describedby={describedBy('email')} />
           {errorEl('email')}
         </div>
@@ -147,20 +175,20 @@ export const InquiryForm = () => {
           {errorEl('phone')}
         </div>
         <div className={styles.field}>
-          <label htmlFor={`${id}-date`}>{t('contact.form.date')} *</label>
-          <input id={`${id}-date`} name="date" type="date" required aria-invalid={!!errors.date} aria-describedby={describedBy('date')} />
+          <label htmlFor={`${id}-date`}>{t('contact.form.date')}{'\u00a0*'}</label>
+          <input ref={dateRef} id={`${id}-date`} name="date" type="date" required aria-invalid={!!errors.date} aria-describedby={describedBy('date')} />
           {errorEl('date')}
         </div>
       </div>
 
       <div className={styles.field}>
-        <label htmlFor={`${id}-venue`}>{t('contact.form.venue')} *</label>
+        <label htmlFor={`${id}-venue`}>{t('contact.form.venue')}{'\u00a0*'}</label>
         <input id={`${id}-venue`} name="venue" type="text" required aria-invalid={!!errors.venue} aria-describedby={describedBy('venue')} />
         {errorEl('venue')}
       </div>
 
       <div className={styles.field}>
-        <label htmlFor={`${id}-message`}>{t('contact.form.message')} *</label>
+        <label htmlFor={`${id}-message`}>{t('contact.form.message')}{'\u00a0*'}</label>
         <textarea id={`${id}-message`} name="message" rows={6} required placeholder={t('contact.form.messagePlaceholder')} aria-invalid={!!errors.message} aria-describedby={describedBy('message')} />
         {errorEl('message')}
       </div>
@@ -175,13 +203,19 @@ export const InquiryForm = () => {
         <input id={`${id}-consent`} name="consent" type="checkbox" required aria-invalid={!!errors.consent} aria-describedby={describedBy('consent')} />
         <label htmlFor={`${id}-consent`}>
           <Trans i18nKey="contact.form.consent" components={[<LocalizedLink key="privacy" page="privacy" />]} />
-          {' *'}
+          {'\u00a0*'}
         </label>
         {errorEl('consent')}
       </div>
 
+      {errorCount > 0 && (
+        <p className={styles.formError} role="alert" data-testid="inquiry-error-summary">
+          {t('contact.form.errorSummary', { count: errorCount })}
+        </p>
+      )}
+
       {status === 'error' && failed && (
-        <div className={styles.formError} role="alert">
+        <div ref={failureRef} tabIndex={-1} className={styles.formError} role="alert">
           <p className={styles.formErrorText}>{t('contact.form.error')}</p>
           {/* Provider down / offline / rate-limited → hand the typed inquiry to the visitor's own mail app. */}
           <a

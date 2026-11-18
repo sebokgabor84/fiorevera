@@ -27,17 +27,20 @@ CSP and head → `seo-expert`. Gates → `qa-specialist`.)*
 - Choosing or changing a processor (form provider, newsletter provider, mailbox, analytics, hosting)
 - Before the Review Brief of any slice that touched the above
 
-## Architecture facts (verified 2026-11-10)
+## Architecture facts (verified 2026-11-16)
 
 | Fact | Where |
 |---|---|
-| One outbound request with personal data: `submitInquiry()` POSTs name, email, phone, wedding_date, venue, message, locale, subject (+ `access_key`) to `VITE_FORM_ENDPOINT`; honeypot `website` dropped client-side; no endpoint → `config` error + prefilled `mailto:` | `src/lib/submitInquiry.ts`, `inquiryMailto.ts` |
+| One outbound request with personal data: `submitInquiry()` POSTs the seven fields under Hungarian keys (`Név`, `E-mail`, `Telefonszám`, `Esküvő dátuma`, `Helyszín`, `Üzenet`, `Nyelv` — `INQUIRY_MAIL_LABELS`; the keys are the labels of the delivered mail) plus the reserved `replyto`, `subject`, `from_name` (+ `access_key`) to `VITE_FORM_ENDPOINT`; honeypot `website` dropped client-side; no endpoint → `config` error + prefilled `mailto:` | `src/lib/submitInquiry.ts`, `inquiryMailto.ts` |
 | Mandatory inquiry consent checkbox (`consent`, `required`, error `contact.form.errors.consent`), label links to the privacy page via `<Trans>` | `InquiryForm.tsx` |
-| Privacy page = 4 hardcoded sections `form · storage · analytics · rights` from `privacy.sections.*`, date from `PRIVACY_UPDATED[locale]` (hand-formatted, D-18) | `PrivacyPage.tsx`, `contact.ts` |
+| Privacy page = 5 hardcoded sections `form · hosting · storage · analytics · rights` from `privacy.sections.*` (`form` has a second paragraph `processor`), date from `PRIVACY_UPDATED[locale]` (hand-formatted, D-18; bump it with every change of meaning) | `PrivacyPage.tsx`, `contact.ts` |
 | Storage: `fv-lang`, `fv-lang-toast-dismissed` only, effects only; `navigator.languages` read once, never stored | `languagePreference.ts`, `LanguageToast.tsx` |
-| No cookies, no banner (D-10); Vercel Web Analytics is on the privacy page and in the CSP but **not wired in code** | `vercel.json`, `package.json` |
-| CSP allows `api.web3forms.com`, `formspree.io`, `va.vercel-scripts.com`, `vitals.vercel-insights.com` — the only hosts the browser may talk to | `vercel.json` |
-| Form provider not chosen, personal Gmail mailbox, processor unnamed on the privacy page — open items, see concept note §1 | `BACKLOG.md` `[FORM]` |
+| No cookies, no banner (D-10); Vercel Web Analytics is wired since 2026-11-12: `inject()` runs once on the client, only on fiorevera.hu / www / `*.vercel.app` | `src/lib/analytics.ts`, `src/entry-client.tsx` |
+| CSP allows `api.web3forms.com`, `formspree.io`, `va.vercel-scripts.com` — the only hosts the browser may talk to. The Speed Insights host `vitals.vercel-insights.com` was removed on 2026-11-18 (owner decision; unused): add it back, with a register entry, in the change that switches Speed Insights on | `vercel.json` |
+| Form processor = **Web3Forms**, operated by Web3Creative (India): DPA v1.0 (2026-07-13) incorporated in its Terms, EEA transfers under SCC 2021/914, sub-processors AWS, Cloudflare, Hetzner, CleanTalk and Akismet (spam check on IP + e-mail), submissions kept up to 3 years on its side. Named on the privacy page since 2026-11-16. Facts read on web3forms.com/privacy and /dpa — **re-read them before changing the copy**; the pages return 403 to plain fetches, open them in a browser | `privacy.sections.form.processor`, register `env` |
+| Hosting = **Vercel Inc.** (Covina, CA): listed as Active under the EU-U.S. DPF (dataprivacyframework.gov, checked 2026-11-16). Its DPA names Pro and Enterprise only — the site is on Hobby, so the privacy page **does not claim a DPA**; logs visible to the owner 1 hour (Hobby) / 1 day (Pro) | `privacy.sections.hosting`, register `hosting`, `docs/launch/domain-and-hosting-plan.md` §7 |
+| Art. 30 record (draft, owner to confirm) | `docs/gdpr/processing-record.md` |
+| Still open: personal Gmail mailbox without a DPA; Vercel Hobby without a written processor contract | `docs/gdpr/processing-record.md` "What the owner has to confirm" |
 
 ## 1. The gate — run on every change in scope
 
@@ -57,7 +60,7 @@ an `https://` host in `src/` (code and CSS), `index.html` or the CSP that is nei
 
 Two more rules live in the tests: the request sent to the form provider carries **exactly** the keys listed under `inquiryPayload`
 (`tests/unit/gdpr.test.ts`, `tests/e2e/contact.spec.ts`; the honeypot and the consent flag are never sent), and **a register change needs a new seal**:
-`docs/gdpr/data-register.seal.json` holds the register's fingerprint and version, and the unit test fails until `npm run audit:gdpr -- --seal` was run.
+`docs/gdpr/data-register.seal.json` holds the register's fingerprint and version, and the unit test fails until `npm run audit:gdpr -- --seal` was run (the seal also stamps the register's `version` with the date of the change).
 **Fix by declaring the sink with a purpose and a privacy key — never by widening the regexes.** If the purpose cannot be
 written in one line, the sink should not exist.
 
@@ -77,7 +80,7 @@ written in one line, the sink should not exist.
 ## 3. Owner decisions this skill never makes
 
 Provider choice (form, newsletter, mailbox) · analytics on/off · HU register of consent copy (DE = *ihr*, decided) · frequency promise and the
-anniversary partial opt-out · retention periods · whether to involve a lawyer (recommended: yes, once, for §1 gaps + §2).
+anniversary partial opt-out · retention periods · whether to involve a lawyer (**decided 2026-11-12, launch plan D8: no lawyer** — do not re-recommend it in every Review Brief; the tags below stay as markers of what was never checked).
 Legal statements are tagged **[INFO]** / **[CONFIRM]** in the concept note; the skill repeats that tagging in every Review Brief.
 
 ## Sparring Manifesto (push back, then propose)

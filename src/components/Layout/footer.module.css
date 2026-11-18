@@ -9,6 +9,11 @@
   gap: var(--space-6);
   padding-block: var(--space-8) var(--space-6);
 }
+/* Columns may shrink below their longest word; long tokens then wrap where they are allowed to —
+   the e-mail address only at its "@" (EmailLink), never mid-word, whatever the column ratio. */
+.grid > * {
+  min-width: 0;
+}
 .brand {
   font-family: var(--font-heading);
   font-size: var(--fs-xl);
@@ -24,6 +29,8 @@
 }
 .social {
   display: flex;
+  /* The pills wrap as a whole in a narrow brand column; the names never break ("Insta-gram" at 768 px). */
+  flex-wrap: wrap;
   gap: var(--space-3);
   list-style: none;
   margin: var(--space-4) 0 0;
@@ -41,6 +48,7 @@
   text-decoration: none;
   font-size: var(--fs-sm);
   color: var(--color-text-main);
+  white-space: nowrap;
 }
 .socialLink:hover {
   border-color: var(--color-gold);

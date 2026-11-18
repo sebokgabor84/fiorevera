@@ -24,19 +24,39 @@ export const inquirySubject = (name: string): string => `Árajánlatkérés – 
 /** Sender name shown in the inbox instead of the provider's default (Web3Forms `from_name`). */
 export const INQUIRY_FROM_NAME = 'Fiore Vera weboldal';
 
+/**
+ * Field labels of the delivered mail. Web3Forms forwards every non-reserved key of the JSON body
+ * as-is, so these keys are the labels Vera reads in her inbox — Hungarian, whatever language the
+ * visitor used (the mail subject is Hungarian for the same reason). The object's order is the
+ * order of the lines in the mail.
+ */
+export const INQUIRY_MAIL_LABELS = {
+  name: 'Név',
+  email: 'E-mail',
+  phone: 'Telefonszám',
+  date: 'Esküvő dátuma',
+  venue: 'Helyszín',
+  message: 'Üzenet',
+  locale: 'Nyelv',
+} as const;
+
 export const submitInquiry = async (payload: InquiryPayload, fetchImpl: typeof fetch = fetch): Promise<InquiryResult> => {
   if (payload.website) return { ok: true }; // silently drop bots
   const endpoint = import.meta.env.VITE_FORM_ENDPOINT as string | undefined;
   if (!endpoint) return { ok: false, reason: 'config' };
   const accessKey = import.meta.env.VITE_FORM_ACCESS_KEY as string | undefined;
+  const L = INQUIRY_MAIL_LABELS;
   const body: Record<string, string> = {
-    name: payload.name,
-    email: payload.email,
-    phone: payload.phone,
-    wedding_date: payload.date,
-    venue: payload.venue,
-    message: payload.message,
-    locale: payload.locale,
+    [L.name]: payload.name,
+    [L.email]: payload.email,
+    [L.phone]: payload.phone,
+    [L.date]: payload.date,
+    [L.venue]: payload.venue,
+    [L.message]: payload.message,
+    [L.locale]: payload.locale,
+    // Reserved Web3Forms keys (not shown as fields): the reserved `email` key would set Reply-To,
+    // but it is now labelled in Hungarian, so the visitor's address is passed as `replyto` instead.
+    replyto: payload.email,
     subject: inquirySubject(payload.name),
     from_name: INQUIRY_FROM_NAME,
   };
