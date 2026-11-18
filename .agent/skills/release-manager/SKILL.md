@@ -18,7 +18,7 @@ description: >-
 |---|---|---|---|
 | Claude edit guard | `.claude/hooks/guard-main-edit.sh` | Edit / Write in a checkout on `main` (git-ignored files stay writable) | shell writes — caught by the next layers |
 | Claude Bash guard | `.claude/hooks/guard-bash.sh` | `--no-verify`, `FV_SKIP_HOOKS=1`, changing `core.hooksPath`, push to `main`, force push, merge into local `main`, `vercel --prod / promote / rollback` | `sh -c '…'` (quoted text is not inspected) |
-| Git hooks | `.githooks/pre-commit`, `pre-merge-commit`, `pre-push` | commit and merge commit on `main`, any push to `main`; runs lint → unit → GDPR audit → build → visual on every other push | the owner's `FV_SKIP_HOOKS=1`; a clone where `npm install` never ran |
+| Git hooks | `.githooks/pre-commit`, `pre-merge-commit`, `pre-push` | commit and merge commit on `main`, any push to `main`; runs lint → unit → build → visual on every other push | the owner's `FV_SKIP_HOOKS=1`; a clone where `npm install` never ran |
 | GitHub ruleset on `main` | GitHub → Settings → Rules (§8) | every direct push, force push and deletion, for everybody | nobody on the bypass list = nobody |
 
 Session hooks: `session-start.sh` prints branch, dirty state, open pull requests, hook health and the handover note; `stop-reminder.sh` reminds once an hour when work is uncommitted and `goodbye` has not run; `session-end.sh` records how a session ended for the next one.
@@ -54,7 +54,6 @@ Vercel builds every pushed branch (on by default) and comments the preview URLs 
 | Never remove a worktree or branch a session may still use; cleanup goes through the script and the owner's yes | A worktree vanished under a running visual suite |
 | Git facts that decide a commit, push or delete come from `rtk proxy git …` | The rtk hook reformats and has shown stale refs |
 | Never `git stash` | The stash is shared by every worktree and session |
-| Visual and e2e runs reuse servers on :4173 / :5173 | In a worktree, check that no other checkout's server is listening before trusting a result |
 | The goodbye close commit follows the same path | `goodbye` writes tracked files, so it runs on the working branch before the merge, or on `chore/session-close-<date>` |
 
 ## 6. After the merge

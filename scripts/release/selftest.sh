@@ -33,7 +33,7 @@ cp "$src"/.claude/hooks/*.sh .claude/hooks/
 cp "$src"/.githooks/* .githooks/
 cat >package.json <<'JSON'
 { "name": "fv-selftest", "private": true, "scripts": {
-  "lint": "echo GATE-lint", "test": "sh -c 'echo GATE-unit'", "audit:gdpr": "echo GATE-gdpr",
+  "lint": "echo GATE-lint", "test": "sh -c 'echo GATE-unit'",
   "build": "echo GATE-build", "test:visual": "echo GATE-visual" } }
 JSON
 printf 'secret.local\n' >.gitignore
@@ -76,7 +76,7 @@ out="$(git commit -m "work on a branch" 2>&1)" && ok "git commit on a feature br
 out="$(git push origin HEAD:main 2>&1)"; expect_refused "git push origin HEAD:main from a branch is refused" $? "$out"
 out="$(git push -u origin feature/selftest 2>&1)"; code=$?
 gates="$(printf '%s\n' "$out" | grep -E '^GATE-[a-z]+$' | tr '\n' ' ')" # npm also echoes the script line
-if [ "$code" -eq 0 ] && [ "$gates" = "GATE-lint GATE-unit GATE-gdpr GATE-build GATE-visual " ]; then ok "push of a branch runs the gates in order: $gates"; else bad "branch push: exit=$code gates='$gates'"; fi
+if [ "$code" -eq 0 ] && [ "$gates" = "GATE-lint GATE-unit GATE-build GATE-visual " ]; then ok "push of a branch runs the gates in order: $gates"; else bad "branch push: exit=$code gates='$gates'"; fi
 out="$(git push origin --delete feature/selftest 2>&1)"; code=$?
 if [ "$code" -eq 0 ] && printf '%s' "$out" | grep -q 'gates skipped' && ! printf '%s' "$out" | grep -q 'GATE-'; then ok "a push that only deletes a branch skips the gates"; show "$out"; else bad "delete push: exit=$code: $out"; fi
 

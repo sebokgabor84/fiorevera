@@ -135,7 +135,7 @@ POST-6  Update BACKLOG.md         → mark [x], capture any new ideas as [ ]
 POST-7  Present Review Brief      → wait for "GO" (GO 1)
 POST-8  git commit && git push    → only after GO 1, on the branch, never on main. .githooks/pre-commit refuses
                                     a commit on main and re-runs POST-4 when UI files are staged; .githooks/pre-push
-                                    refuses any push to main and re-runs POST-1/2 + the GDPR audit + build + POST-4
+                                    refuses any push to main and re-runs POST-1/2 + build + POST-4
                                     (a push that only deletes branches skips the gates)
 POST-9  Pull request brief        → compare link + drafted body + preview link; the owner merges on GitHub (GO 2)
 ```
