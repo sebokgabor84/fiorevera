@@ -66,7 +66,7 @@ Static shell (`index.html`): favicon stack (svg + 32/16 png + apple-touch + `sit
 
 ## 4. Sitemap, robots, legacy URLs
 
-- `public/sitemap.xml` is generated from `allRoutes()` + `alternatesFor()` (`xhtml:link` per locale incl. `x-default`) by `npm run sitemap` (first step of `npm run build`). Never hand-edit. Sitemap = route table: adding a route to `ROUTES` is the only way to get it listed. Open: no `lastmod` (see backlog); `changefreq`/`priority` are ignored by Google.
+- `public/sitemap.xml` is generated from `allRoutes()` + `alternatesFor()` (`xhtml:link` per locale incl. `x-default`) by `npm run sitemap` (first step of `npm run build`). Never hand-edit. Sitemap = route table: adding a route to `ROUTES` is the only way to get it listed. `<lastmod>` per URL comes from `scripts/sitemap-lastmod.json`: a fingerprint of the page's copy in its language plus `src/data/`, with the day it last changed; the generator keeps the date while the fingerprint is unchanged and stamps today's date when it changes (code and CSS changes do not move it). Commit `public/sitemap.xml` and the ledger with the content change; `tests/unit/sitemap.test.ts` fails while they are stale. `changefreq`/`priority` are ignored by Google.
 - `public/robots.txt`: `Allow: /` + `Sitemap: https://www.fiorevera.hu/sitemap.xml`. Keep `/assets/` crawlable (images rank).
 - **Legacy URL preservation (US-11)**: every legacy HU and DE slug stays identical. Only two redirects exist — `REDIRECTS` in `routes.ts` mirrored in `vercel.json`: `/viragoskert/` → `/rolunk/`, `/de/blumengarten/` → `/de/uebermich/` (301, both with and without trailing slash; revertible per D-16). Cutover check (MASTER-PLAN 4.3): `curl -I` on every legacy URL → 200, the two above → 301.
 
@@ -98,7 +98,7 @@ Run home, gallery, rental, contact in HU + one DE/EN each; rerun a Performance o
 | hreflang reciprocity | every route's 4 alternates equal `alternatesFor(page)` — unit-tested; re-check only after editing `routes.ts` |
 | Title/description lengths | `npm test -- --run tests/unit/i18n.test.ts` |
 | One `<h1>` per route, lang attribute, HU leaks on DE/EN | `npx playwright test tests/e2e/navigation.spec.ts` |
-| Sitemap = routes | `npm run sitemap && git diff --exit-code public/sitemap.xml` after a route change |
+| Sitemap = routes, lastmod current | `npm test -- --run tests/unit/sitemap.test.ts` (red → `npm run sitemap`, commit `public/sitemap.xml` + `scripts/sitemap-lastmod.json`) |
 
 ## 8. DoD hooks
 

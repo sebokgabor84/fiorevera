@@ -48,5 +48,28 @@ export default tseslint.config(
         },
       ],
     },
+  },
+  {
+    // Playwright specs and their helpers get `test`/`expect` from the fixtures, never from the bare
+    // package: tests/e2e/fixtures.ts aborts every request to a real form provider, and a spec that
+    // imports '@playwright/test' directly silently loses that guard (real submissions cost quota and
+    // land in the owner's inbox). Type-only imports are fine.
+    files: ['tests/e2e/**/*.ts', 'tests/visual/**/*.ts'],
+    ignores: ['tests/e2e/fixtures.ts'],
+    rules: {
+      '@typescript-eslint/no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@playwright/test',
+              allowTypeImports: true,
+              message:
+                "Import { test, expect } from './fixtures' instead: the fixture blocks requests to the real form providers in every test.",
+            },
+          ],
+        },
+      ],
+    },
   }
 );

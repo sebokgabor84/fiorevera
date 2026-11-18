@@ -1,4 +1,5 @@
-import { expect, type Locator, type Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
+import { expect } from './fixtures';
 import { ROUTES } from '../../src/data/routes';
 
 /** Pages under visual regression: every HU page, the DE and EN home, and the localized 404. */
@@ -89,3 +90,40 @@ export const expectFullyInViewport = async (locator: Locator): Promise<void> => 
   });
   expect(box.top >= 0 && box.bottom <= box.innerHeight, `element spans ${box.top}–${box.bottom}px in a ${box.innerHeight}px viewport; raise the viewport height for this snapshot`).toBe(true);
 };
+
+/**
+ * The only way to take an element snapshot: checks that the element fits the viewport first
+ * (expectFullyInViewport), so a too-short viewport fails the test instead of freezing a cut PNG.
+ */
+export const snapshotElement = async (locator: Locator, name: string): Promise<void> => {
+  await expectFullyInViewport(locator);
+  await expect(locator).toHaveScreenshot(name);
+};
+
+/**
+ * Links whose text is a single token (an e-mail address, a phone number without spaces, one word)
+ * and that render on more than one line. `overflow-wrap: anywhere` on links lets such a token break
+ * mid-word when its column is a few pixels short — the footer e-mail showed as "gmail.co / m" at 1280
+ * and no gate saw it (2026-11-09). Returns one description per offending link.
+ */
+export const wrappedSingleTokenLinks = (page: Page): Promise<string[]> =>
+  page.evaluate(() => {
+    const out: string[] = [];
+    for (const a of document.querySelectorAll<HTMLAnchorElement>('a')) {
+      const text = a.textContent?.trim() ?? '';
+      if (text.length < 2 || /\s/.test(text)) continue;
+      const box = a.getBoundingClientRect();
+      if (box.width === 0 || box.height === 0 || getComputedStyle(a).visibility === 'hidden') continue;
+      // One line box per rendered line of text: collect the distinct tops of the text's client rects.
+      const tops = new Set<number>();
+      const walker = document.createTreeWalker(a, NodeFilter.SHOW_TEXT);
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        if (!node.textContent?.trim()) continue;
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        for (const r of range.getClientRects()) if (r.width > 0) tops.add(Math.round(r.top));
+      }
+      if (tops.size > 1) out.push(`link "${text.slice(0, 40)}" wraps onto ${tops.size} lines (${Math.round(box.width)}px wide box)`);
+    }
+    return out;
+  });

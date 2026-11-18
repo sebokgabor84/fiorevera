@@ -92,6 +92,13 @@
 }
 @media (min-width: 48rem) {
   .grid {
+    /* Tablet: two columns. With four, the contact column is narrower than info.fiorevera@gmail.com
+       below ~1050 px and the address breaks mid-word (tests/visual/layout.spec.ts, invariant 7). */
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 70rem) {
+  .grid {
     /* The contact column must hold info.fiorevera@gmail.com on one line at 1280 (218 px). */
     grid-template-columns: 1.6fr 1.15fr 0.9fr 0.9fr;
   }

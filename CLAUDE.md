@@ -15,7 +15,7 @@ Session close goes through the `goodbye` skill (`.agent/skills/goodbye/SKILL.md`
 The scope contract is **`MASTER-PLAN.md`** (34 numbered items, frozen from `docs/PRD.md`). Every build action traces to an item; new ideas go to `BACKLOG.md`. As of the first build pass (`feature/site-build`):
 
 - **Done:** Phase 0.1 archive (`scripts/archive-legacy.ts` → `references/legacy/`), 0.2 image pipeline (`assets-src/<slot>/` → `public/assets/**.webp` + generated `src/data/generated/imageMeta.ts`), 0.4 page map; Phase 1 (tokens, locale router, i18n parity gate, header + mobile menu, language toast, footer, `SeoHead`, prerender + sitemap); all Phase 2 pages render in all 3 locales with the archived legacy photography.
-- **Open:** 1.3 Vera's 15 cover picks, 2.3/2.4 copy sign-off (R-1), 2.10 form provider endpoint, Phase 3: axe as a hard gate (the 4-browser e2e run, Lighthouse and the visual-regression gate are in place; QA session report in `docs/qa/`), Phase 4 Vercel + cutover.
+- **Open:** 1.3 Vera's 15 cover picks, 2.3/2.4 copy sign-off (R-1), 2.10 form provider endpoint, Phase 3: the manual VoiceOver run of 3.1 (axe is a hard gate in the e2e suite since 2026-11-16; the 4-browser e2e run, Lighthouse and the visual-regression gate are in place; QA session report in `docs/qa/`), Phase 4 Vercel + cutover.
 - **Heavy folders are git-ignored** (`references/legacy/images/`, `references/legacy/raw/`, `assets-src/`, ~155 MB each side); regenerate with `npm run archive:legacy -- --seed-assets` then `npm run optimize:assets`. `references/legacy/manifest.json` + Markdown pages are committed.
 
 Key source facts: `src/data/routes.ts` is the single route source (router, `SeoHead`, hreflang, sitemap, prerender). `src/i18n/config.ts` creates one pre-initialised i18next instance per locale from the pathname — no language detection, no `changeLanguage`, nothing reads `window` during render (hydration-safe). `src/entry-client.tsx` hydrates when `#root` has element children, else renders (dev). `src/entry-server.tsx` is used by `scripts/prerender.ts` and by `tests/unit/render.test.tsx`. Data lives in `src/data/*.ts` with Zod contracts in `src/data/types.ts`; image lists come only from the generated `imageMeta.ts` (data references slots/album slugs, never filenames — PRD D-5).
@@ -29,23 +29,25 @@ npm install
 npm run dev              # Vite dev server (http://localhost:5173) — CSR in dev; prerendered HTML only in the build
 npm run build            # sitemap → tsc -b → vite build → vite build --ssr → scripts/prerender.ts (dist/<route>/index.html)
 npm run preview          # serve dist/
-npm run lint             # eslint . — 0 errors AND 0 warnings before any commit
-npm test -- --run        # vitest (54 tests: routes, data, i18n parity, server render of every route, archive, assets)
-npm run test:e2e         # playwright — reuses a running dev server locally; specs in tests/e2e/
+npm run lint             # eslint . (0 errors AND 0 warnings) + tsc -p tsconfig.scripts.json (type-check of scripts/, skill scripts, Playwright configs, tests/)
+npm test -- --run        # vitest (116 tests in 15 files: routes, data, i18n parity, server render of every route, archive, assets, form logic, GDPR audit + register seal, sitemap + lastmod, self-tests of the gates)
+npm run test:e2e         # playwright, 4 browsers, incl. axe on every route × locale (tests/e2e/a11y.spec.ts); reuses a running dev server only if it was started in THIS checkout
 npm run test:visual      # visual regression + layout invariants vs the PRODUCTION build (vite preview :4173); chromium; baselines in tests/visual/__screenshots__/
 npm run test:visual:update  # re-baseline — ONLY after the owner approved the new look
+npm run visual:sheet     # tests/visual/review.html: every baseline on one page; after a red run, expected / actual / diff per failed snapshot (generated, git-ignored)
 npm run prepush          # lint → unit → build → visual (what .githooks/pre-push runs)
 npm run archive:legacy -- --seed-assets   # Webnode archive → references/legacy/ + assets-src/
 npm run optimize:assets  # assets-src/ → public/assets/**.webp + src/data/generated/imageMeta.ts
 npm run validate:i18n    # key-parity gate on the three locale files
-npm run audit:gdpr       # every data sink in src/, index.html and the CSP must be declared in docs/gdpr/data-register.json
+npm run audit:gdpr       # every data sink in src/, index.html and the CSP must be declared in docs/gdpr/data-register.json (also runs inside npm test); `-- --seal` after an intended register change
+npm run verify:live      # read-only health check of https://www.fiorevera.hu: DNS, certificates, all routes, legacy URLs, redirects, 404s (expectations in docs/launch/live-expectations.json)
 npm run lockscreen       # regenerates the QR lockscreen PNGs
 npm run favicon          # public/favicon.svg → favicon-16/32, apple-touch-icon, android-chrome PNGs (add -- --from <variant-id> to ship a design-round variant first)
 npm run favicon:variants # regenerates docs/design/favicon-variants.html (the favicon design round, with 16 px raster proof)
 ```
 
 Run a single unit test: `npm test -- --run tests/unit/render.test.tsx` (or `-t "test name"`).
-Run a single e2e spec: `npx playwright test tests/e2e/<name>.spec.ts`. Playwright reuses an already-running dev server locally (`reuseExistingServer`), uses 1 worker + 2 retries on CI.
+Run a single e2e spec: `npx playwright test tests/e2e/<name>.spec.ts`. Playwright reuses an already-running dev server locally (`reuseExistingServer`), uses 1 worker + 2 retries on CI. **Server identity** (`scripts/checkout.ts`, `tests/support/globalSetup.ts`): the dev server (:5173) and the preview (:4173) say which checkout they serve; a git worktree gets its own ports, and both suites stop before the first test when the server belongs to another checkout or, for the visual suite, when `dist/` is missing or older than the sources. No CI runs yet; the prepared workflow and what the pixel gate would need there are in `docs/ci/README.md`.
 
 ## Definition of Done (enforced before every commit/push)
 
@@ -59,14 +61,15 @@ Run in order, stop on first failure, **fix the code not the test**: `npm run lin
   - `src/components/**/*.tsx` → `PASCAL_CASE`
   - other `src/**/*.ts` → `camelCase`
   - `src/**/*.css` → `kebab-case`
-  ESLint runs on every `*.ts`/`*.tsx` in the repo (`scripts/`, `tests/` included); only `dist` is ignored. `tsc -b` type-checks `src/` and `vite.config.ts` only, so `scripts/` and `tests/` are linted but not part of the build type-check.
+  ESLint runs on every `*.ts`/`*.tsx` in the repo (`scripts/`, `tests/` included); only `dist` is ignored. `tsc -b` type-checks `src/` and `vite.config.ts` only; `scripts/`, the skill scripts, the Playwright configs and `tests/` are type-checked by `tsc -p tsconfig.scripts.json`, which `npm run lint` runs after ESLint.
+- **Playwright specs import `test`/`expect` from `./fixtures`** (`tests/e2e/fixtures.ts`, re-exported by `tests/visual/fixtures.ts`), never from `@playwright/test`: the fixture aborts every request to a real form provider. ESLint (`no-restricted-imports`) fails on a bare import; type-only imports are fine.
 - **TS is strict**: `noUnusedLocals`, `noUnusedParameters`, `verbatimModuleSyntax` (type-only imports must use `import type`), `erasableSyntaxOnly`, `noUncheckedSideEffectImports`. No `any` (qa-specialist vetoes it, even in temp scripts).
 - **Zod DTOs**: data structures are validated against schemas in `src/data/types.ts` before tests. If validation fails, fix the data, not the schema.
 - **Semantic HTML / a11y**: `jsx-a11y` recommended rules are on; interactive elements must be native (`<button>`, `<a>`), no `onClick` on `<div>`. `index.html` already ships the skip link targeting `#main-content`.
 - **Images**: site assets go in `public/assets/` as `webp`, ≤ 200 KB. (The `lockscreen/` folder is exempt — it is a generated-asset workspace, not shipped site imagery.)
 - **i18n**: all copy is keyed (HU/DE/EN) in `src/i18n/locales/*.json`; `tests/unit/i18n.test.ts` fails on a missing key, an empty string, or an identical value in all three locales (whitelist in `scripts/validate-i18n.ts`), on legacy typos, on garden mentions outside `about.garden.*` (PRD D-16) and on SEO titles > 60 / descriptions > 160 chars. The toast strings are rendered in the *target* locale via `getI18n(target)`.
 - **Hydration safety (PRD D-18)**: no `window`/`document`/`localStorage`/`Intl`/`Date` in render paths — effects only (`react-hooks/set-state-in-effect` is an error: use a callback such as `requestAnimationFrame` inside the effect). `formatHuf` and `PRIVACY_UPDATED` are hand-formatted for this reason.
-- **Generated files**: `src/data/generated/imageMeta.ts` and `public/sitemap.xml` are generated — never hand-edit, re-run the scripts.
+- **Generated files**: `src/data/generated/imageMeta.ts`, `public/sitemap.xml`, `scripts/sitemap-lastmod.json` (per-route content fingerprint + `lastmod` date) and `docs/gdpr/data-register.seal.json` are generated — never hand-edit, re-run the scripts. After a copy or data change `npm run sitemap` (part of `npm run build`) refreshes the sitemap dates; commit both files with the change (`tests/unit/sitemap.test.ts` fails while they are stale).
 - `.env.example` lists `VITE_FORM_ENDPOINT` / `VITE_FORM_ACCESS_KEY` (contact form provider).
 - **Shell**: prefix commands with `rtk` (see `.agent/rules/antigravity-rtk-rules.md` and the global RTK rule); the Claude Code hook rewrites them automatically.
 
