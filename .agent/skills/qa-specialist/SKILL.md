@@ -1,6 +1,6 @@
 ---
 name: qa-specialist
-description: Owns the Fiore Vera quality pipeline — ESLint/tsc strictness, the 54 Vitest tests, the 4-browser Playwright suite, the production build + prerender, the chromium visual-regression gate and the pre-push hook. Use when writing or fixing tests, debugging a red gate, re-baselining screenshots, or validating a slice before any commit or push.
+description: Owns the Fiore Vera quality pipeline — ESLint/tsc strictness, the 116 Vitest tests, the 4-browser Playwright suite with axe on every route, the production build + prerender, the chromium visual-regression gate, the server-identity check and the pre-push hook. Use when writing or fixing tests, debugging a red gate, re-baselining screenshots, or validating a slice before any commit or push.
 ---
 
 # QA Specialist — Fiore Vera
@@ -17,16 +17,16 @@ Senior QA for the HU/DE/EN prerendered React 19 + Vite 7 site. Owns the Definiti
 
 ## 1. Definition of Done — run in order, stop on first failure, fix the code not the test
 
-| # | Command | Current green result (2026-11-09) | What it enforces |
+| # | Command | Current green result (2026-11-16) | What it enforces |
 |---|---|---|---|
-| 1 | `npm run lint` | 0 errors **and** 0 warnings | `eslint.config.js`: ts-eslint recommended, `jsx-a11y` recommended, `react-hooks` recommended incl. `set-state-in-effect` (error — use a callback such as `requestAnimationFrame` inside the effect), `react-refresh/only-export-components` (warn), `check-file`: `src/components/**/` folders and `.tsx` PASCAL_CASE, other `src/**/*.ts` camelCase, `src/**/*.css` kebab-case. Lints `scripts/` and `tests/` too; only `dist` is ignored. |
-| 2 | `npx tsc -b` (also step 2 of `npm run build`) | clean | `tsconfig.app.json` (`src/`) + `tsconfig.node.json` (`vite.config.ts`): `strict`, `noUnusedLocals/Parameters`, `verbatimModuleSyntax` (type-only imports must be `import type`), `erasableSyntaxOnly`, `noUncheckedSideEffectImports`. No `any`. `scripts/` and `tests/` are linted but not type-checked by the build — write them as if they were. |
-| 3 | `npm test -- --run` | 54 passed in 7 files | Vitest 4, jsdom, `globals: true`, setup `src/setupTests.ts` (jest-dom). Excludes `tests/e2e/**`, `tests/visual/**`. Files below. |
-| 4 | `npm run test:e2e` | 260 passed, 16 skipped | Playwright, 4 projects (chromium, firefox, webkit, Mobile Chrome = Pixel 5), 69 tests per project against the **dev server** (:5173, CSR). Skips below. |
+| 1 | `npm run lint` | 0 errors **and** 0 warnings | `eslint.config.js`: ts-eslint recommended, `jsx-a11y` recommended, `react-hooks` recommended incl. `set-state-in-effect` (error — use a callback such as `requestAnimationFrame` inside the effect), `react-refresh/only-export-components` (warn), `check-file`: `src/components/**/` folders and `.tsx` PASCAL_CASE, other `src/**/*.ts` camelCase, `src/**/*.css` kebab-case. Lints `scripts/` and `tests/` too; only `dist` is ignored. `@typescript-eslint/no-restricted-imports`: a spec or helper under `tests/e2e/` or `tests/visual/` that imports values from `@playwright/test` is an error (import from `./fixtures`; type-only imports are fine). **Then `tsc -p tsconfig.scripts.json`**: type-check of `scripts/`, the skill scripts, the Playwright configs and all of `tests/` — same strict flags as the app. |
+| 2 | `npx tsc -b` (also step 2 of `npm run build`) | clean | `tsconfig.app.json` (`src/`) + `tsconfig.node.json` (`vite.config.ts`): `strict`, `noUnusedLocals/Parameters`, `verbatimModuleSyntax` (type-only imports must be `import type`), `erasableSyntaxOnly`, `noUncheckedSideEffectImports`. No `any`. `scripts/` and `tests/` are not part of the build's `tsc -b`; step 1 type-checks them. |
+| 3 | `npm test -- --run` | 116 passed in 15 files | Vitest 4, jsdom, `globals: true`, setup `src/setupTests.ts` (jest-dom). Excludes `tests/e2e/**`, `tests/visual/**`. Files below. |
+| 4 | `npm run test:e2e` | 397 passed, 7 skipped | Playwright, 4 projects (chromium, firefox, webkit, Mobile Chrome = Pixel 5), 101 tests per project against the **dev server** (CSR; :5173 in the main checkout, an own port in a worktree — section 5 "Server identity"). Skips below. |
 | 5 | `npm run build` | 21 pages + `dist/404.html` | `scripts/generate-sitemap.ts` → `tsc -b` → `vite build` → `vite build --ssr src/entry-server.tsx --outDir dist-ssr` → `scripts/prerender.ts` (7 pages × 3 locales from `src/data/routes.ts`, one empty-root noindex 404). |
 | 6 | `npm run test:visual` (after step 5) | all green vs committed baselines | Section 2. Replaces the "eyeball it at one width" step; the browser look-through (README step 9 / POST-4) still happens before the Review Brief. |
 
-### Unit files (54 tests)
+### Unit files (116 tests)
 
 | File | Tests | Guards |
 |---|---|---|
@@ -37,26 +37,38 @@ Senior QA for the HU/DE/EN prerendered React 19 + Vite 7 site. Owns the Definiti
 | `tests/unit/assets.test.ts` | 2 | `public/assets/**` is webp ≤ 200 KB (lockscreen workspace exempt); every `IMAGE_META` entry has dimensions and all three size variants exist on disk |
 | `tests/unit/legacyArchive.test.ts` | 2 | `references/legacy/manifest.json` (15 albums / 169 images / 4 testimonials, garden archived) and the Markdown per legacy page |
 | `tests/unit/skills.test.ts` | 4 | `SKILL_NAMES` ↔ `.agent/skills/*` ↔ backticked mention in `AGENTS.md`; no legacy singular agent-file name in the core docs |
+| `tests/unit/submitInquiry.test.ts` | 6 | `submitInquiry` through its injectable `fetchImpl`: no endpoint, honeypot, body keys, access key, rejected, network error |
+| `tests/unit/inquiryMailto.test.ts` | 4 | the prefilled `mailto:` fallback |
+| `tests/unit/validateInquiry.test.ts` | 9 | field validation codes (the "minimum only" rules) |
+| `tests/unit/analytics.test.ts` | 4 | Vercel Web Analytics only on the served hosts |
+| `tests/unit/gdpr.test.ts` | 15 | the personal-data audit on the real repo (`[]`), a finding per deleted register entry, hosts in comments ignored, iframe / external script / preconnect / web font / cookie write caught, the request body has exactly the keys in `inquiryPayload`, the register matches its seal (a register change without `npm run audit:gdpr -- --seal` fails) |
+| `tests/unit/sitemap.test.ts` | 6 | `scripts/sitemap-lastmod.json` knows all 21 routes and matches the current copy + data; committed `public/sitemap.xml` equals the generator's output; a date moves only for changed routes. Red → `npm run sitemap`, commit both files |
+| `tests/unit/gates.test.ts` | 12 | the gates fail on what they exist for: a server from another checkout / without identity / wrong mode is refused, worktree ports, missing or stale `dist/`, ESLint error on a bare `@playwright/test` import |
+| `tests/unit/verifyLive.test.ts` | 6 | judging logic of `npm run verify:live` (legacy URL list, nameserver families, permanent redirects and chains, certificate names and expiry) — no network |
 
-### E2E (7 specs, 69 tests × 4 projects)
-`navigation` (21 routes × locale, 3 localized 404s, DE CTAs stay in `/de/`, keyboard nav, mobile menu), `seo` (21 heads), `contact` (5), `locale` (5: toast for de-*/en-* browsers only, dismiss persists), `gallery` (3), `rental` (4), `vitals` (4: CLS < 0.1, LCP < 4 s on the dev build). The 16 skips are intentional: **4** are the `isMobile` split (`header navigation reaches every page by keyboard` skips on Mobile Chrome; `mobile menu opens…` skips on the 3 desktop projects) and **12** are the contact success paths (3 locales × 4 projects) that `test.skip` when Playwright reused an already-running dev server started without `VITE_FORM_ENDPOINT`. Start the suite with no dev server running and those 12 execute against the mocked endpoint — then the expected result is 272 passed / 4 skipped.
+### E2E (8 specs, 101 tests × 4 projects)
+`navigation` (27: 21 routes × locale, 3 localized 404s, DE CTAs stay in `/de/`, keyboard nav, mobile menu), `seo` (21 heads), `a11y` (27, below), `contact` (10), `locale` (5: toast for de-*/en-* browsers only, dismiss persists), `gallery` (3), `rental` (4), `vitals` (4: CLS < 0.1, LCP < 4 s on the dev build). The 7 skips are intentional: **4** are the `isMobile` split (`header navigation reaches every page by keyboard` skips on Mobile Chrome; `mobile menu opens…` skips on the 3 desktop projects) and **3** are `the open mobile menu has no axe violations` on the 3 desktop projects. Always compare the passed total with the expected one: a piped `| tail` hides the exit code (2026-11-16: 210 passed looked green while Firefox never launched).
+
+**`tests/e2e/a11y.spec.ts` — axe as a hard gate (MASTER-PLAN 3.1).** `@axe-core/playwright` with its full default rule set on all 21 routes, the 3 localized 404s, the contact form with validation errors, the open mobile menu and the HU home with the language toast; zero violations, no rule disabled, no element excluded. A failure prints rule id, impact, the element's selector, axe's fix hint and the help URL. Fix the markup or CSS (`accessibility-expert`), never the rule list. axe covers only what a machine can check; the manual VoiceOver run of 3.1 is still open.
+
+**`tests/e2e/contact.spec.ts`** (10): field errors; named errors; per locale: the consent box starts unticked and nothing is sent without it; per locale: success path (one request, body keys = `inquiryPayload` in `docs/gdpr/data-register.json`, honeypot and consent flag never sent, confirmation focused and in view); un-mocked submission blocked by the fixture; failure path with the mailto fallback. The success path skips only when Playwright reused a dev server of this checkout that the owner started without `VITE_FORM_ENDPOINT`; **with `CI` set that is a failure, not a skip**.
 
 ## 2. Visual regression gate (chromium, production build)
 
 | Fact | Value |
 |---|---|
 | Config | `playwright.visual.config.ts` — `testDir: tests/visual`, chromium only (Desktop Chrome), `locale: hu-HU`, light scheme, `retries: 0`, `trace: retain-on-failure` |
-| Target | `vite preview --port 4173 --strictPort` serving `dist/` (`reuseExistingServer: true` — a stale preview serves a stale build, rebuild first) |
+| Target | `vite preview --strictPort` serving `dist/`, :4173 in the main checkout, an own port in a worktree (`reuseExistingServer: true`). The server command and `tests/support/globalSetup.ts` refuse a missing `dist/`, a `dist/` older than `src/`, `public/`, `index.html`, `vite.config.ts` or `scripts/prerender.ts`, and a preview that serves another checkout — the message says to run `npm run build` or which process to stop |
 | Comparison | `scale: 'css'`, `animations: 'disabled'`, `caret: 'hide'`, `maxDiffPixelRatio: 0.001`, `maxDiffPixels: 150` |
-| Baselines | `tests/visual/__screenshots__/snapshots.spec.ts/<name>.png` — 25 PNGs, committed, rendered on darwin (other OSes rasterise fonts differently and would need their own set) |
+| Baselines | `tests/visual/__screenshots__/snapshots.spec.ts/<name>.png` — 27 PNGs (count them with `ls`, the history is in `docs/qa/visual-baselines-log.md`), committed, rendered on darwin (other OSes rasterise fonts differently and would need their own set) |
 | Report | `playwright-report-visual/` (git-ignored) — expected / actual / diff per failure; traces in `test-results/` |
 | Run | `npm run build && npm run test:visual` |
-| Review a diff | `npm run visual:review` — runs the suite and opens the HTML report (expected / actual / diff per snapshot). Show the owner the diff PNGs (`test-results/**/*-diff.png`) in chat BEFORE proposing anything |
+| Review a diff | `npm run visual:sheet` → `tests/visual/review.html` (serve it: `.claude/launch.json` → `visual-review`): after a red run it opens with expected / actual / diff per failed snapshot, followed by every baseline with its checklist. Generated and git-ignored — regenerate, never commit. `npm run visual:review` opens Playwright's own HTML report instead. Pre-screen the sheet yourself, then show the owner BEFORE proposing anything |
 | Re-baseline | `npm run test:visual:update -- --approved-by="<name>" --note="<what changed and why>"` → `scripts/visual-approve.mjs`: refuses without an approver, re-records, lists every changed PNG and appends a row to `docs/qa/visual-baselines-log.md`. **Only after the owner approved the reviewed diff (explicit GO)**, never to make a red run green; never call `--update-snapshots` directly |
 
 `tests/visual/helpers.ts` defines the page set (`PAGES`: 8 HU pages incl. the 404 path `/nincs-ilyen-oldal/`, plus DE/EN home at 375 only), the widths and `openStable()` — toast pre-dismissed, animations and smooth scroll off, `document.fonts.ready`, scroll-through so lazy images mount, then every image inside the 1500 px snapshot area is force-decoded with an 8 s cap.
 
-**`tests/visual/layout.spec.ts` — 82 structural tests, no pixels** (10 pages × 8 widths `320 375 768 1024 1120 1280 1440 1920`; desktop widths use a 768 px tall viewport, phones 812). Each invariant encodes a regression that reached a reviewer on 2026-11-09:
+**`tests/visual/layout.spec.ts` — 83 structural tests, no pixels** (80 = 10 pages × 8 widths `320 375 768 1024 1120 1280 1440 1920`; desktop widths use a 768 px tall viewport, phones 812). Each invariant encodes a regression that reached a reviewer on 2026-11-09:
 
 | Invariant | Regression it pins |
 |---|---|
@@ -66,10 +78,12 @@ Senior QA for the HU/DE/EN prerendered React 19 + Vite 7 site. Owns the Definiti
 | any `position: sticky` inside `main`: `top + height ≤ innerHeight` | sticky image column pinned under the header on phones, text scrolled behind it |
 | no `overflow: hidden` text element with `scrollWidth > clientWidth + 2` (ellipsis allowed) | clipped headings |
 | `<img>` without `object-fit: cover/contain` keeps its natural ratio within 2 % | distorted photos |
+| a link whose text is one token (e-mail, phone number, one word) renders on one line (`wrappedSingleTokenLinks` in `helpers.ts`) | `overflow-wrap: anywhere` on links broke the footer e-mail mid-word ("gmail.co / m") when its column was a few px short — at 1280 on 2026-11-09, at 768 and 1024 until 2026-11-16 |
+| self-test: the footer e-mail link squeezed by 12 px must be reported | an invariant that silently stops matching |
 | overlay hit-tests (home @ 375 / 1280): centre of the first 20 header/CTA controls hits itself via `elementFromPoint` | QA M9: toast (z 120) over the H1, CTAs and the first two menu items (the carousel-arrow hit-test lives in `tests/e2e/gallery.spec.ts`) |
 | `< 1120`: menu panel `[role="dialog"]` covers > 70 % of the viewport and owns the centre point; Escape → `aria-expanded="false"` | header `backdrop-filter` became the containing block of the fixed panel; QA M10 Escape only inside the panel |
 
-**`tests/visual/snapshots.spec.ts` — 25 pixel tests**: full-page clips `1500 px` tall (gallery 1100) at 375 and 1280 for the 8 HU pages; `home-de-375`, `home-en-375`; header strip (96 px) at 1120/1280/1440/1920; `menu-open-375`; first gallery carousel on slide 2 at 375 and 1280.
+**`tests/visual/snapshots.spec.ts` — 27 pixel tests**: full-page clips `1500 px` tall (gallery 1100) at 375 and 1280 for the 8 HU pages; `home-de-375`, `home-en-375`; header strip (96 px) at 1120/1280/1440/1920; language toast at 375 and 1280; `menu-open-375`; the first gallery carousel (`[aria-roledescription="carousel"]`) on slide 2 at 375 and 1280. Element snapshots go through `snapshotElement()` only: it asserts that the element lies fully inside the viewport first, because Chromium leaves the part below the viewport edge unpainted and the PNG would freeze a cut frame. The native date input shows `mm/dd/yyyy` in the contact baselines (headless Chromium's UI locale); that is not a site defect.
 
 Reading a failure: open `playwright-report-visual/index.html`, look at the diff image first. A diff confined to one component after a CSS change is the change — decide with the owner. A diff everywhere (fonts, anti-aliasing) means a different machine or a stale `dist/`; rebuild, do not re-baseline. A layout invariant failure prints the offending element and numbers in the assertion message — fix the CSS.
 
@@ -95,8 +109,12 @@ Reading a failure: open `playwright-report-visual/index.html`, look at the diff 
 - **Strings come from the locale JSON**, never literals: `import { T, hu, de, en } from './locales'` (e2e) or `flatten(loadLocales()[l])` (unit).
 - **Binaries**: call `./node_modules/.bin/playwright …` and `./node_modules/.bin/vitest …`. The RTK shell hook rewrites `npx <bin>` to `npm run <bin>`, which fails for anything that is not a script.
 - One spec / one project: `./node_modules/.bin/playwright test tests/e2e/gallery.spec.ts --project=chromium`; one unit file: `npm test -- --run tests/unit/render.test.tsx` or `-t "test name"`; one visual test: `./node_modules/.bin/playwright test -c playwright.visual.config.ts -g "home @ 375"`.
-- **Form endpoint mock**: `playwright.config.ts` starts the dev server with `VITE_FORM_ENDPOINT=https://mock-form-endpoint.test/submit`; `contact.spec.ts` fulfils that host with `page.route` for success and `route.abort('failed')` for the failure path. No real provider is ever called.
+- **Import `test` and `expect` from `./fixtures`, never from `@playwright/test`** (e2e and visual; ESLint enforces it). The auto fixture in `tests/e2e/fixtures.ts` aborts every request to `api.web3forms.com` and `formspree.io` in every test: a reused dev server may carry the real endpoint from `.env.local`, the production build under the visual suite always does, and each real submission costs quota and lands in the owner's inbox.
+- **Form endpoint mock**: `playwright.config.ts` starts the dev server with `VITE_FORM_ENDPOINT=https://mock-form-endpoint.test/submit`; `contact.spec.ts` fulfils that host (and the real ones) with `page.route` for success and `route.abort('failed')` for the failure path.
+- **Server identity** (`scripts/checkout.ts`): the dev and the preview server answer `/__fv/checkout` with the folder they serve. `tests/support/globalSetup.ts` stops both suites before the first test when the server on the test port was started in another checkout, does not answer the question (foreign or outdated server), or is the wrong kind. The main checkout uses :5173 / :4173; a git worktree gets its own stable ports (`checkoutPort()`), so a worktree session and the owner's dev server never collide. Never start a server by hand on another checkout's port.
+- **Accessibility**: a new page or a new state (dialog, expanded panel, error state) gets a scan in `tests/e2e/a11y.spec.ts`.
 - E2E targets the CSR dev server; anything about the **prerendered** HTML belongs in `render.test.tsx` or the visual suite.
+- **The live site** is checked by `npm run verify:live` (`scripts/verify-live.ts`, read-only: DNS, certificates, all routes, the 14 legacy URLs, redirects, 404s, sitemap, security headers; expectations in `docs/launch/live-expectations.json`). Run it after any DNS, domain or `vercel.json` change. It is not part of the gates: it needs the network and the production site.
 
 ## 6. Debugging
 `resources/debugging-guide.md` — traces (`./node_modules/.bin/playwright show-trace test-results/<dir>/trace.zip`), `--reporter=line`, the report folders, and the false positives met on 2026-11-09 (probing below the fold, `boundingBox()` including scroll offset, lazy `img.decode()` hanging).

@@ -2,6 +2,14 @@ import { mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { defineConfig, devices } from '@playwright/test';
+import { checkoutPort } from './scripts/checkout';
+
+/*
+ * The dev server under test must be THIS checkout's. The main checkout uses :5173; a git worktree gets
+ * its own port (scripts/checkout.ts), and tests/support/globalSetup.ts refuses to run against a server
+ * that was started in another folder.
+ */
+const origin = `http://localhost:${checkoutPort(5173)}`;
 
 /*
  * Firefox on macOS: at startup the test browser reads the profile registry of the INSTALLED Firefox
@@ -21,8 +29,10 @@ export default defineConfig({
     retries: process.env.CI ? 2 : 0,
     workers: process.env.CI ? 1 : undefined,
     reporter: 'list',
+    globalSetup: './tests/support/globalSetup.ts',
+    metadata: { fvServer: { origin, mode: 'dev' } },
     use: {
-        baseURL: 'http://localhost:5173',
+        baseURL: origin,
         trace: 'on-first-retry',
     },
 
@@ -51,8 +61,8 @@ export default defineConfig({
 
     /* Run your local dev server before starting the tests */
     webServer: {
-        command: 'npm run dev',
-        url: 'http://localhost:5173',
+        command: `npm run dev -- --port ${new URL(origin).port} --strictPort`,
+        url: origin,
         reuseExistingServer: !process.env.CI,
         // Contact-form E2E: the app posts to this host, which the specs mock with page.route (success) / abort (failure).
         env: { VITE_FORM_ENDPOINT: 'https://mock-form-endpoint.test/submit' },

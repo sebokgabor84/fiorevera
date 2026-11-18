@@ -108,7 +108,8 @@ export const AlbumSection = ({ album, priority = false }: Props) => {
           className={styles.carousel}
           role="region"
           aria-roledescription="carousel"
-          aria-label={t('gallery.carousel.label', { title })}
+          // The venue keeps the landmark name unique: two albums share a couple's names (axe landmark-unique).
+          aria-label={t('gallery.carousel.label', { title: venue ? `${title} — ${venue}` : title })}
           aria-describedby={statusId}
         >
           {/* The scrollable track is the keyboard target (arrow keys); scrollable regions must be focusable. */}
