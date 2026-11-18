@@ -29,7 +29,8 @@ text on DE, HU couple names on the DE gallery). The language is decided by the U
 |---|---|
 | **One pre-initialised i18next instance per locale**, `getI18n(locale)`, `initImmediate: false`, `fallbackLng: 'hu'`, `escapeValue: false`, `returnNull: false`. No detector, no `changeLanguage`, nothing async. `i18next-browser-languagedetector` sits in `package.json` **unused — never wire it in** (D-4). | `src/i18n/config.ts` |
 | Locale comes from the pathname (`localeFromPath`, `matchRoute`) and is passed down via `LocaleContext { locale, page }` | `src/data/routes.ts`, `src/i18n/localeContext.ts` |
-| Three files, same tree, **274 keys each**, 15 namespaces: `meta nav lang toast common home services gallery rental about privacy notFound footer testimonials` | `src/i18n/locales/{hu,de,en}.json` |
+| Three files, same tree, **274 keys each** (counted 2026-11-18 — recount, never copy), 15 namespaces: `meta nav lang toast common home services gallery rental about contact privacy notFound footer testimonials` | `src/i18n/locales/{hu,de,en}.json` |
+| Page intros and titles sit under `<page>.hero.{eyebrow,title,intro}` and are read through `PageHero` (`t('gallery.hero.intro')`); form errors are **codes** from `src/lib/validateInquiry.ts` that `InquiryForm` maps to `contact.form.errors.{required,email,phone,tooLong,consent}` | `src/pages/*.tsx`, `src/components/Contact/InquiryForm.tsx` |
 | Data files hold **keys and proper nouns only** (`nameKey`, `descriptionKey`, `titleKey`, `partners`, venue names); Zod rejects anything else | `src/data/*.ts`, `src/data/types.ts` |
 | `<html lang>` is set by `scripts/prerender.ts` per route and by a `Layout` effect on client navigation | `scripts/prerender.ts`, `Layout.tsx` |
 
@@ -50,11 +51,13 @@ text on DE, HU couple names on the DE gallery). The language is decided by the U
 
 | Action | Steps |
 |---|---|
+| **Edit existing copy** | **First find the key the component reads**: `grep -rn "gallery\." src/pages src/components` (quote the pattern, zsh). An intro edit once went to `gallery.intro`, a key the page never read — the page reads `gallery.hero.intro`. Then change all three locales and look at the page |
 | Add key | write HU → DE → EN in the same namespace position; `npm run validate:i18n`; use via `t('ns.key')` |
 | Rename key | update every `t()` / `*Key` field / `tests/e2e/locales.ts` consumer + all three files; grep the old key: `grep -rn "old.key" src tests scripts` |
 | Remove key | delete from all three; grep proves zero consumers (the five dead keys of the 2026-11-09 QA report were removed on 2026-11-16) |
 | Identical by design | add to `IDENTICAL_WHITELIST` with a reason in the PR; never for CTAs or labels |
-| Placeholder | `{{name}}` identical in all three (`{{count}}`, `{{title}}`, `{{venue}}`, `{{n}}`, `{{total}}`, `{{date}}`, `{{areas}}`); word order may change, names may not |
+| Placeholder | `{{name}}` identical in all three (`{{count}}`, `{{title}}`, `{{venue}}`, `{{n}}`, `{{total}}`, `{{date}}`, `{{areas}}`, `{{max}}` in `contact.form.errors.tooLong`, `{{phone}}` in the rental steps — Vera's number comes from `src/data/contact.ts`, never typed into copy); word order may change, names may not |
+| Copy that is only a proposal | Keep it out of the locale files until the owner's GO — one key forces all three locales through the parity gate. Today: the greetings-list copy (`docs/gdpr/newsletter-consent-concept.md` §7) and the privacy hosting / Web3Forms lines (`docs/launch/domain-and-hosting-plan.md` §7.4) |
 
 ## 2. Plurals
 
@@ -95,7 +98,18 @@ Gate: `tests/unit/render.test.tsx` renders all 21 routes + 3 404s with `renderTo
 
 ## 7. Register — owner decision, not yours
 
-D-12 says informal first-person (HU *te*, DE *du*, EN *you*). **DE is decided (owner, 2026-11-10): the couple is addressed as *ihr***; the last five *du* strings were aligned on 2026-11-16. HU still mixes singular and plural (*Álmaid … figyelnetek*). The decision is listed under `BACKLOG.md` `[CONTENT]` "Owner decisions from the QA session" and `docs/qa/2026-11-09-qa-session.md#owner-decisions-needed`. Until it is made: keep the register of the surrounding strings when editing, flag inconsistencies in the Review Brief, **do not pick a side**. Testimonials are verbatim (typo fixes only).
+D-12 says informal first-person (HU *te*, DE *du*, EN *you*). What the owner decided since (review of 2026-11-16/18, `docs/qa/2026-11-16-minor-triage.md`):
+
+| Question | Status |
+|---|---|
+| DE address of the couple | **Decided by the owner 2026-11-10: *ihr*.** New and edited DE copy uses *ihr*; the last five *du* strings were aligned on 2026-11-18 |
+| HU *te* vs *ti* | **Decided 2026-11-18:** *te* for what one reader does (buttons, form, "Hívj bátran"), *ti* for the couple and their wedding ("esküvőtök", "nektek"). Only a sentence that switches inside itself gets aligned (the hero lead now starts "Álmaitok …"). No sweep |
+| Hyphenation, emoji in the rental step, gold numerals, portrait crops | **Decided 2026-11-18:** no automatic hyphenation; the smiley stays; numerals done (QA M7); Vera picks landscape covers |
+| Services eyebrow, hero buttons on phones | **Decided 2026-11-18:** the eyebrow is the pillar's position ("1 / 3", rendered in code, no copy key); both hero buttons are full width and stacked on phones, labels unchanged |
+| Field labels in the delivered inquiry mail | **Decided and built:** Hungarian (`INQUIRY_MAIL_LABELS` in `src/lib/submitInquiry.ts`), confirmed by a delivered mail on 2026-11-18. Subject and sender name ("Fiore Vera weboldal") stay HU-only by design |
+| Copy sign-off per locale (R-1), Vera's phone check of the three locales | **Open** (MASTER-PLAN 2.3/2.4, 4.2) |
+
+Testimonials are verbatim (typo fixes only).
 
 ## 8. Typography and formatting per locale
 
@@ -131,7 +145,8 @@ Then in the browser, per locale: 404 page title/h1/CTA, form states (empty submi
 - **Veto hardcoded strings** in JSX — visible text, `aria-label`, `title`, `alt`, `placeholder`, JSON-LD names, form error messages, noscript. Everything goes through `t()` or a prerender replacement.
 - **Veto keys added to one or two locales**, placeholder renames in one locale, or a HU value pasted into DE/EN "for now". The gate is red for a reason; fix the copy, not the whitelist.
 - **Veto machine-translation artefacts**: literal idioms ("I was completely on fire", "costs running away"), German-isms in EN ("references"), HU word order in DE, wrong capitalisation ("Zala county"), untranslated conjunctions in proper-noun joins. Ask the owner for the practitioner's term instead of guessing (zero-guessing, `AGENTS.md`).
-- **Veto register decisions without the owner** (te/ti, du/ihr) and any "normalisation" sweep before the BACKLOG decision lands.
+- **Veto register decisions without the owner** (HU te/ti is open; DE *ihr* is decided) and any "normalisation" sweep before the BACKLOG decision lands.
+- **Veto a copy edit made without reading the consumer**: name the key and the component that reads it in the Review Brief.
 - **Veto locale from browser/storage during render**, redirects on language, and any use of `i18next-browser-languagedetector`.
 - **Veto strings built by concatenation** (`name + ' és ' + name`, `count + ' db'`) — use interpolation and plural keys.
 
@@ -140,3 +155,4 @@ Then in the browser, per locale: 404 page title/h1/CTA, form states (empty submi
 - `accessibility-expert`: accessible-name rules (label-in-name, WCAG 2.5.3) for localized `aria-label`s.
 - `qa-specialist`: DoD run; Playwright `locale.spec.ts` + `navigation.spec.ts` are the regression gates.
 - `design-system-expert`: DE length overflow in nav/buttons/pills.
+- `gdpr-guardian`: every `privacy.*` and `contact.form.consent*` string; a privacy edit bumps `PRIVACY_UPDATED` in `src/data/contact.ts` (hand-formatted per locale).

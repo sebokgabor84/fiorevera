@@ -1,6 +1,6 @@
 # Site polish: privacy, footer, icons, mail labels, QA minors, visual review as code
 
-Branch `claude/site-polish-5354c6` → `main`, rebased on `main` after the Quality gates merge (PR 9). `chore/goodbye-harvest` (PR 8) rewrites the same skill files, `AGENTS.md` and `BACKLOG.md`: whichever of the two merges second needs a doc-only conflict resolution.
+Branch `claude/site-polish-5354c6` → `main`. `main` (quality gates, the harvest and the branch guardrails, merge 5dbb825) is merged in; the doc conflicts with the harvest are resolved on this branch.
 
 ## What changes for visitors
 
@@ -26,7 +26,7 @@ Branch `claude/site-polish-5354c6` → `main`, rebased on `main` after the Quali
 - `docs/qa/2026-11-16-minor-triage.md`: every QA minor with its outcome (33 fixed, 5 already fixed, 12 not changed with a reason, 4 handed over, 7 decided by the owner).
 - 20 visual baselines re-recorded through the approval script, approved by Gabor Sebők after three review rounds (`docs/qa/visual-baselines-log.md`).
 
-## Gates on this branch (after the rebase, 2026-11-18)
+## Gates on this branch (with `main` 5dbb825 merged in, 2026-11-18)
 
 | Gate | Result |
 |---|---|
@@ -40,7 +40,7 @@ One e2e run showed two Firefox timeouts in `a11y.spec.ts` (`waitForLoadState('ne
 
 ## Done before this pull request
 
-- [x] Rebased on `main` (Quality gates in): data register `inquiryPayload` switched to the 11 new keys and re-sealed, sitemap dates refreshed, carousel baselines taken from `main`.
+- [x] `main` merged in (quality gates, harvest, guardrails): data register `inquiryPayload` switched to the 11 new keys and re-sealed, sitemap dates refreshed, carousel baselines taken from `main`.
 - [x] Owner sent a real inquiry from the Vercel preview on 2026-11-18: Hungarian labels arrive, Reply goes to the visitor.
 - [x] Owner read `docs/gdpr/processing-record.md` and accepted the Web3Forms DPA (2026-11-18).
 - [x] Visual review: three rounds on the review page, 20 baselines re-recorded under the owner's name.

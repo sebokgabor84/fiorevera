@@ -14,6 +14,7 @@ export const SKILL_NAMES = [
   'i18n-guardian',
   'lockscreen-qr-generator',
   'qa-specialist',
+  'release-manager',
   'seo-expert',
   'skill-creator',
   'to-prd',

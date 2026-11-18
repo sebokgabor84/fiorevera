@@ -1,40 +1,188 @@
 # 🧠 Fiore Vera — Project Memory & Self-Learning Log
 
 > Single source of truth for persistent architectural learnings, workflow rules, user preferences, and self-improvement directives discovered across working sessions.
+>
+> **Last consolidated:** 2026-11-16, from the eight session notes in `.agent/harvest/` (the raw record, kept in the repo) plus the entries that were here since 2026-09-26.
+> **Format:** one line per learning — **rule** — why — evidence (file, commit or date) — tag as in `.agent/harvest/README.md` — source note in brackets. If a line contradicts the code, the code wins: fix the line in the same change.
 
 ---
 
 ## 💡 Key Session Learnings & Directives
 
-### 1. Code-First Skill Architecture (Zero Token Waste)
-- **Learning**: Performing multi-step text calculations or unscripted repetitive tasks in prompt memory wastes tokens and introduces risk of hallucination.
-- **Directive**: Any repeatable skill or task MUST bundle a deterministic TypeScript/Node script inside `scripts/` or `skills/<name>/scripts/`.
+### Workflow
 
-### 2. Strict Skill Registry Type Safety & Drift Gates
-- **Learning**: Keeping skill lists in markdown files without type contracts allows documentation drift over time.
-- **Directive**: All skills MUST be strictly typed in `src/types/skills.ts` and validated via automated Vitest test gates (`tests/unit/skills.test.ts`).
+- **Code-first skill architecture (zero token waste):** any repeatable task bundles a deterministic TypeScript/Node script in `scripts/` or `.agent/skills/<name>/scripts/`; multi-step text work in prompt memory wastes tokens and invites hallucination — `AGENTS.md` Working Principles, since 2026-09-26. [workflow]
+- **`AGENTS.md` is the single canonical agent file** (persona, operating contract, routing table); the legacy singular-named agent file is deleted and a Vitest gate fails if `CLAUDE.md`, `README.md` or `AGENTS.md` mention it — `tests/unit/skills.test.ts:50-65`. [workflow]
+- **Session boot is NOT mechanical in Claude Code:** `.agent/hooks.json` (handover auto-injection) is honoured by the Antigravity IDE only, so read `AGENTS.md`, `README.md` and `.agent/last-session-handover.md` by hand and check the note's date against the last commit — the note stayed at 2026-11-09 for a week. `CLAUDE.md` (".agent/ layout"), [main-build]. [workflow] _(corrects the 2026-09-26 entry "boot is mechanical")_
+- **A pause is a session end: run the goodbye ritual on "we pause" too, and keep one overarching session that only coordinates** — a long session with many side sessions hit context compaction and dropped instructions; the handover went stale. 2026-11-09 → 2026-11-16, [main-build]. [workflow]
+- **Side-session notes live outside the repo and die with the chat — every sub chat writes `.agent/harvest/<name>.md` before it is archived or deleted**, the coordinating session consolidates, only then the chat goes — `.agent/harvest/README.md`, [contact-form] §1/§5, [gdpr] §1. [workflow]
+- **When the owner chains instructions ("update the artifact, push, compact") execute every one or say which could not be done** — one was silently dropped and had to be asked for again. 2026-11-16, [main-build]. [workflow]
+- **Check which i18n key a component reads before editing copy** — an intro edit went to `gallery.intro` instead of `gallery.hero.intro`. [main-build]. [workflow]
+- **Count files with `ls`/`find`, never from memory** — the baseline count was reported as 27 when it was 25 at the time. [main-build]. [workflow]
+- **Every code-writing side session gets its own worktree:** `git worktree add .claude/worktrees/<name> -b <branch> <base>` + `ln -s ../../../node_modules`; sessions sharing one checkout share its `.env.local`, dev server and branch, and cannot stash or rebase. All gates ran green in such a worktree without `npm install` (`d6846bb`). [main-build], [contact-form], [firefox-e2e]. [workflow]
+- **Never remove a worktree or branch while another session may be running gates in it** — on 2026-11-16 10:38 the worktrees were removed under a running pre-push hook; the red visual run ("fatal: Unable to read current working directory") was an artefact, not a regression. Check the linked-sessions list or ask first. [firefox-e2e]. [workflow]
+- **A push carries every unpushed commit on the branch: `git fetch`, list `origin/<branch>..HEAD` before and after, and state what the push will carry before asking GO** — `da226a1` carried three sibling commits; the first GDPR push carried two contact-form commits. [baseline-review], [gdpr]. [workflow]
+- **In a shared checkout stage by hunk or explicit path, never `git add -A`, and `git diff --cached` every shared file** (`package.json`, `AGENTS.md`, `CLAUDE.md`, `BACKLOG.md`, `docs/gdpr/data-register.json`); recipe: `git diff -U0` → filtered patch → `git apply --cached --unidiff-zero` — `10c51f3`, `23512dd`, `698b150`. [favicon], [domain-move], [gdpr]. [workflow]
+- **One session owns `BACKLOG.md` edits per day, or sessions append under their own heading** — idle sessions' hunks forced patch-filtered staging for every commit. [domain-move]. [workflow]
+- **Bring a branch up to date with `main` before opening its pull request** — a branch cut before `dcd491e` failed Vercel's preview check without touching `vercel.json`. Pull request 5, 2026-11-16, [firefox-e2e]. [ops] [workflow]
+- **Once a pull request is open, update it by merging `main` in — no rebase + force-push; ask "is the pull request still open?" first** — the owner merged pull request 5 while a rebase was being pushed; the force-push landed as duplicate commit `5b96271`. [firefox-e2e]. [workflow]
+- **Rebase in a shared, dirty checkout without stash:** when the base tree equals the old parent's tree, `git commit-tree <tree> -p <base>` + `git update-ref <branch> <new> <old>`, then `--force-with-lease=<branch>:<old>` — `19f4b14` → `a22e629`, 2026-11-16. [contact-form]. [workflow]
+- **`main` deploys production: `git fetch` + `git merge --ff-only origin/main` before committing when the owner merges in between, and never commit or push to `main` directly** — the launch-day shortcut "push `HEAD:main` on GO" is retired; the close commit goes on a branch and through a pull request. [domain-move] §7, [main-build] §3. [workflow]
+- **Do not upgrade a dependency as the first reflex for a launch failure** — the brief assumed Playwright 1.63.0 → 1.65.1 plus a download; the cause was an OS access rule and the fix needed neither (not proven: that 1.65.1 fails the same way). `d6846bb`, [firefox-e2e]. [workflow] [tooling]
+- **A brief for a side session states the symptom and the done-criteria and leaves the cause open** — a pre-decided fix cost an investigation detour. [firefox-e2e]. [workflow]
+- **Pre-screen a review sheet yourself, with measurements, before the owner looks; the owner's pass confirms, it does not find** — the verdict was 23 × OK; both real defects came from the agent's own pass. `docs/qa/visual-baseline-review-2026-11-10.md`, [baseline-review]. [workflow]
+- **The approval script logs a row even when nothing changed — use it to record a "set confirmed" decision** — `scripts/visual-approve.mjs`, last row of `docs/qa/visual-baselines-log.md` (2026-11-10). [baseline-review]. [workflow]
+- **Check a pasted verdict for unmarked rows before acting on it** — header-1440 came back blank because the radio was never clicked. [baseline-review]. [workflow]
+- **Do not use the inbox's own address as the sender in a real form test** — Reply-To must be visibly different from the delivery inbox, or the owner cannot tell the fields apart. 2026-11-11, [contact-form]. [workflow]
+- **Concept-only briefs stay concept-only; say the scope and what was deliberately left out in the first Review Brief** — the owner asked "was the implementation done in the privacy and in the contact form?" and then confirmed "for now we are done". 2026-11-10, [gdpr]. [workflow]
+- **For a design round, write the catalogue and the builder in the repo from the first variant** — scratchpad drafts (`build.mjs`, `page.mjs`) were thrown away when ported to `scripts/favicon/`. [favicon]. [workflow]
+- **When the owner steers a side session directly (scope grows, "push to remote" overrides a "no commit" brief), say so in the reply and record it in the shared note at once** — so the coordinating session is not surprised. 2026-11-09, [favicon]. [workflow]
+- **Run long commands in the background and keep the task id + output path in the hand-over note** — context compaction hit mid-push. [gdpr]. [workflow]
 
-### 3. Canonical Single Agent File (`AGENTS.md`)
-- **Learning**: Having both `AGENT.md` and `AGENTS.md` creates dead cross-references and user confusion.
-- **Directive**: `AGENTS.md` is the single canonical agent persona, operating contract, and routing table. `AGENT.md` is deleted, and a Vitest lint gate prevents resurrection.
+### Architecture
 
-### 4. Mechanical Session Boot Auto-Injection
-- **Learning**: Relying on habit to read `AGENTS.md` at session start is vulnerable to memory loss.
-- **Directive**: `.agent/hooks.json` mechanically auto-injects `.agent/last-session-handover.md` and boot context on every session start.
+- **Skill registry is typed and drift-gated:** `src/types/skills.ts` holds the `SKILL_NAMES` union (13 skills); `tests/unit/skills.test.ts` fails on a skill folder without a union entry, a union entry without `SKILL.md`, or a name missing from `AGENTS.md` — since 2026-09-26, verified 2026-11-16. [architecture]
+- **`backdrop-filter` on an element makes it the containing block for `position: fixed` descendants** — the mobile menu rendered under page content; the glass sits on `.header::before` — `src/components/Layout/header.module.css:18-29`. [main-build]. [architecture]
+- **Vercel 404s need no catch-all rewrite:** a single `dist/404.html` (empty root, noindex) is served natively with HTTP 404 and the client renders the localized page — `vercel.json`, `scripts/prerender.ts`, QA M2. [main-build]. [architecture] [seo]
+- **`curl` sees the HU shell on `/de/<unknown>/`, browsers see the DE not-found page — by design, do not "fix"** — `docs/launch/domain-and-hosting-plan.md` §0a note. [domain-move]. [architecture]
+- **Form validation is a pure function that returns codes; the component maps codes to i18n** — `noValidate` only silences browser bubbles, so `input.validity.valid` is passed in; insertion order of the error object is the focus order; no character filtering (React escapes, the mailto is percent-encoded) — `src/lib/validateInquiry.ts`, `InquiryForm.tsx:54`, `f4feae3`. [contact-form]. [architecture]
+- **`VITE_`-prefixed env vars are inlined into the bundle and therefore public; Vercel refuses to store them as Secret (use Config) and renaming breaks the form** — `src/lib/submitInquiry.ts`, owner report 2026-11-16. [domain-move], [contact-form]. [architecture]
+- **Form-level escaping cannot protect a future inbox-reading agent from prompt injection** (attackers can mail the inbox directly); the defence is least privilege: read + draft only, human approval for outward actions, sender-based origin checks. Owner question 2026-11-10, [contact-form]. [architecture]
+- **Browser-specific env belongs on the Playwright project, not on `process.env`** — a process-wide `CFFIXED_USER_HOME` would also move the home of WebKit and the Vite dev server — `playwright.config.ts:39`. [firefox-e2e]. [architecture] [testing]
+- **One source SVG → every icon by script; never hand-export a PNG** — the legacy set drifted (daisy SVG vs badge PNGs) — `scripts/generate-favicons.ts`, `npm run favicon`, `10c51f3`. [favicon]. [architecture]
+- **React 19 emits hoistable `<title>/<meta>/<link>` at the start of `renderToString` output; `scripts/prerender.ts` moves them into `<head>`** — handover 2026-11-09. [architecture]
+- **`entry-client` checks `root.firstElementChild`, not `hasChildNodes()`, before hydrating** — the dev `index.html` keeps the `<!--app-html-->` marker inside `#root` — `src/entry-client.tsx:20`. [architecture]
+- **`react-hooks/set-state-in-effect` is an error here: derive state or set it inside a callback (`requestAnimationFrame`) in the effect** — handover 2026-11-09, `CLAUDE.md` "Hydration safety". [architecture]
 
-### 5. Brand Identity & Design System Lock-In
-- **Learning**: Design decisions must be locked in `design-system-expert` before generating visual assets.
-- **Directive**: Brand palette (`#faf7f2` Warm Linen, `#7a8b7b` Soft Sage, `#e8c5c8` Muted Blush, `#d4af37` Warm Gold) and typography (`Cormorant Garamond` serif headings, `Inter` body) are now locked as the standard for all UI components and generated assets.
+### Testing
+
+- **Gate numbers measured 2026-11-16 (re-measure, do not quote): lint 0/0 · unit 77 passed in 11 files · e2e 280 passed / 4 skipped (71 tests × 4 projects) · build 21 pages + 404 · visual 109 checks · 27 baseline PNGs; after pull request 9 on 2026-11-18: unit 116 in 15 files · e2e 397 passed / 7 skipped (101 tests × 4 projects, axe included)** — [firefox-e2e] §1, `find tests/visual/__screenshots__ -name '*.png'`. [testing]
+- **`.env.local` leaks into every running dev server, and e2e reuses that server; tests must never depend on the server's env** — a real endpoint in `.env.local` un-skipped 3 success tests and posted to the real provider: 12 failures on 2026-11-09 — `playwright.config.ts:56-58`. [contact-form]. [testing]
+- **Every e2e spec imports `test, expect` from `./fixtures`, never from `@playwright/test`** — the auto fixture aborts `api.web3forms.com` and `formspree.io` at context level (`page.route()` mocks override it); a bare import silently loses the guard and can spend real submissions — `tests/e2e/fixtures.ts`, `a22e629`. The visual specs still use the bare import (safe only because none presses submit). [contact-form]. [testing]
+- **Run the full e2e suite at session start** — Firefox stopped launching after the macOS update and it was noticed only at commit time. [contact-form]. [testing]
+- **"Could not find profile folder." from Playwright's Firefox means the browser could not read the INSTALLED Firefox's data folder** (`~/Library/Application Support/Firefox`, denied by macOS 27 "System Policy"), not that `-profile` is wrong; check `ls` on that folder ("Operation not permitted") and the kernel log — `playwright.config.ts:6-13`, `d6846bb`. [firefox-e2e]. [testing] [tooling]
+- **Reproduce a browser launch failure with the bare binary before touching Playwright** — `…/firefox-1543/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile <dir> -screenshot <png> about:blank` ruled out temp dir, sandbox and config in one step. 2026-11-16, [firefox-e2e]. [testing]
+- **`CFFIXED_USER_HOME` must point at an EXISTING folder; `HOME` alone is not enough** — hence `mkdirSync(..., { recursive: true })` at `playwright.config.ts:15`. [firefox-e2e]. [testing]
+- **`launchOptions.env` replaces the whole environment; always spread `process.env`** — `playwright.config.ts:39`. [firefox-e2e]. [testing]
+- **Visual and e2e runs reuse whatever already listens on :4173 / :5173** (`reuseExistingServer`), so with several sessions or worktrees a suite may test another checkout's build without saying so — `playwright.visual.config.ts:42`, `playwright.config.ts:56`. [firefox-e2e]. [testing]
+- **An element snapshot must fit the viewport, or the PNG freezes a half-painted frame; keep guards that assert a screenshot's preconditions** — the first `carousel-slide2-1280` baseline lost its bottom 108 px and stayed green for a day — `expectFullyInViewport` in `tests/visual/helpers.ts`, `8fdea0c`. [baseline-review]. [testing]
+- **A green pixel gate proves "like before", never "correct"; every new baseline gets one human look** — two of 27 machine-recorded baselines froze defects — `docs/qa/visual-baseline-review-2026-11-10.md`. [baseline-review]. [workflow] [testing]
+- **Re-baselining goes only through `npm run test:visual:update -- --approved-by="<name>"`, and only after the owner saw the diff** — never to turn a red run green — `scripts/visual-approve.mjs`, `docs/qa/visual-baselines-log.md`. [main-build]. [testing]
+- **`getByRole('region').first()` resolves to a labelled `<section>`, not the `role="region"` carousel div** — the "first carousel" baseline is the whole album section — `tests/visual/snapshots.spec.ts:56`, `src/components/Gallery/AlbumSection.tsx:97`. [baseline-review]. [testing]
+- **Baselines are machine-bound (darwin Chromium rasterisation); a CI container needs its own recorded set** — nothing on Linux has been recorded — `playwright.visual.config.ts` header, `docs/qa/visual-regression-plan.md`. [baseline-review]. [testing] [ops]
+- **DE/EN inner pages have no pixel baseline (deliberate until copy sign-off R-1)** — only `home-de-375` / `home-en-375`; the layout invariants are the only cover — `PAGES` in `tests/visual/helpers.ts`. [baseline-review]. [testing]
+- **The native date input shows `mm/dd/yyyy` in the baselines — not a site bug, do not "fix"** — headless Chromium's UI locale is en-US regardless of `locale: 'hu-HU'` — `contact-1280.png`, `contact-375.png`. [baseline-review]. [testing]
+- **Lazy images make `img.decode()` hang in tests** — force `loading = 'eager'` inside the snapshot area and race with a timeout — `tests/visual/helpers.ts`. [main-build]. [testing]
+- **`scroll-behavior: smooth` makes programmatic scroll probes lie** — verify scrolling with real wheel or keyboard input. [main-build]. [testing]
+- **Image re-encodes do not trip the pixel baselines** (tolerance maxDiffPixelRatio 0.001 / 150 px; 109 checks green through q82 → q70) — run the suite, do not pre-emptively re-baseline for compression changes — `2f97d84`. [seo-webvitals]. [testing]
+- **`hrefLang` is emitted camel-cased in the prerendered HTML — assert and grep case-insensitively** — handover 2026-11-09, `curl https://fiorevera.vercel.app/de/verleih/`. [domain-move]. [testing]
+- **Node ESM (Playwright) needs import attributes for JSON — specs read locale JSON via `fs`** — `tests/e2e/locales.ts`, handover 2026-11-09. [testing]
+- **For an audit script write the negative test first** (remove two register entries, expect two findings) — the first `audit:gdpr` run produced false positives from comments. 2026-11-10, [gdpr]. [testing]
+
+### Tooling
+
+- **The rtk hook rewrites commands and reformats output: for anything used as evidence or that decides a delete, merge or push use `rtk proxy git …`, `./node_modules/.bin/<bin>` (not `npx`), `/usr/bin/grep`, `/bin/ls`; verify a push with `git fetch` + `git rev-parse origin/<branch>`** — on 2026-11-16 `git log`/`rev-parse` showed a stale `origin/main` tip, `git push` printed only `ok <branch>`, `git diff --stat` printed blank lines. [main-build], [contact-form], [firefox-e2e], [gdpr], [seo-webvitals], [baseline-review]. [tooling]
+- **The auto-mode classifier rejects batched calls after the rtk hook rewrote one of them** — issue one command per call when the hook will rewrite it (web calls too), or re-issue verbatim once. [domain-move], [seo-webvitals], [firefox-e2e]. [tooling]
+- **No `gh` CLI: push, hand over the compare link + a drafted body; list open pull requests with `curl -s "https://api.github.com/repos/sebokgabor84/fiorevera/pulls?state=open"`** (public repo; quote the URL in zsh). [main-build], [contact-form]. [tooling]
+- **A piped `| tail` hides the exit code of a test run, and zsh has no `PIPESTATUS`** (use `set -o pipefail`, `pipestatus`, or run unpiped `cmd; echo $?`) — always compare the passed total with the expected one: on 2026-11-16 a run "exited 0" with 210 passed instead of 280. [contact-form], [favicon], [domain-move]. [tooling]
+- **The pre-push hook runs the full gate (lint → unit → build → visual, several minutes) even when the push only deletes a branch** — `.githooks/pre-push` has no deletion check. [main-build], [firefox-e2e]. [tooling]
+- **A commit with `src/`, `index.html`, `public/fonts/` or `tests/visual/` staged runs build + visual in the pre-commit hook for minutes — run it in the background** — `.githooks/pre-commit`. [contact-form]. [tooling]
+- **Declare `useCallback`s above the effects that use them; after a failed build `rm -rf dist dist-ssr` before trusting it** — a TDZ error broke `tsc` and left a stale `dist/`. [main-build]. [tooling]
+- **zsh traps: `g` is an alias, unquoted globs fail (`--include='*.tsx'`, or use `rg`), and `cd` changes the cwd for the whole session — absolute paths only.** [contact-form], [gdpr], [domain-move]. [tooling]
+- **Filtering a diff with `grep -v "^[-+][-+]"` hides every `BACKLOG.md` line (they start with `- [`)** — print diff lines with python or `grep -E "^(@@|\+- |-- \[)"`. [domain-move]. [tooling]
+- **The Browser pane does not list cross-origin `fetch` calls in `read_network_requests`** — use `performance.getEntriesByType('resource')` and read `responseStatus`. [contact-form]. [tooling]
+- **Browser pane quirks: `read_page` is empty while the pane is hidden (use `find` / `form_input` / JS); a mobile viewport needs `resize_window` and a reset to desktop afterwards; `preview_start` may move ports — read the port from the tool result.** [contact-form], [baseline-review]. [tooling]
+- **`file://` pages do not load images in the Browser pane — serve any local HTML review page over HTTP** (`visual-review` entry in `.claude/launch.json`: `vite preview --outDir tests/visual --port 4174`; Python's `http.server` was blocked by the sandbox). [baseline-review]. [tooling]
+- **Vendor pages that answer 403 to WebFetch (web3forms.com) are read through the Browser pane.** 2026-11-10, [contact-form]. [tooling]
+- **PageSpeed audit rows need their expand clicks before `get_page_text` shows per-image detail** (the UI may be German). [seo-webvitals]. [tooling]
+- **Scratchpad probe scripts cannot resolve the repo's packages (`sharp`, `@playwright/test`)** — import by absolute path from the repo's `node_modules`, or keep probes in a git-ignored folder inside the repo. [seo-webvitals], [baseline-review]. [tooling]
+- **`node scripts/optimize-images.js --force` re-encodes every tier including the full one** — when only a lower tier's quality changed, restore the full-tier files with `git checkout` (paths not matching `-w(800|1280|240)\.webp$`) to keep the binary diff honest. `2f97d84`, [seo-webvitals]. [tooling]
+- **Strip comments before pattern-matching source** — the first audit flagged hosts and keys that lived in JSDoc only — `code()` helper, `.agent/skills/gdpr-guardian/scripts/audit-personal-data.ts:29-30`. [gdpr]. [tooling]
+- **Do not read a huge binary to find a cause when an experiment answers faster** — a `grep -o` on the 161 MB `XUL` library ran past the 2-minute limit (`grep -c -a` to locate at most). [firefox-e2e]. [tooling]
+- **Docs connector: `projection` reads cannot ride in a `batch`; load the standalone `read` tool first.** [domain-move]. [tooling]
+
+### Design
+
+- **Brand identity is locked in `design-system-expert` before any asset is generated:** linen `#faf7f2`, soft sage `#7a8b7b`, muted blush `#e8c5c8`, warm gold `#d4af37`, text `#2c2825` / `#6b635b`; Cormorant Garamond headings, Inter body — `CLAUDE.md` "Brand tokens (locked)", since 2026-09-26. [design]
+- **A width cap on `.container` must be re-checked against the header** — the M1 container fix wrapped the wordmark at ≥ 1280 px; the header bar has its own `90rem` cap and a non-shrinking logo. This regression is why the visual gate exists — `header.module.css:46`. [main-build]. [design] [testing]
+- **No sticky columns below 48rem** — on phones the About text scrolled behind the sticky image ("critical UX bug", owner) — `src/pages/pages.module.css`. [main-build]. [design]
+- **Swapping a tall element for a short one clamps the scroll to the new page bottom** — on the state change `scrollIntoView({ block: 'start' })` + `focus()` with `tabIndex={-1}`; assert `toBeInViewport({ ratio: 1 })` and `toBeFocused()` — `InquiryForm.tsx:36`, `tests/e2e/contact.spec.ts:72`, `a22e629`. [contact-form]. [design]
+- **Global `overflow-wrap: anywhere` on `a` turns a 6 px shortfall into a mid-word break** ("gmail.co / m"); the layout invariants check clipping and overflow, not wrapping, so only eyes catch it — `src/styles/global.css:267`. [baseline-review]. [design] [testing]
+- **Widen the column that needs it by shrinking the columns with short content, not the brand column** — footer grid `1.6fr 1.15fr 0.9fr 0.9fr` kept brand width and page height — `src/components/Layout/footer.module.css:95-96`, `8fdea0c`. [baseline-review]. [design]
+- **Never judge a favicon from the vector preview; rasterise at 16 px and look at it on a light and a dark tab strip** — a draft that looked fine as SVG read as a moth at 16 px — `scripts/favicon-variants.ts`, `docs/design/favicon-variants.html`. [favicon]. [testing] [design]
+- **Favicon SVGs carry glyph outlines as paths, never live text or web fonts** — a favicon cannot load `@font-face` — `scripts/favicon/extract-glyphs.py` → `scripts/favicon/glyphs.ts`. [favicon]. [tooling] [design]
+- **Two letters inside the crest cost 16 px legibility** — cap height drops 28 → 22 of 64 units for "FV" — `scripts/favicon/crest.ts`. [favicon]. [design]
+- **Measure palette contrast for small marks; the brand tints are low-contrast against each other** — linen on sage ≈ 3.3:1, sage on blush ≈ 2.3:1 — `scripts/favicon/variants.ts:174-210`. [favicon]. [design]
+- **Small marks: stroke floor ≥ 4 of 64 units (≈ 1 px at 16), no gradients / filters / opacity, colours only from the five tokens** — `.agent/skills/favicon-builder/SKILL.md` vetoes. [favicon]. [design]
+
+### SEO and performance
+
+- **Lighthouse mobile (Moto G, DPR 1.75) picks the 800 w image at 100vw** — a 1280 tier does not move the lab LCP; it matters for real DPR-3 phones only. Confirmed 2026-11-09 and 2026-11-16. [main-build], [seo-webvitals]. [seo]
+- **The hero LCP is render-bound, not download-bound** — PageSpeed breakdown: TTFB 0 ms, load delay 150 ms, load 410 ms, element render delay 800 ms; the four font preloads (`index.html:20-23`, ~200 KB) and the JS bundle delay the paint, so font subsetting is the next lever. [seo-webvitals]. [seo] [architecture]
+- **Lighthouse's image-savings number is an estimate at about q60; the real gain at an acceptable quality is about half** (claimed 108 KiB, delivered ≈ 60 KiB) — probe sizes with sharp at q82/76/70/64 before changing a ceiling — `TIER_QUALITY` in `scripts/optimize-images.js:36`, `2f97d84`. [seo-webvitals]. [seo] [tooling]
+- **A DPR-2 desktop picks the 1920 full tier for a `sizes="100vw"` hero** — the 1280 tier only serves 1280-px DPR-1 screens and DPR-2 phones. [seo-webvitals]. [architecture]
+- **Vercel sends `permanent: true` redirects as 308, not 301** — Google treats both as permanent; the MASTER-PLAN "301" DoD is met in substance — `curl -I https://www.fiorevera.hu/viragoskert/`, 2026-11-16. [domain-move]. [seo]
+- **Reference measurement, live home page, 2026-11-16 10:15 (PageSpeed mobile, Lighthouse 13.6.0, before `2f97d84` was deployed):** Performance 90 · Accessibility 100 · Best Practices 100 · SEO 100; FCP 0.9 s · LCP 3.6 s · TBT 30 ms · CLS 0; no field data yet. [seo-webvitals] §1. [seo]
+
+### Legal/GDPR
+
+- **Every data sink declares itself in `docs/gdpr/data-register.json`; when `npm run audit:gdpr` fails, fix the register (or the code), never the regexes.** `aefc023`, [gdpr]. [tooling] [legal]
+- **A privacy page that describes processing the code does not do is as wrong as the reverse** — Vercel Web Analytics was on the page and in the CSP without code until `698b150` (2026-11-12). [gdpr]. [legal] [architecture]
+- **"It is only a greeting" is still advertising under Hungarian Grt. § 6** — every send-out to a visitor needs prior, separate, unticked consent — `docs/gdpr/newsletter-consent-concept.md` §2.2. [gdpr]. [legal]
+- **Marketing consent is never `required` and never bundled with the inquiry consent** — the inquiry consent is the service itself, a greetings box is not — `.agent/skills/gdpr-guardian/SKILL.md` §2. [gdpr]. [legal] [design]
+- **Reusing the wedding date for an anniversary mail is a new purpose** — own consent, own privacy section, partial opt-out — concept §3. [gdpr]. [legal]
+- **Legal statements carry [INFO] / [CONFIRM] / [DECISION] tags and a "not legal advice" banner; the owner decided on 2026-11-12 (launch plan D8) that no lawyer is involved, so the tags stay as markers of what was never checked** — do not recommend a lawyer in every Review Brief. [gdpr]. [workflow] [legal]
+
+### Operations
+
+- **Vercel: team `fiorevera`, project `fioreveraviragesdekor001`, Hobby plan, production branch `main` (every push deploys), build `npm run build`, output `dist`** — `docs/launch/domain-and-hosting-plan.md` §0a A1, live since 2026-11-16. [domain-move] §3. [ops]
+- **Never put pseudo-comment or other unknown keys into `vercel.json`** — `_comment_404` passed locally and Vercel's import validator rejected it on launch day ("should NOT have additional property"); explanations go in `docs/` — fix `dcd491e`. [main-build], [domain-move]. [ops]
+- **`npm ci --ignore-scripts` is the Vercel install command for this repo** — `prepare` runs `git config core.hooksPath`, which can fail outside a git checkout — `package.json:29`. [domain-move]. [ops]
+- **Vercel issues one certificate per added hostname (the apex↔www redirect does not add www); test with `openssl s_client -servername www.… -connect <ip>:443` and wait 5 minutes before declaring a cert problem** — an edge served the apex cert for www for minutes after issuance (2026-11-16). [domain-move]. [ops]
+- **Vercel's apex A IP is per project (`216.198.79.1` here; www CNAME `f07e1d688aad7d56.vercel-dns-017.com.`) — never copy `76.76.21.21` from guides.** `docs/launch/domain-and-hosting-plan.md` §0a, dashboard 2026-11-16. [domain-move]. [ops]
+- **Webnode's DNS centre stays editable after the Premium plan expires (the domain is a separate paid service)** — the DNS-first cutover beat the registrar transfer by days; keep the Webnode login alive until the Rackhost transfer completes. 2026-11-16, [domain-move]. [ops]
+- **Never overwrite an existing TXT row to add another** (SPF and the Google verification coexist) — add a row. `dig TXT fiorevera.hu`, 2026-11-16. [domain-move]. [ops]
+- **After a DNS change the local cache (TTL 3600) keeps showing the old answer** — verify with `dig @ns1.register.it` / `@8.8.8.8` and `curl --resolve host:443:IP`. [domain-move]. [ops]
+- **The .hu auth code can bypass the old registrar:** the registrant goes through start.domain.hu, or for document-protected domains the new registrar moves it without a code (since 2025-05-06) — domain.hu policy §3.7, plan §2.2. [domain-move]. [legal]
+- **The form provider's payload key names are the mail's field labels** — Web3Forms prettifies `wedding_date` → "Wedding date"; `email` becomes Reply-To; `subject` and `from_name` are honoured on the free plan — delivered mail 2026-11-11, `src/lib/submitInquiry.ts`. [contact-form]. [ops]
+- **The Web3Forms access key is public by design (it only selects the delivery inbox), yet never ask for it or repeat it in chat** — the owner pastes it into git-ignored `.env.local` and Vercel env; verify by length only (36-char UUID). [contact-form]. [ops]
+- **Web3Forms free plan: 250 submissions/month, 1 recipient, 30-day history (not an archive); warning mails at 90 % and 100 %, then submissions are refused until next month and the form shows error + mailto fallback** — read from web3forms.com 2026-11-10, chosen by the owner 2026-11-11. [contact-form] §3. [ops]
+
+---
+
+## 👤 Owner preferences
+
+Gabor's and Vera's stated tastes and rules. Quotes are the owner's words as recorded in the harvest notes.
+
+- **"Sub chat" means a real side session (`start_session`), not an inline answer.** [main-build]. [owner-preference]
+- **Every fix on its own feature branch — "make sure this is a separate feature branch" — and no commit or push without an explicit GO.** 2026-11-16, [firefox-e2e] §3, `AGENTS.md` Release Protocol. [owner-preference]
+- **Wants a small and a large option, then picks the small one** ("Minimum only" for validation, "Prefilled fallback" for mailto); wants plain-English explanations and numbered step-by-step setup guidance. 2026-11-09/10, [contact-form]. [owner-preference]
+- **Present options with an honest critique and a recommendation; the owner picks and may pick against it ("my favorite is the F3") — record the pick, do not re-argue.** 2026-11-09, [favicon]. [workflow] [owner-preference]
+- **Real form submissions cost quota; ask before each extra one** — the owner treats quota waste as a major bug (2026-11-11); e2e must never reach a real provider. [contact-form]. [owner-preference]
+- **Copy proposals stay in the concept note until the owner's GO** (the i18n parity gate would otherwise force all three locales at once) — `docs/gdpr/newsletter-consent-concept.md` §7; `grep greetings src/i18n/locales/*.json` → 0 hits by design. [gdpr]. [workflow] [owner-preference]
+- **A pasted verdict saying "being updated at the moment" is not a defect report** — ask what it means; the owner then chose "good to go with the first version". 2026-11-10, [baseline-review]. [owner-preference]
+- **The Hobby plan is a written risk acceptance, not an oversight — do not re-litigate;** fall-back = Pro, one $20 seat covers both of Gabor's sites — plan §1.4, §8 D1/D2, 2026-11-12. [domain-move]. [owner-preference]
+- **One layout per component unless a breakpoint is unavoidable** — on the toast: "simplify the implementation, to not depend on device" — `language-toast.module.css`, `410c6d0`. [main-build]. [owner-preference]
+- **Contrast failures are a hard no-go; the always-on glass header (option A) was chosen over scroll-dependent styling.** 2026-11-09, `header.module.css`. [main-build]. [owner-preference] [a11y]
+- **Carousel: arrows always rendered, also on phones, on top of the image, constant box size, nothing jumps — "do not overcomplicate".** 2026-11-09, `src/components/Gallery/AlbumSection.tsx`. [main-build]. [owner-preference]
+- **Rejects generic or AI-looking marks; "more colourful, but not a rainbow" = 2–3 brand tints per mark, structure in ink or linen.** 2026-11-09, [favicon]. [owner-preference]
+- **The favicon is a family crest ("címer"): the badge's open arc (200° → 340°) + three trailing dots per side, always with a letter;** shipped F3 `crest-fv-sage`, the clef-F family G1–G3 is parked, not rejected — `scripts/favicon/variants.ts`. [favicon]. [owner-preference] [design]
+- **`theme-color` and the manifest colours tint the mobile browser chrome, they are not "the icon colour" — "Keep linen" (`#faf7f2`).** `index.html:17`, `public/site.webmanifest`. [favicon]. [design] [owner-preference]
+- **Lockscreen: only realistic material passes (painted wreath, photographed frames, untouched badge); AI-collage renders, candles and flat line art were rejected; linen-classic is the confirmed final; show one design at a time and name it.** `.agent/skills/lockscreen-qr-generator/SKILL.md:46-75`, 2026-11-09. [owner-preference]
+- **DE addresses the couple as *ihr*, no rewrite** (2026-11-10); the HU te/ti voice is still open — `BACKLOG.md` `[CONTENT]` owner decisions. [gdpr]. [owner-preference] [design]
+- **Vera:** no taste statement of her own was recorded this week; she is not technical and is meant to maintain the site through an agent (branch `vera-concierge`). Her pending inputs: the 15 cover picks, copy sign-off per locale (R-1), the phone check of the three locales, a look at the favicon (Gabor picked F3) — `BACKLOG.md` `[CONTENT]`, MASTER-PLAN 1.3 / 3.4 / 4.2, [favicon] §6. [owner-preference]
 
 ---
 
 ## 🚀 Improvement Proposals for Subsequent Sessions
 
-1. **Automated Asset Optimizer Script (`scripts/optimize-assets.ts`)**:
-   Create a CLI script that takes uploaded images, auto-converts to `.webp`, resizes to retina bounds, enforces `≤ 200 KB` file size limits, and outputs into `public/assets/`.
+The three proposals of 2026-09-26 all shipped (`scripts/optimize-images.js`, `scripts/validate-i18n.ts`, the grilled `docs/PRD.md`). The next three follow from the friction sections of the 2026-11-16 harvest:
 
-2. **Automated i18n Key Validator (`scripts/validate-i18n.ts`)**:
-   Build a TypeScript script that compares `HU`, `DE`, and `EN` locale JSON files to ensure 100% key parity and flag missing translations during `npm test`.
+1. **Isolation by default for writing sessions** (friction in 6 of 8 notes: shared `.env.local`, dev server, branch, hunks):
+   every code-writing sub chat starts in its own worktree, and `playwright.config.ts` / `playwright.visual.config.ts` verify that the server on :5173 / :4173 serves THIS checkout (or start their own on a free port). Acceptance: a visual run in a worktree fails loudly or starts its own server when :4173 belongs to another folder.
 
-3. **PRD Fast-Track Template**:
-   Provide a structured interview script for `/grill-me` to resolve the remaining open questions (photography inventory, exact page list) in a single high-efficiency turn.
+2. **One scripted "git and gate facts" command** (friction: rtk reformatting in 6 notes, hidden exit codes in 3, the pre-push gate on deletions in 2):
+   a `scripts/` entry that prints branch, ahead/behind, merged-but-undeleted branches, worktrees and open pull requests through `rtk proxy git`, runs gates with `pipefail` and compares the passed totals with the expected ones; `.githooks/pre-push` skips the gates when every pushed ref is a deletion (changes a gate — needs the owner's yes). Acceptance: `goodbye` step 2 is one command; `git push origin --delete <branch>` returns in seconds.
+
+3. **Make the close ritual impossible to skip** (friction: handover stale for a week, compaction dropping chained instructions, side-session notes outside the repo):
+   a Claude Code hook or reminder that fires on "we pause" / session end, the stale-handover check in the boot sequence, and the harvest note as a precondition for archiving a sub chat (the `branch-guardrails` branch is the place for the hook). Acceptance: the "Last Updated" date of the handover is never older than the last commit on `main`.

@@ -34,10 +34,10 @@ Skip links allow keyboard and screen-reader users to jump past repeated navigati
 
 | Rule | Implementation |
 |---|---|
-| **Required on every page** | `<a href="#main-content" class="skip-link">Skip to main content</a>` — first focusable element in `<body>` |
+| **Required on every page** | Rendered by `src/components/Layout/Layout.tsx` as the first focusable element, in the page's language: `<a href="#main-content" className="skip-link">{t('common.skipToContent')}</a>`. It is **not** in `index.html` any more (a static HU link leaked onto DE/EN pages, QA M4) |
 | **Visually hidden until focused** | Use `.skip-link { position: absolute; transform: translateY(-100%); }` + `:focus { transform: translateY(0); }` |
-| **Target must have `id`** | `<main id="main-content" tabindex="-1">` — `tabindex="-1"` lets the link move focus to a non-interactive element |
-| **SPA route changes** | `Layout.tsx` moves focus to `<main>` when the pathname changes (`focus({ preventScroll: true })`, compared with the previous pathname so StrictMode's double effect does not steal focus on load); `#main-content:focus` has no outline because it is never a tab stop |
+| **Target must have `id`** | `<main id="main-content" tabIndex={-1}>` in `Layout.tsx` — `tabIndex={-1}` lets the link move focus to a non-interactive element. Gate: `tests/e2e/navigation.spec.ts` (skip link → Enter → `#main-content` focused) |
+| **SPA route changes** | `Layout.tsx` moves focus to `<main>` when the pathname changes (`focus({ preventScroll: true })`, compared with the previous pathname so StrictMode's double effect does not steal focus on load); `#main-content:focus` has no outline because it is never a tab stop. Implemented 2026-11-16 (was the open item of the accessibility pass) |
 | **Additional skip targets** | If a page has a long nav + sidebar, add a second `<a href="#page-content">Skip to page content</a>` before the sidebar |
 
 ### 3. ARIA Landmark Roles
@@ -48,24 +48,33 @@ readers can navigate by region.
 | HTML Element | Implicit Role | Fiore Vera usage |
 |---|---|---|
 | `<header>` (top-level) | `banner` | Site-wide header — one per page |
-| `<nav aria-label="Main navigation">` | `navigation` | Primary nav (inside `<header>`) |
-| `<nav aria-label="Language switcher">` | `navigation` | Language toggle (separate label required) |
+| `<nav aria-label={t('nav.mainLabel')}>` | `navigation` | Primary nav (inside `<header>`); every label comes from a locale key, never a literal (`i18n-guardian`) |
+| `<nav aria-label={t('lang.label')}>` | `navigation` | Language toggle (separate label required) |
 | `<main id="main-content">` | `main` | Page content — exactly one per page |
 | `<footer>` | `contentinfo` | Site-wide footer — one per page |
 | `<section aria-labelledby="...">` | `region` | Named page sections (hero, gallery, services) — label required or it won't become a landmark |
 | `<aside aria-label="...">` | `complementary` | Sidebar or supplementary content |
-| `<form aria-label="Contact inquiry">` | `form` | Contact form (must have accessible label) |
+| `<form aria-label=…>` | `form` | Contact form — **the inquiry form has no accessible name yet** (open QA minor, `docs/qa/2026-11-09-qa-session.md`) |
 
 **Rules:**
 - **Unique labels on repeated landmarks** — two `<nav>` elements on the same page MUST have different `aria-label` values.
 - **No orphaned content** — every visible content block must be inside a landmark.
-- **No nested `<main>`** — React page components mount *inside* a single `<main>` in `App.tsx`; never render a second `<main>` in a child component.
+- **No nested `<main>`** — React page components mount *inside* the single `<main>` in `Layout.tsx`; never render a second `<main>` in a child component.
 - **Sections without a label are invisible to landmark navigation** — always pair `<section>` with `aria-labelledby="<heading-id>"`.
 
 ### 4. Interactive Elements
 - **Icon-only links** — add `aria-label` on the `<a>`, and `aria-hidden="true" focusable="false"` on the embedded `<svg>`.
 - **Click actions** — must use a semantic `<button>` with `aria-label`. Never attach `onClick` to `<div>` or `<span>` without full ARIA roles and keyboard handlers.
 - **Focus ring** — never suppress `outline` without providing an equivalent custom focus indicator.
+- **Label in name (WCAG 2.5.3)** — the accessible name must contain the visible text: the logo link carries no `aria-label`, language-switch labels start with the visible code ("DE – Deutsch"), `Header.tsx` / `LanguageSwitch.tsx` (QA M8).
+
+### 4a. State swaps and form feedback (pattern from `src/components/Contact/InquiryForm.tsx`)
+
+| Situation | Pattern | Why |
+|---|---|---|
+| A region is replaced by another (form → confirmation card) | In an effect on the state change: `el.scrollIntoView({ block: 'start' })` (the global `scroll-padding-top` keeps it under the sticky header), then `el.focus({ preventScroll: true })`; the new region carries `tabIndex={-1}` and `role="status"` | Swapping a tall element for a short one clamps the scroll to the new page bottom — the visitor landed in the footer (owner report 2026-11-11) — and a screen reader hears nothing unless focus moves |
+| Test for it | `await expect(region).toBeInViewport({ ratio: 1 })` and `toBeFocused()` | `tests/e2e/contact.spec.ts` |
+| Field errors | Validation is a pure function returning codes (`src/lib/validateInquiry.ts`); the form is `noValidate`, each error is `role="alert"` linked by `aria-describedby`, and focus goes to the first invalid field — the order of the error object is the focus order | Browser bubbles are not localizable or consistent; open QA minor: an empty submit raises six alerts at once |
 
 ### 4a. State changes and forms (patterns in `InquiryForm.tsx`)
 - **A region replaces another** (form → success card, form → failure box): give the new region `tabIndex={-1}`, a live role, then in an effect `scrollIntoView` and `focus({ preventScroll: true })`. Otherwise the page clamps to the footer and a screen reader hears nothing.
@@ -74,7 +83,7 @@ readers can navigate by region.
 - **A fixed control must never sit above another control's tap target** — hit-test with `elementFromPoint` (scroll-to-top vs the carousel arrow, 2026-11-16).
 
 ### 5. Visual & Media
-- **Color contrast** — minimum 4.5:1 for normal text, 3:1 for large text (WCAG 2.2 AA).
+- **Color contrast** — minimum 4.5:1 for normal text, 3:1 for large text (WCAG 2.2 AA). For the owner a contrast failure is a hard no-go: that is why the header is always glass instead of changing with scroll (`design-system-expert`), and why text-sized gold is banned (2.1:1 on white).
 - **Image `alt`** — informative images: descriptive text. Decorative images: `alt=""` + `aria-hidden="true"`.
 - *`width`/`height` on images → `seo-expert` (CLS prevention)*
 
@@ -82,15 +91,17 @@ readers can navigate by region.
 
 ## Shift-Left QA Automation
 
-| Layer | Tool | Assertion |
-|---|---|---|
-| Static | `eslint-plugin-jsx-a11y` | Zero warnings — all escalated to hard errors |
-| Unit | `vitest-axe` | `expect(results).toHaveNoViolations()` after `axe(container)` |
-| E2E | `@axe-core/playwright` | `expect(violations).toEqual([])` with `wcag2a/aa/21a/21aa` tags |
-| E2E — skip link | Playwright | Tab to first element → assert `href="#main-content"` is focused + visible |
-| E2E — landmarks | Playwright | Assert `main`, `banner`, `contentinfo` exist; assert no duplicate `main` per page |
+| Layer | Tool | Assertion | Status in this repo (2026-11-16) |
+|---|---|---|---|
+| Static | `eslint-plugin-jsx-a11y` (recommended set, `eslint.config.js`) | `npm run lint` → 0 errors and 0 warnings | **In place**, hard gate |
+| Unit | `vitest-axe` | `expect(results).toHaveNoViolations()` after `axe(container)` | **Not installed**, no test |
+| E2E | `@axe-core/playwright` | zero violations with axe's full default rule set, no rule disabled, no element excluded | **In place**, hard gate since 2026-11-18: `tests/e2e/a11y.spec.ts` (21 routes, 3 localized 404s, form with errors, open mobile menu, HU home with the toast; 4 browsers). A new page or state gets a scan there. The manual VoiceOver run of MASTER-PLAN 3.1 is still open |
+| E2E — skip link | Playwright | focus `.skip-link` → Enter → `#main-content` focused | **In place**: `tests/e2e/navigation.spec.ts` (desktop projects) |
+| E2E — menu | Playwright | dialog opens, first link focused, Escape closes, focus back on the toggle | **In place**: `navigation.spec.ts` (Mobile Chrome) |
+| E2E — landmarks | Playwright | Assert `main`, `banner`, `contentinfo` exist; no duplicate `main` | Not written; `tests/unit/render.test.tsx` only asserts `#main-content` on every route |
+| Lab score | Lighthouse / PageSpeed | Accessibility 100 on the home page (2026-11-09 preview, 2026-11-16 live) | Measured by hand, `seo-expert` §6 — a score, not a substitute for axe on every route |
 
-**Enforcement**: Zero lint errors (including WCAG 2.2) is a mandatory Definition of Done. Refactor existing violations before adding new features.
+**Enforcement**: Zero lint errors and warnings is a mandatory Definition of Done. Refactor existing violations before adding new features. Until 3.1 lands, do not write "axe clean" in a Review Brief unless axe was actually run — say which tool, on which routes.
 
 ---
 
@@ -102,4 +113,5 @@ readers can navigate by region.
 
 ## Implicit Loading (Handshakes)
 - `design-system-expert`: Whenever visual components are changed, a11y must be co-verified.
-- `qa-specialist`: Ensures `@axe-core/playwright` and `vitest-axe` are correctly configured.
+- `qa-specialist`: owns the gates; wiring `@axe-core/playwright` into the e2e or visual run is the open MASTER-PLAN 3.1 item.
+- `gdpr-guardian`: consent checkbox label, helper and error wiring.
