@@ -4,8 +4,10 @@
 #   2. --no-verify (and `git commit -n`)                              (skips the git hooks)
 #   3. changing core.hooksPath                                        (unplugs the git hooks)
 #   4. a push whose target is main (also --all / --mirror / delete)   (main = production)
-#   5. a force push                                                   (rewrites a shared branch)
-#   6. `git merge <branch>` while on main (only origin/main may be merged, fast-forward)
+#   5. a plain force push (--force, -f, +refspec); --force-with-lease is allowed, because a
+#      rebased branch needs it
+#   6. `git merge <branch>` while on main (only origin/main may be merged, fast-forward), and
+#      merging main INTO a feature branch (hard rule: rebase onto origin/main instead)
 #   7. vercel --prod / promote / rollback / alias                     (changes production directly)
 # These stay possible for the OWNER in his own terminal; an agent never runs them.
 # Rules: .agent/skills/release-manager/SKILL.md ("When a hook blocks").
@@ -123,11 +125,11 @@ while IFS= read -r seg; do
     for t in "${args[@]:-}"; do
       case "$t" in
         --all | --mirror) deny "\`git push $t\` would also push main. Push only your own branch: git push -u origin <branch>" ;;
-        --force | --force-with-lease* | --force-if-includes) deny "a force push rewrites a branch other sessions or an open pull request may rely on (2026-11-16: a force push landed on a branch the owner was merging). Bring a pushed branch up to date by merging origin/main into it." ;;
+        --force) deny "a plain --force overwrites whatever is on origin. After a rebase onto origin/main use: git push --force-with-lease origin <branch> — and first check that the pull request is still open (2026-11-16: a force push landed on a branch the owner was merging)." ;;
         --*) ;;
-        -*f*) deny "\`git push $t\` contains -f (force push). Bring a pushed branch up to date by merging origin/main into it." ;;
+        -*f*) deny "\`git push $t\` contains -f (plain force push). After a rebase onto origin/main use: git push --force-with-lease origin <branch>" ;;
         -*) ;;
-        +*) deny "the refspec \`$t\` is a force push. Bring a pushed branch up to date by merging origin/main into it." ;;
+        +*) deny "the refspec \`$t\` is a plain force push. After a rebase onto origin/main use: git push --force-with-lease origin <branch>" ;;
         main | master | refs/heads/main | refs/heads/master | *:main | *:master | *:refs/heads/main | *:refs/heads/master)
           deny "this push targets main, and main is production (Vercel deploys every push to it). The only way onto main is a pull request the owner merges on GitHub (GO 2). Push your branch instead: git push -u origin <branch>"
           ;;
@@ -143,6 +145,30 @@ while IFS= read -r seg; do
         case "$rest" in
           *" --abort "* | *" --quit "* | *" origin/main "* | *" origin/master "* | *" @{u} "* | *" @{upstream} "* | *" FETCH_HEAD "*) ;;
           *) deny "this merges into the local \`$b\`. Work reaches main only through a pull request merged on GitHub. To update the local main: git merge --ff-only origin/main" ;;
+        esac
+        ;;
+      *)
+        case "$rest" in
+          *" --abort "* | *" --quit "* | *" --continue "*) ;;
+          *" main "* | *" master "* | *" origin/main "* | *" origin/master "*)
+            deny "hard rule (owner, 2026-11-18): a feature branch is never merged with main. Bring \`$b\` up to date with: git fetch && git rebase origin/main — and push an already pushed branch with: git push --force-with-lease origin $b"
+            ;;
+        esac
+        ;;
+    esac
+  fi
+
+  # 6b. `git pull … main` on a feature branch is a merge of main unless it rebases
+  if [ "$sub" = "pull" ]; then
+    b="$(git -C "${cwd:-$PWD}" symbolic-ref --short -q HEAD 2>/dev/null || true)"
+    case "$b" in
+      main | master | "") ;;
+      *)
+        case "$rest" in
+          *" --rebase "* | *" --rebase="* | *" -r "*) ;;
+          *" main "* | *" master "*)
+            deny "hard rule (owner, 2026-11-18): this pull would merge main into \`$b\`. Use: git fetch && git rebase origin/main"
+            ;;
         esac
         ;;
     esac

@@ -2,6 +2,7 @@
 # Pre-merge-commit. FV-GUARD: refuses a merge commit on main (git does not run pre-commit for
 # merges). Work reaches main only through a pull request the owner merges on GitHub; the local
 # main is only ever fast-forwarded: git merge --ff-only origin/main
+# It also refuses a merge of main INTO a feature branch (FV-RULE below): rebase instead.
 # (A fast-forward runs no hook at all — the push refusal in pre-push and the GitHub ruleset
 # stand behind it.) Emergency bypass for the owner: FV_SKIP_HOOKS=1
 if [ "$FV_SKIP_HOOKS" = "1" ]; then exit 0; fi
@@ -17,3 +18,23 @@ case "$branch" in
     exit 1
     ;;
 esac
+
+# FV-RULE (owner, 2026-11-18): a feature branch is rebased onto main, never merged with it.
+merging=$(git rev-parse -q --verify MERGE_HEAD 2>/dev/null || true)
+main_merge=0
+for ref in origin/main main origin/master master; do
+  tip=$(git rev-parse -q --verify "$ref" 2>/dev/null || true)
+  [ -n "$merging" ] && [ "$merging" = "$tip" ] && main_merge=1
+done
+case "${GIT_REFLOG_ACTION:-}" in
+  "merge origin/main" | "merge main" | "merge origin/master" | "merge master") main_merge=1 ;;
+esac
+if [ "$main_merge" = 1 ]; then
+  echo ""
+  echo "pre-merge-commit: REFUSED — this merges main into '$branch'. Hard rule: rebase instead."
+  echo "    git merge --abort"
+  echo "    git fetch && git rebase origin/main"
+  echo "    An already pushed branch is then pushed with: git push --force-with-lease origin $branch"
+  echo "    Rules: .agent/skills/release-manager/SKILL.md §5"
+  exit 1
+fi

@@ -98,7 +98,8 @@ deny|rtk git push origin HEAD:main
 deny|git push origin feature/x:refs/heads/main
 deny|git push origin --delete main
 deny|git push --all origin
-deny|git push --force-with-lease origin feature/x
+deny|git push --force origin feature/x
+deny|git push --force-with-lease origin main
 deny|git push -f origin feature/x
 deny|git push origin +feature/x
 deny|git commit --no-verify -m "quick fix"
@@ -113,6 +114,7 @@ deny|cd /tmp && npx vercel --prod
 deny|vercel promote https://example.vercel.app
 deny|vercel rollback
 allow|git push -u origin feature/x
+allow|git push --force-with-lease origin feature/x
 allow|git push origin --delete feature/x
 allow|git push -u origin feature/main-menu
 allow|git commit -m "docs: never push to main with --no-verify or FV_SKIP_HOOKS=1"
@@ -126,6 +128,46 @@ allow|git diff main...HEAD
 allow|vercel --version
 allow|npm run build && npm test -- --run
 CASES
+
+echo "6. Hard rule: a feature branch takes main in by rebase, never by a merge"
+git switch -q -c feature/rebase-rule
+echo four >feature.txt && git add feature.txt && git commit -q -m "work on the branch" >/dev/null 2>&1
+git push -q -u origin feature/rebase-rule >/dev/null 2>&1
+git switch -q main
+echo five >main-moves.txt && git add main-moves.txt && FV_SKIP_HOOKS=1 git commit -q -m "main moves on (test setup)"
+FV_SKIP_HOOKS=1 git push -q origin main >/dev/null 2>&1
+git switch -q feature/rebase-rule
+out="$(git merge --no-edit origin/main 2>&1)"; expect_refused "git merge origin/main on a feature branch is refused (pre-merge-commit)" $? "$out"
+git merge --abort 2>/dev/null; git reset -q --hard
+git merge -q --no-commit --no-ff origin/main >/dev/null 2>&1
+out="$(git commit -m "merge main by hand" 2>&1)"; expect_refused "committing a prepared merge of main is refused (pre-commit)" $? "$out"
+git merge --abort 2>/dev/null; git reset -q --hard
+while IFS='|' read -r want cmd; do
+  [ -z "$want" ] && continue
+  res="$(bash_guard "$cmd")"
+  if [ "$want" = "deny" ]; then expect_deny "denied:  $cmd" "$res"; else expect_quiet "allowed: $cmd" "$res"; fi
+done <<'CASES'
+deny|git merge origin/main
+deny|git merge main
+deny|rtk git merge --no-edit origin/main
+deny|git pull origin main
+deny|git push --force origin feature/rebase-rule
+deny|git push -f origin feature/rebase-rule
+deny|git push --force-with-lease origin main
+allow|git pull --rebase origin main
+allow|git fetch origin && git rebase origin/main
+allow|git push --force-with-lease origin feature/rebase-rule
+allow|git merge --abort
+allow|git merge feature/other-branch
+CASES
+out="$(git rebase origin/main 2>&1)" && ok "git rebase origin/main on the feature branch works" || bad "rebase failed: $out"
+out="$(git push origin feature/rebase-rule 2>&1)"; code=$?
+if [ "$code" -ne 0 ]; then ok "a plain push of the rebased branch is rejected by git (not a fast-forward)"; else bad "plain push of a rebased branch went through: $out"; fi
+out="$(git push --force-with-lease origin feature/rebase-rule 2>&1)"; code=$?
+gates="$(printf '%s\n' "$out" | grep -E '^GATE-[a-z]+$' | tr '\n' ' ')"
+if [ "$code" -eq 0 ] && [ "$gates" = "GATE-lint GATE-unit GATE-build GATE-visual " ]; then ok "git push --force-with-lease of the rebased branch runs the gates and lands"; else bad "force-with-lease push: exit=$code gates='$gates': $out"; fi
+merges="$(git rev-list --merges --count origin/main..HEAD)"
+if [ "$merges" = 0 ] && [ "$(git rev-parse HEAD)" = "$(git rev-parse origin/feature/rebase-rule)" ]; then ok "the branch is on origin, on top of main, without a merge commit"; else bad "after the rebase: merges=$merges"; fi
 
 echo ""
 echo "release selftest: $pass passed, $fail failed"

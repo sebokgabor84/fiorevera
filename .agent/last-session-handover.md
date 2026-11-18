@@ -39,7 +39,7 @@
 | Domain move (kept) | — | — | Rackhost transfer track (owner steps + docs) |
 
 - All five worktree branches pointed at `676f62b` (no commits of their own) when this note was written.
-- **Intended merge order:** `chore/goodbye-harvest` → `branch-guardrails` → `quality-gates` → `site-polish` → `vera-concierge`, each rebased on `main` **before** its pull request is opened (after that: merge `main` in, no force-push).
+- **Intended merge order:** `chore/goodbye-harvest` → `branch-guardrails` → `quality-gates` → `site-polish` → `vera-concierge`, each rebased on `main` **before** its pull request is opened (after that, too: rebase onto `main` and `--force-with-lease`; owner's hard rule of 2026-11-18).
 - **Finished and removed sub chats** — their knowledge lives in `.agent/harvest/`: contact form, Firefox e2e, baseline review, favicon, GDPR.
 
 ## 🎯 Next unblocked actions
@@ -68,7 +68,7 @@
 Full list with evidence: `.agent/memory.md` (consolidated 2026-11-16). The ones that change how the next session works:
 
 - A pause is a session end. Run the `goodbye` ritual on "we pause" too — this note was a week stale because nobody did. `.agent/hooks.json` is not honoured by Claude Code, so read this file by hand and compare its date with the last commit.
-- `main` is production. Never commit on it; fetch and fast-forward before committing; update an open pull request by merging `main` in, not by rebase + force-push.
+- `main` is production. Never commit on it; fetch and fast-forward before committing; update a branch by rebasing onto `origin/main`, never by merging `main` in (owner's hard rule of 2026-11-18), then `git push --force-with-lease`.
 - Every code-writing sub chat gets its own worktree. One checkout means one `.env.local`, one dev server on :5173, one preview on :4173, one branch — and a push carries every unpushed commit on it.
 - A sub chat writes `.agent/harvest/<name>.md` before it is archived or deleted; do not remove a worktree while its session may be mid-gate.
 - The rtk hook reformats git output and rewrites `npx`: use `rtk proxy git …`, `./node_modules/.bin/<bin>`, `/usr/bin/grep` for anything that is evidence. A piped test run hides its exit code — compare the passed total with the expected one.
