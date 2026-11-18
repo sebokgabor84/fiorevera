@@ -10,12 +10,14 @@ Website for a decoration & floristry business, built on the agent-driven, skill-
 
 | | |
 |---|---|
-| **Current iteration** | 3 — first build pass on `feature/site-build`: MASTER-PLAN Phase 0 (archive + image pipeline), Phase 1 (tokens, locale router, i18n gate, header/toast/footer, SeoHead, prerender) and all Phase 2 pages render in HU/DE/EN with the archived legacy photography; unit + E2E suites in place |
-| **Next iteration** | 3b — Vera's cover picks + copy sign-off per locale (1.3 / 2.4 / R-1), form provider wired (`VITE_FORM_ENDPOINT`, 2.10), skill reshapes (0.3), Phase 3 quality gates (axe, Lighthouse, all 4 Playwright projects), then Vercel (Phase 4) |
+| **Status** | **Live since 2026-11-16** on [www.fiorevera.hu](https://www.fiorevera.hu) (Vercel, Hobby plan; production deploys from `main` on every push). DNS is still served from Webnode's DNS centre until the domain moves to Rackhost |
+| **Current iteration** | 4 — launch week: MASTER-PLAN Phases 0–2 built and merged to `main`; contact form on Web3Forms (2.10), E2E green on 4 browsers (3.2), Vercel project (4.1) and DNS cutover (4.3) done; visual-regression gate, GDPR audit and the F3 crest favicon in place |
+| **Next iteration** | 4b — Rackhost domain transfer (4.5), Search Console follow-up at day 7 / day 30 (4.4), Vera's cover picks, copy sign-off and phone review (1.3 / 2.3 / 2.4 / 3.4 / 4.2), axe as a hard gate (3.1), Lighthouse ≥ 90 per route (3.3), privacy copy naming Vercel and Web3Forms. Open work and owner decisions: [`BACKLOG.md`](BACKLOG.md) |
+| **Operations** | [`docs/operations/runbook.md`](docs/operations/runbook.md) (hosting, DNS, uptime monitor, form quota, rollback, first checks); launch record: [`docs/launch/domain-and-hosting-plan.md`](docs/launch/domain-and-hosting-plan.md) |
 | **Local path** | `/Users/gabor.seboek/Documents/Projects/Private/fiorevera` |
 | **Remote** | `https://github.com/sebokgabor84/fiorevera` |
 | **Template source** | `/Users/gabor.seboek/Documents/Projects/Private/Learning/GaborPortfolio` |
-| **Business / legacy site** | **Fiore Vera** — legacy origin: [www.fiorevera.hu](https://www.fiorevera.hu) (Webnode; baseline to improve on; QR target) |
+| **Business / legacy site** | **Fiore Vera** — the legacy Webnode site on the same domain expired in November 2026 and is archived under `references/legacy/` (the baseline the new site improved on); the QR target stays www.fiorevera.hu |
 | **PRD / scope** | [`docs/PRD.md`](docs/PRD.md) (decisions D-1…D-17, stories US-1…US-12) → frozen in [`MASTER-PLAN.md`](MASTER-PLAN.md) |
 
 ---
@@ -39,13 +41,15 @@ The goal is to build Fiore Vera on the **GaborPortfolio base** — same proven t
 7. **Source & optimize content** — **decided (PRD D-5):** reuse the legacy CDN photos only (169 images, ≤ 1920 px), archived first by `scripts/archive-legacy.ts`, then converted to `webp` ≤ 200 KB into `public/assets/`. Copy: legacy HU rewritten + natively translated, Vera signs off (D-12). The build blocker is now copy sign-off, not photos.
 8. **Reshape the skills** for the decoration domain (see table below), guided by the master plan — **`design-system-expert` first**, since the palette / typography / component system drives everything built in step 9. All 8 kept by design (see Ecosystem Vision / Honest Critique #4).
 9. **Build the site — incremental slices** — build **one vertical slice at a time** (a single page or section), each tracing to a `MASTER-PLAN.md` item. Per-slice loop: build → `lint` + unit → **visual verification** (run the dev server, view it in a real browser / screenshot, eyeball against the references) → commit → next slice. **No slice is "done" until it has been seen** — the `qa-specialist` DoD checks lint/test/vitals but *not* whether it looks right, so the visual gate is mandatory. This step — not the planning — is where drift kills agentic builds.
-10. **Launch / cutover** — deploy to **Vercel**, point the `fiorevera.hu` domain at the new site, retire the legacy page. Definition of *shipped* = new site live on the domain + legacy retired.
+10. **Launch / cutover** — deploy to **Vercel**, point the `fiorevera.hu` domain at the new site, retire the legacy page. Definition of *shipped* = new site live on the domain + legacy retired. *(live — 2026-11-16: Vercel deploys `main`, DNS points at Vercel, all 14 legacy URLs answer 200 / 308; the Webnode plan expired on its own; the registrar transfer to Rackhost is the open rest)*
 
 > **Parallel track — ship now, independent of the build:** the **iPhone-lockscreen QR** (digital visit card → fiorevera.hu) needs only the URL (known) + `lockscreen-qr-generator`, so it can ship immediately without waiting on steps 3–10. The **Mac wallpaper** (`desktop-background-generator`) is similarly standalone. Both are ecosystem pillars (see Ecosystem Vision), not gated behind the site build.
 
 ### Skills to reshape (iteration 2)
 
-The `.agent/skills/` folder currently holds the **GaborPortfolio versions verbatim** — they are the base, not the final form.
+> Historical plan, kept for the record: the reshape is done (MASTER-PLAN 0.3, 2026-11-09) and the skill set has grown since; the current list and status are in `CLAUDE.md` and `AGENTS.md`.
+
+The `.agent/skills/` folder held the **GaborPortfolio versions verbatim** when this plan was written — they were the base, not the final form.
 
 | Skill | Reshape direction |
 |---|---|
@@ -78,7 +82,7 @@ Per AGENTS.md, every plan must challenge its own assumptions. The risks below we
 
 1. ✅ **Architecture mismatch.** GaborPortfolio is a single-person *showcase* (projects, KPIs, "Mission Control" carousel); a decoration business is a *marketing site* (gallery, services, about, contact). The stack + QA pipeline transfer cleanly; the IA and data contracts (`projects.ts`, `kpis.ts`, Mission Control) do not. **Resolved (accepted, known risk):** keep the GaborPortfolio base and extend it with new content blocks + multiple pages rather than rebuilding from scratch. The IA divergence is managed during the build.
 2. ✅ **PRD sequencing.** `to-prd` explicitly does not interview — it synthesizes known context, so running it against unresolved questions yields a hallucinated PRD. **Resolved:** iteration-1 PRD is drafted in the agent's **interview mode** (not `to-prd`), iterated with `grill-me`, then written to a real PRD. `to-prd` deferred.
-3. ✅ **Imagery, references & hosting are first-class.** A decoration site lives on its photography and visual references; it also needs a deploy target. **Resolved:** added a references & brand-assets step (incl. legacy-site audit + seed inspiration list) and a content-sourcing step; hosting is **Vercel** (setup pending as a build task), domain to take over `fiorevera.hu` when ready.
+3. ✅ **Imagery, references & hosting are first-class.** A decoration site lives on its photography and visual references; it also needs a deploy target. **Resolved:** added a references & brand-assets step (incl. legacy-site audit + seed inspiration list) and a content-sourcing step; hosting is **Vercel** (live since 2026-11-16), and the new site took over `fiorevera.hu` the same day.
 4. ✅ **Skill scope.** My recommendation was to prune the 8 skills for a small site — **overruled, correctly.** The skill set is intentional: the goal is the full digital + physical ecosystem above, where `desktop-background-generator` (Mac wallpaper) and `lockscreen-qr-generator` (iPhone visit card) are core pillars, not the QR quick win alone.
 5. ✅ **Execution cadence, not just planning.** The plan was strong on planning but vague on the build itself — and for agentic dev, the build is where drift actually happens. **Resolved:** added an explicit incremental-build step (step 9 — vertical slices, each gated by a mandatory **visual verification** the `qa-specialist` DoD doesn't cover) + a launch/cutover step (10), pulled the QR quick win into an independent parallel track, and clarified `MASTER-PLAN.md` (frozen scope) vs `BACKLOG.md` (emergent tasks).
 
@@ -92,13 +96,13 @@ Per AGENTS.md, every plan must challenge its own assumptions. The risks below we
 - [x] **Brand palette & typography** — locked in `design-system-expert` (linen / sage / blush / gold; Cormorant Garamond + Inter). *(confirmed 2026-09-26)*
 - [/] **Inspiration references** — seed list (more to come; treated as basic starting points): [akerteszlanya.hu](https://www.akerteszlanya.hu/), [naturalweddingdecor.hu](https://naturalweddingdecor.hu/). Expanded + audited in step 3.
 - [x] **Page list** — **7 pages**: Home, Services, Gallery, Prop Rental, About, Contact, Privacy. Flower Garden **paused** (garden on hold through the dry summers, planned to return; 301 → About, revertible). Routes for HU/DE/EN in PRD D-3. *(confirmed 2026-11-09)*
-- [x] **Hosting** — **Vercel** *(decided; not yet set up — setup is an iteration-2 task)*. Domain: take over `fiorevera.hu` once the new site is ready (timing TBD).
+- [x] **Hosting** — **Vercel**, Hobby plan by owner decision (risk accepted in writing, Pro is the fall-back). *(live 2026-11-16; the new site serves `fiorevera.hu` and `www.fiorevera.hu`)*
 - [x] **Content / photography** — reuse the legacy site's ~169 professional wedding photos from the Webnode CDN as a replaceable first set; asset structure built for swapping (PRD D-5, risk R-2). *(confirmed 2026-11-09)*
 - [x] **Rendering** — prerender every route to static HTML at build time to protect current rankings (PRD D-18). *(confirmed 2026-11-09)*
 - [x] **Services** — 3 pillars: full wedding decoration, wedding floristry (seasonal, sourced), prop rental with HUF catalog (PRD D-8). *(confirmed 2026-11-09)*
-- [x] **Contact flow** — Web3Forms/Formspree form + direct links; cookieless Vercel Analytics, no consent banner (PRD D-9, D-10). *(confirmed 2026-11-09)*
+- [x] **Contact flow** — form + direct links; cookieless Vercel Analytics, no consent banner (PRD D-9, D-10). *(confirmed 2026-11-09; provider = **Web3Forms**, free plan, chosen 2026-11-11, live submission delivered 2026-11-16)*
 - [x] **Locale behaviour** — no auto-redirect; language-suggestion toast under the switcher (PRD D-4). *(confirmed 2026-11-09)*
-- [ ] **DNS / registrar access** for `fiorevera.hu` — who holds the login? (PRD R-7; needed at MASTER-PLAN 4.3)
+- [/] **DNS / registrar access** for `fiorevera.hu` — DNS: resolved, the records are edited in Webnode's DNS centre with Vera's login (cutover done 2026-11-16). Registrar: still Register.it through Webnode; the registrant on domain.hu is still to be read and the transfer to Rackhost is open (PRD R-7; launch plan §0a Track B)
 
 ---
 
@@ -123,13 +127,14 @@ fiorevera/
 └── [tsconfig*, vite, eslint, prettier, playwright, .gitignore, .env.example]
 ```
 
-> The app does **not** build yet — source files (`main.tsx`, components, data, locales) are intentionally absent and arrive in iteration 2. This commit is a structure + plan checkpoint only.
+> Historical snapshot of iteration 1, when the app did not build yet. Today every folder above is populated, the app builds (21 prerendered pages + `404.html`) and is live; see `CLAUDE.md` for the current layout.
 
 ## Local dev
 
 ```bash
 npm install
 npm run dev              # vite dev server → http://localhost:5173 (CSR; prerendered HTML only in the build)
+npm run dev:form         # dev server + local fake form provider (npm run form:fake = provider only): test the contact form without real submissions
 npm run lint             # eslint — 0 errors / 0 warnings
 npm test -- --run        # vitest: routes, data contracts, i18n parity, server render of every route, archive, assets
 npm run test:e2e         # playwright (chromium, firefox, webkit, Mobile Chrome) — reuses a running dev server

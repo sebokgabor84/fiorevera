@@ -1,9 +1,40 @@
 #!/bin/sh
-# Pre-push gate (AGENTS.md Definition of Done): lint → unit → production build → visual regression.
-# Installed by `npm run prepare` (git config core.hooksPath .githooks). Emergency bypass: FV_SKIP_HOOKS=1 git push
+# Pre-push gate. Installed by `npm run prepare` (git config core.hooksPath .githooks).
+# 1. FV-GUARD: refuses every push that creates, updates or deletes main. Vercel deploys
+#    production from main; the only way onto it is a pull request the owner merges on GitHub
+#    (.agent/skills/release-manager/SKILL.md).
+# 2. A push that only deletes refs (branch cleanup after a merge) pushes no code: gates skipped.
+# 3. Otherwise the Definition of Done (AGENTS.md): lint → unit → production build → visual
+#    regression. (The GDPR data-sink audit runs inside the unit suite: tests/unit/gdpr.test.ts.)
+# Emergency bypass for the owner, in his own terminal only: FV_SKIP_HOOKS=1 git push …
+# (record why in the pull request).
 if [ "$FV_SKIP_HOOKS" = "1" ]; then
-  echo "pre-push: FV_SKIP_HOOKS=1 — gates skipped (record why in the PR)"; exit 0
+  echo "pre-push: FV_SKIP_HOOKS=1 — main guard and gates skipped (record why in the PR)"; exit 0
 fi
+
+# git feeds one line per pushed ref: <local ref> <local sha> <remote ref> <remote sha>
+refs=0
+only_deletes=1
+while read -r local_ref local_sha remote_ref remote_sha; do
+  refs=$((refs + 1))
+  case "$remote_ref" in
+    refs/heads/main | refs/heads/master)
+      echo ""
+      echo "pre-push: REFUSED — this push targets '${remote_ref#refs/heads/}', which is production."
+      echo "    Nothing was pushed. Push your branch and open a pull request instead:"
+      echo "        git push -u origin <branch>"
+      echo "    The owner merges it on GitHub (GO 2). Rules: .agent/skills/release-manager/SKILL.md"
+      exit 1
+      ;;
+  esac
+  case "$local_sha" in
+    *[!0]*) only_deletes=0 ;;
+  esac
+done
+if [ "$refs" -gt 0 ] && [ "$only_deletes" = 1 ]; then
+  echo "pre-push: only ref deletions — gates skipped"; exit 0
+fi
+
 set -e
 echo "pre-push: lint"; npm run lint
 echo "pre-push: unit"; npm test -- --run

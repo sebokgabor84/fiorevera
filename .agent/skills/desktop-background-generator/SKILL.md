@@ -43,6 +43,7 @@ description: >-
 - Prefer a light base over the ink variant on the desktop: windows and the menu bar sit on it, and a dark base flips the menu bar to dark.
 - Logo badge untouched.
 - Present one named draft at a time ("linen-classic wide"), never positional options.
+- **Open owner decision (2026-11-09 favicon round):** sign the wallpaper with the family crest (`scripts/favicon/crest.ts`, `crestSvg()`, shipped colourway F3 `crest-fv-sage`). Session recommendation: yes, small, as a signature. Ask first — the crest is code-drawn, and the owner rejected flat code-drawn line art as the main motif of the lock screen.
 
 ## Workflow when building it
 1. Plan + Honest Critique, `feature/wallpaper` branch, explicit GO (`AGENTS.md` release protocol).

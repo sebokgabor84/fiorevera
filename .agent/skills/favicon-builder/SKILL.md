@@ -21,13 +21,15 @@ The favicon is the smallest piece of the brand ecosystem (site → lockscreen QR
 
 | Item | Path / command |
 |---|---|
-| Crest builder (side-effect-free) | `scripts/favicon/crest.ts` — `TOKENS`, `COLOURWAYS`, `frame()`, `monogram()`, `clefLetter()`, `crestSvg()` |
+| Crest builder (side-effect-free) | `scripts/favicon/crest.ts` — `TOKENS`, `COLOURWAYS`, `FRAME_WIDE` / `FRAME_TIGHT`, `frame()` (arc 200° → 340° + three dots per side), `monogram()`, `clefLetter()`, `crestSvg()`, `singleLetterCrest()` (cap 28 of 64, tight frame), `monogramCrest()` (cap 22, wide frame) |
 | Design-round catalogue | `scripts/favicon/variants.ts` — every variant with id, rationale, critique, SVG |
-| Letter outlines | `scripts/favicon/glyphs.ts` (generated) ← `scripts/favicon/extract-glyphs.py` (fontTools + brotli, from `public/fonts/cormorant-garamond-latin.woff2`) |
+| Letter outlines | `scripts/favicon/glyphs.ts` — F and V at weight 600/700 as SVG path data (1000 upm, cap height 625) ← `scripts/favicon/extract-glyphs.py <out.json>`. Only needed for a new letter or weight. Setup: `pip install fonttools brotli` (not in `package.json`); the script hard-codes the repo's absolute font path and writes JSON — copying the new entries into `glyphs.ts` is a manual step, there is no converter in the repo |
 | Review page | `npm run favicon:variants` → `docs/design/favicon-variants.html` (inline SVG 16/32/48/180 on light + dark tab strips, sharp 16 px rasters ×6, critique per variant) |
 | Ship the icon set | `npm run favicon [-- --from <variant-id>]` → `public/favicon.svg` + `favicon-16x16/32x32.png` (alpha) + `apple-touch-icon.png`, `android-chrome-192/512.png` (opaque, flattened on the tile colour) |
 | HTML links | `index.html` `<!-- Favicons -->` block — SVG, 32, 16, apple-touch, manifest, theme-color |
-| **Shipped (2026-11-09)** | F3 `crest-fv-sage` — sage tile, linen arc and FV (Cormorant 700), gold/blush/gold dots; owner's pick over the clef (G1–G3) and E. Manifest + `theme-color` kept linen (browser chrome) |
+| **Shipped (2026-11-09)** | F3 `crest-fv-sage` (`SHIPPED_VARIANT_ID`) — sage tile, linen arc and FV (Cormorant 700), gold/blush/gold dots. **The owner picked it against the agent's recommendation** (E for 16 px, F1 for colour, G3 if the clef wins): the pick is recorded, not re-argued. Manifest + `theme-color` kept linen ("Keep linen": they tint the browser chrome, they are not the icon colour) |
+| **Parked, not rejected** | The clef family G1–G3 (F drawn as a treble clef) was the owner's own letter idea and stays in the catalogue. Open owner decision: use G2/G3 where 16 px does not apply (print, stationery) |
+| Not built (proposals) | `/favicon.ico` (16+32+48; blind requests for it get a 404 today) · maskable Android icon · a unit test that the five PNGs match the current `favicon.svg` · type-checking `scripts/` (`tsc -b` skips it, the scripts run under `tsx` unchecked) |
 
 ## How to use it
 
@@ -41,6 +43,11 @@ The favicon is the smallest piece of the brand ecosystem (site → lockscreen QR
 - Append variants to `scripts/favicon/variants.ts` (never edit a shipped one silently), run `npm run favicon:variants`, open the page in the browser.
 - Each variant gets a two-line rationale and an **honest critique**, and the page ends with a recommendation — the owner picks.
 - Gate: every stroke ≥ 4 units of 64 (≈ 1 px at 16), no gradients, filters, live fonts, opacity; check both strips (`#f1f3f4`, `#202124`). Accents that vanish at 16 px are dropped, and the drop is written on the page.
+- **Judge the 16 px raster, never the vector preview**: the page's proof is a true 16 px sharp render (`density: 72 * (size / 64) * 4`) magnified ×6 with nearest-neighbour. A magnolia draft looked fine as SVG and read as a moth at 16 px.
+- **Letters are outlines, never live text**: a favicon SVG cannot load `@font-face`, the browser falls back to a system serif.
+- **Two letters cost 16 px legibility** (cap height 28 → 22 units): "FV" becomes a bar under the arc at 16 px. Say the trade-off before the owner picks.
+- **Measure tint-on-tint contrast**: linen on sage ≈ 3.3:1 (F3's letters soften at 16 px), sage on blush ≈ 2.3:1 (F1's arc fades to a hint). "More colourful, but not a rainbow" (owner) = 2–3 brand tints per mark, structure in ink or linen.
+- Write the catalogue and builder in the repo from the first variant — scratchpad drafts were thrown away once.
 
 ### 3. Ship (only after the owner's pick)
 `npm run favicon -- --from <id>` → verify the five PNGs visually → keep `index.html` links valid → `site.webmanifest` colours stay linen unless the owner wants the browser chrome tinted → DoD (`npm run lint`, `npm test -- --run`, `npm run build`, `npm run test:visual` — baselines do not include the favicon) → Review Brief → commit only on "GO".
@@ -49,5 +56,13 @@ The favicon is the smallest piece of the brand ecosystem (site → lockscreen QR
 - **Crest veto**: a favicon without the arc-and-dots frame or without a letter is a different brand — stop and ask.
 - **Palette veto**: any colour outside `TOKENS`, any gradient, filter or opacity — the GaborPortfolio insignia's metallic gradients are the counter-example.
 - **16 px veto**: nothing ships that was not rasterised at 16 px on both strips and looked at.
+- **One-source veto**: every icon file comes from `public/favicon.svg` through `npm run favicon`; a hand-exported PNG is how the legacy set drifted (daisy SVG beside badge PNGs).
+- **Generic veto**: the owner rejects generic or AI-looking marks (the gold rosette D was the counter-example).
 - **Mood note**: the `inkEditorial` (dark) colourway is an exception to `design-system-expert`'s no-dark-surfaces rule, allowed because the lockscreen already shipped it — a decision, never a default.
 - **Hand-off**: `seo-expert` owns the `<link>` set and manifest validity; `design-system-expert` owns the tokens.
+
+## Open owner decisions (not rules)
+- Clef F (G2/G3) for print or stationery — session recommendation: show Vera G3 at large size for print only, the tab stays F3.
+- The crest across the ecosystem (wallpaper signature, e-mail signature, stationery) — recommendation: yes for the wallpaper signature, no change to the confirmed linen-classic lock screen.
+- `docs/design/favicon-variants.html` (~290 KB, generated) committed or git-ignored — recommendation: keep it, it is the decision record; regenerate only for a new round.
+- Vera has not seen the round as far as the record shows (Gabor picked F3); a look at the home-screen icon on her phone is owed.

@@ -1,0 +1,19 @@
+#!/bin/sh
+# Pre-merge-commit. FV-GUARD: refuses a merge commit on main (git does not run pre-commit for
+# merges). Work reaches main only through a pull request the owner merges on GitHub; the local
+# main is only ever fast-forwarded: git merge --ff-only origin/main
+# (A fast-forward runs no hook at all — the push refusal in pre-push and the GitHub ruleset
+# stand behind it.) Emergency bypass for the owner: FV_SKIP_HOOKS=1
+if [ "$FV_SKIP_HOOKS" = "1" ]; then exit 0; fi
+
+branch=$(git symbolic-ref --short -q HEAD || true)
+case "$branch" in
+  main | master)
+    echo ""
+    echo "pre-merge-commit: REFUSED — this would create a merge commit on '$branch' (production)."
+    echo "    Run 'git merge --abort'. Merging into $branch happens on GitHub (pull request, GO 2)."
+    echo "    To update the local $branch: git merge --ff-only origin/$branch"
+    echo "    Rules: .agent/skills/release-manager/SKILL.md"
+    exit 1
+    ;;
+esac
