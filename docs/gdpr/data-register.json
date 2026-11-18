@@ -1,6 +1,6 @@
 {
   "$comment": "Personal-data register of fiorevera.hu (gdpr-guardian). Every form field, storage key, env endpoint, external host and browser signal in the code must be declared here with a purpose and the privacy-page key that explains it. Checked by .agent/skills/gdpr-guardian/scripts/audit-personal-data.ts (npm run audit:gdpr, and tests/unit/gdpr.test.ts inside npm test). inquiryPayload lists exactly the keys of the request sent to the form provider: the honeypot (website) and the consent flag are never sent. After any change here run `npm run audit:gdpr -- --seal`: it stamps today's date as version and updates data-register.seal.json. Keep in sync with docs/gdpr/newsletter-consent-concept.md section 1.",
-  "version": "2026-11-16",
+  "version": "2026-11-18",
   "controller": "Sebőkné Antalics Veronika (Fiore Vera), 8749 Zalakaros, Rózsa utca 53.",
   "formFields": [
     { "name": "name", "personal": true, "purpose": "answer the inquiry, address the quote", "privacyKey": "privacy.sections.form" },
@@ -13,13 +13,14 @@
     { "name": "consent", "personal": false, "purpose": "mandatory consent flag for processing the inquiry (GDPR Art. 6(1)(a))", "privacyKey": "privacy.sections.form" }
   ],
   "inquiryPayload": [
-    { "key": "name", "source": "form field name", "privacyKey": "privacy.sections.form" },
-    { "key": "email", "source": "form field email", "privacyKey": "privacy.sections.form" },
-    { "key": "phone", "source": "form field phone (empty string when not given)", "privacyKey": "privacy.sections.form" },
-    { "key": "wedding_date", "source": "form field date", "privacyKey": "privacy.sections.form" },
-    { "key": "venue", "source": "form field venue", "privacyKey": "privacy.sections.form" },
-    { "key": "message", "source": "form field message", "privacyKey": "privacy.sections.form" },
-    { "key": "locale", "source": "language of the page the form was sent from (hu/de/en); not typed by the visitor", "privacyKey": "privacy.sections.form" },
+    { "key": "Név", "source": "form field name; the key is the Hungarian label Vera reads in the delivered mail", "privacyKey": "privacy.sections.form" },
+    { "key": "E-mail", "source": "form field email", "privacyKey": "privacy.sections.form" },
+    { "key": "Telefonszám", "source": "form field phone (empty string when not given)", "privacyKey": "privacy.sections.form" },
+    { "key": "Esküvő dátuma", "source": "form field date", "privacyKey": "privacy.sections.form" },
+    { "key": "Helyszín", "source": "form field venue", "privacyKey": "privacy.sections.form" },
+    { "key": "Üzenet", "source": "form field message", "privacyKey": "privacy.sections.form" },
+    { "key": "Nyelv", "source": "language of the page the form was sent from (hu/de/en); not typed by the visitor", "privacyKey": "privacy.sections.form" },
+    { "key": "replyto", "source": "form field email again, under the provider's reserved key: sets Reply-To of the delivered mail to the visitor", "privacyKey": "privacy.sections.form" },
     { "key": "subject", "source": "fixed mail subject plus the visitor's name", "privacyKey": "privacy.sections.form" },
     { "key": "from_name", "source": "fixed sender label shown in the inbox", "privacyKey": "privacy.sections.form" },
     { "key": "access_key", "optional": true, "source": "VITE_FORM_ACCESS_KEY (public Web3Forms key); sent only when configured", "privacyKey": "privacy.sections.form" }
@@ -29,17 +30,19 @@
     { "kind": "localStorage", "key": "fv-lang-toast-dismissed", "purpose": "language toast dismissed (consent-exempt preference, PRD D-4)", "privacyKey": "privacy.sections.storage" }
   ],
   "env": [
-    { "name": "VITE_FORM_ENDPOINT", "purpose": "form provider endpoint the inquiry is POSTed to", "processor": "Web3Forms (chosen 2026-11-11, free plan; company in Kerala, India, servers US-East, DPA offered); still to be named on the privacy page (BACKLOG [GDPR])", "privacyKey": "privacy.sections.form" },
+    { "name": "VITE_FORM_ENDPOINT", "purpose": "form provider endpoint the inquiry is POSTed to", "processor": "Web3Forms, operated by Web3Creative (India); processor under its DPA v1.0 of 2026-07-13, which is part of its Terms; transfers under the EU Standard Contractual Clauses (2021/914); sub-processors AWS, Cloudflare, Hetzner (EU), CleanTalk and Akismet (US, spam check on IP + e-mail); submissions kept up to 3 years on its side (30 days visible on the free plan) — read on web3forms.com/privacy and /dpa 2026-11-16; named on the privacy page since 2026-11-16", "privacyKey": "privacy.sections.form" },
     { "name": "VITE_FORM_ACCESS_KEY", "purpose": "Web3Forms public access key sent with the inquiry", "processor": "Web3Forms", "privacyKey": "privacy.sections.form" }
   ],
   "networkSinks": [
     { "file": "src/lib/submitInquiry.ts", "purpose": "the only outbound request carrying personal data: inquiry → form provider → info.fiorevera@gmail.com", "privacyKey": "privacy.sections.form" }
   ],
   "hosts": [
-    { "host": "api.web3forms.com", "role": "processor candidate: form delivery (India/US — transfer mechanism to confirm)", "privacyKey": "privacy.sections.form" },
-    { "host": "formspree.io", "role": "processor candidate: form delivery (US — transfer mechanism to confirm)", "privacyKey": "privacy.sections.form" },
-    { "host": "va.vercel-scripts.com", "role": "Vercel Web Analytics — wired 2026-11-12 via @vercel/analytics inject() in src/lib/analytics.ts, production mode, only on fiorevera.hu / *.vercel.app hosts; v2 loads the script and sends page-view beacons same-origin (/_vercel/insights/*), this host is the package's debug/fallback script origin kept in the CSP", "privacyKey": "privacy.sections.analytics" },
-    { "host": "vitals.vercel-insights.com", "role": "Vercel Speed Insights beacon host, allowed in the CSP as a fallback; not used by Web Analytics v2 (same-origin intake)", "privacyKey": "privacy.sections.analytics" }
+    { "host": "api.web3forms.com", "role": "processor in use: Web3Forms form delivery (Web3Creative, India; SCC via its DPA — see env VITE_FORM_ENDPOINT)", "privacyKey": "privacy.sections.form" },
+    { "host": "formspree.io", "role": "not in use: alternative form provider kept in the CSP and in submitInquiry (US — transfer mechanism to confirm before any switch)", "privacyKey": "privacy.sections.form" },
+    { "host": "va.vercel-scripts.com", "role": "Vercel Web Analytics — wired 2026-11-12 via @vercel/analytics inject() in src/lib/analytics.ts, production mode, only on fiorevera.hu / *.vercel.app hosts; v2 loads the script and sends page-view beacons same-origin (/_vercel/insights/*), this host is the package's debug/fallback script origin kept in the CSP", "privacyKey": "privacy.sections.analytics" }
+  ],
+  "hosting": [
+    { "host": "www.fiorevera.hu", "processor": "Vercel Inc. (USA)", "purpose": "serving the site: the CDN sees the visitor's IP address, user agent and the requested URL; runtime logs", "retention": "logs visible to the owner: 1 hour on Hobby (1 day on Pro) — vercel.com/docs/logs/runtime, read 2026-11-16", "transfer": "EU-US Data Privacy Framework: Vercel Inc. (Covina, CA) listed as Active for the EU-U.S. DPF, HR and non-HR data, on dataprivacyframework.gov/list (checked 2026-11-16); Vercel's DPA (effective 2026-03-31, SCC 2021/914) names Pro and Enterprise customers only — on Hobby there is no written processor contract [CONFIRM], so the privacy page does not claim one", "lawfulBasis": "legitimate interest in running the site securely (Art. 6(1)(f)) [CONFIRM]", "privacyKey": "privacy.sections.hosting" }
   ],
   "outboundLinks": [
     { "host": "www.fiorevera.hu", "role": "the site itself (canonical, hreflang, JSON-LD)" },

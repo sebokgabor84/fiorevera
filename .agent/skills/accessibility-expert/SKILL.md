@@ -37,7 +37,7 @@ Skip links allow keyboard and screen-reader users to jump past repeated navigati
 | **Required on every page** | Rendered by `src/components/Layout/Layout.tsx` as the first focusable element, in the page's language: `<a href="#main-content" className="skip-link">{t('common.skipToContent')}</a>`. It is **not** in `index.html` any more (a static HU link leaked onto DE/EN pages, QA M4) |
 | **Visually hidden until focused** | Use `.skip-link { position: absolute; transform: translateY(-100%); }` + `:focus { transform: translateY(0); }` |
 | **Target must have `id`** | `<main id="main-content" tabIndex={-1}>` in `Layout.tsx` — `tabIndex={-1}` lets the link move focus to a non-interactive element. Gate: `tests/e2e/navigation.spec.ts` (skip link → Enter → `#main-content` focused) |
-| **SPA route changes** | Target rule: on every React Router navigation focus returns to `main`. **Not implemented**: the `Layout` effect only scrolls (to the hash target or the top). Open with the accessibility pass, MASTER-PLAN 3.1 — add it there, in an effect, never in render (PRD D-18) |
+| **SPA route changes** | `Layout.tsx` moves focus to `<main>` when the pathname changes (`focus({ preventScroll: true })`, compared with the previous pathname so StrictMode's double effect does not steal focus on load); `#main-content:focus` has no outline because it is never a tab stop. Implemented 2026-11-16 (was the open item of the accessibility pass) |
 | **Additional skip targets** | If a page has a long nav + sidebar, add a second `<a href="#page-content">Skip to page content</a>` before the sidebar |
 
 ### 3. ARIA Landmark Roles
@@ -75,6 +75,12 @@ readers can navigate by region.
 | A region is replaced by another (form → confirmation card) | In an effect on the state change: `el.scrollIntoView({ block: 'start' })` (the global `scroll-padding-top` keeps it under the sticky header), then `el.focus({ preventScroll: true })`; the new region carries `tabIndex={-1}` and `role="status"` | Swapping a tall element for a short one clamps the scroll to the new page bottom — the visitor landed in the footer (owner report 2026-11-11) — and a screen reader hears nothing unless focus moves |
 | Test for it | `await expect(region).toBeInViewport({ ratio: 1 })` and `toBeFocused()` | `tests/e2e/contact.spec.ts` |
 | Field errors | Validation is a pure function returning codes (`src/lib/validateInquiry.ts`); the form is `noValidate`, each error is `role="alert"` linked by `aria-describedby`, and focus goes to the first invalid field — the order of the error object is the focus order | Browser bubbles are not localizable or consistent; open QA minor: an empty submit raises six alerts at once |
+
+### 4a. State changes and forms (patterns in `InquiryForm.tsx`)
+- **A region replaces another** (form → success card, form → failure box): give the new region `tabIndex={-1}`, a live role, then in an effect `scrollIntoView` and `focus({ preventScroll: true })`. Otherwise the page clamps to the footer and a screen reader hears nothing.
+- **Validation**: field messages are plain `<p id>` linked by `aria-describedby` and read when the field is focused (the first invalid one is focused on submit). Exactly **one** `role="alert"` summary announces how many fields need attention — never one alert per field.
+- **Forms have an accessible name** (`aria-labelledby` their heading); required markers are joined to the label with `\u00a0` so the asterisk never wraps alone.
+- **A fixed control must never sit above another control's tap target** — hit-test with `elementFromPoint` (scroll-to-top vs the carousel arrow, 2026-11-16).
 
 ### 5. Visual & Media
 - **Color contrast** — minimum 4.5:1 for normal text, 3:1 for large text (WCAG 2.2 AA). For the owner a contrast failure is a hard no-go: that is why the header is always glass instead of changing with scroll (`design-system-expert`), and why text-sized gold is banned (2.1:1 on white).

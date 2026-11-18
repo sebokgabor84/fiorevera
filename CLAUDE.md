@@ -39,7 +39,8 @@ npm test -- --run        # vitest (116 tests in 15 files: routes, data, i18n par
 npm run test:e2e         # playwright, 4 browsers, incl. axe on every route × locale (tests/e2e/a11y.spec.ts); reuses a running dev server only if it was started in THIS checkout (397 passed / 7 skipped on 2026-11-16: compare the total, a piped `| tail` hides the exit code)
 npm run test:vitals      # only tests/e2e/vitals.spec.ts
 npm run test:visual      # visual regression + layout invariants vs the PRODUCTION build (vite preview :4173); chromium; baselines in tests/visual/__screenshots__/
-npm run visual:review    # the same run with the HTML report (expected / actual / diff per snapshot) — show this to the owner on a red run
+npm run visual:review    # the same run with the HTML report (expected / actual / diff per snapshot) — for your own look at a red run
+npm run visual:page      # the owner's review page for a red visual run (.visual-review/, publish as an Artifact); `-- --answers <file>` judges the pasted answers — the only way a visual change is approved: docs/qa/visual-review-process.md
 npm run test:visual:update  # re-baseline — ONLY after the owner approved the new look (scripts/visual-approve.mjs, needs -- --approved-by="<name>")
 npm run visual:sheet     # tests/visual/review.html: every baseline on one page; after a red run, expected / actual / diff per failed snapshot (generated, git-ignored)
 npm run prepush          # lint → unit → build → visual (the gates .githooks/pre-push runs; the GDPR audit is part of the unit run)

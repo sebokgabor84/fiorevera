@@ -6,9 +6,9 @@ import { useLocale } from '../../i18n/localeContext';
 import {
   dismissLanguageToast,
   isLanguageToastDismissed,
-  rememberLanguageChoice,
   suggestedLocaleFor,
 } from '../../lib/languagePreference';
+import { useLanguageLink } from '../../lib/useLanguageLink';
 import styles from './language-toast.module.css';
 
 /**
@@ -18,6 +18,7 @@ import styles from './language-toast.module.css';
 export const LanguageToast = () => {
   const { locale, page } = useLocale();
   const [suggested, setSuggested] = useState<Locale | null>(null);
+  const onLanguageClick = useLanguageLink();
 
   useEffect(() => {
     // Runs after paint, as a callback: hydration-safe and no synchronous setState in the effect body.
@@ -42,17 +43,18 @@ export const LanguageToast = () => {
 
   if (!suggested) return null;
   const tt = getI18n(suggested).getFixedT(suggested);
+  const to = pathFor(page ?? 'home', suggested);
 
   return (
     <div className={styles.toast} role="status" lang={suggested} data-testid="language-toast">
       <p className={styles.body}>{tt('toast.body')}</p>
       <div className={styles.actions}>
         <Link
-          to={pathFor(page ?? 'home', suggested)}
+          to={to}
           hrefLang={suggested}
           className="btn btn--primary"
-          onClick={() => {
-            rememberLanguageChoice(suggested);
+          onClick={(event) => {
+            onLanguageClick(suggested, to)(event);
             setSuggested(null);
           }}
         >

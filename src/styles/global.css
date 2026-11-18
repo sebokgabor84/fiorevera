@@ -110,6 +110,10 @@ ol {
 .skip-link:focus {
   top: 0;
 }
+/* <main> only takes focus programmatically (skip link, route change): no ring around the whole page. */
+#main-content:focus {
+  outline: none;
+}
 
 /* ---------- Utilities ---------- */
 .container {
@@ -267,15 +271,14 @@ blockquote {
   overflow-wrap: anywhere;
   word-break: break-word;
 }
-/* Hyphenation only where lines are genuinely short: body text on narrow screens, never headings. */
-@media (max-width: 48rem) {
-  p,
-  li,
-  figcaption,
-  blockquote {
-    hyphens: auto;
-  }
+/* E-mail addresses (EmailLink) wrap only at the <wbr> before the "@", never mid-word. */
+.email-link {
+  overflow-wrap: normal;
+  word-break: normal;
 }
+/* No automatic hyphenation anywhere (owner decision D5, 2026-11-18): "terve-zéstől", "kell-jen" on
+   phones read worse than a ragged right edge. `overflow-wrap: anywhere` above still keeps a word
+   that is longer than its line from overflowing. */
 
 /* Language toast shown (bottom-anchored): keep the page end reachable above it. */
 body.toast-visible {

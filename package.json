@@ -32,7 +32,8 @@
     "release:selftest": "bash scripts/release/selftest.sh",
     "visual:sheet": "node scripts/visual-contact-sheet.mjs",
     "verify:live": "tsx scripts/verify-live.ts",
-    "visual:review": "playwright test -c playwright.visual.config.ts --reporter=html; playwright show-report playwright-report-visual"
+    "visual:review": "playwright test -c playwright.visual.config.ts --reporter=html; playwright show-report playwright-report-visual",
+    "visual:page": "tsx scripts/visual-review-page.ts"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

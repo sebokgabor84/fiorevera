@@ -12,15 +12,17 @@ export const ServicesPage = () => {
   const { t } = useTranslation();
   const { locale } = useLocale();
   const [full, floristry, rental] = services;
+  /** Eyebrow of each pillar: its position, "1 / 3" — numbers only, so no copy and no translation (owner decision D3). */
+  const position = (n: number) => `${n} / ${services.length}`;
   return (
     <>
       <SeoHead locale={locale} page="services" />
       <PageHero eyebrow={t('services.hero.eyebrow')} title={t('services.hero.title')} intro={t('services.hero.intro')} />
 
-      <section id={full.anchor} className={`${styles.pillar} ${styles.anchor}`}>
+      <section id={full.anchor} className={styles.pillar}>
         <div className="container">
           <div className={styles.pillarHead}>
-            <span className="eyebrow">{t('services.full.eyebrow')}</span>
+            <span className="eyebrow">{position(1)}</span>
             <h2>{t(full.titleKey)}</h2>
             <p className="lead">{t(full.introKey)}</p>
             <p>{t('services.full.scope')}</p>
@@ -43,10 +45,10 @@ export const ServicesPage = () => {
         </div>
       </section>
 
-      <section id={floristry.anchor} className={`${styles.pillar} ${styles.anchor} section--warm`}>
+      <section id={floristry.anchor} className={`${styles.pillar} section--warm`}>
         <div className={`container ${styles.twoCol} ${styles.twoColWide}`}>
           <div>
-            <span className="eyebrow">{t('services.floristry.eyebrow')}</span>
+            <span className="eyebrow">{position(2)}</span>
             <h2>{t(floristry.titleKey)}</h2>
             <p className="lead">{t(floristry.introKey)}</p>
             <p>{t('services.floristry.body')}</p>
@@ -61,15 +63,18 @@ export const ServicesPage = () => {
         </div>
       </section>
 
-      <section id={rental.anchor} className={`${styles.pillar} ${styles.anchor}`}>
-        <div className={`container ${styles.prose}`}>
-          <span className="eyebrow">{t('services.rental.eyebrow')}</span>
-          <h2>{t(rental.titleKey)}</h2>
-          <p className="lead">{t(rental.introKey)}</p>
-          <p>{t('services.rental.body')}</p>
-          <LocalizedLink page="rental" className={`btn btn--gold ${styles.inlineCta}`}>
-            {t(rental.ctaKey)}
-          </LocalizedLink>
+      <section id={rental.anchor} className={styles.pillar}>
+        <div className="container">
+          {/* Same text column as the first pillar's head (46rem); last block of the section, so no bottom margin. */}
+          <div className={styles.pillarHead} style={{ marginBottom: 0 }}>
+            <span className="eyebrow">{position(3)}</span>
+            <h2>{t(rental.titleKey)}</h2>
+            <p className="lead">{t(rental.introKey)}</p>
+            <p>{t('services.rental.body')}</p>
+            <LocalizedLink page="rental" className={`btn btn--gold ${styles.inlineCta}`}>
+              {t(rental.ctaKey)}
+            </LocalizedLink>
+          </div>
         </div>
       </section>
 

@@ -65,11 +65,7 @@
     "phone": "Telefon",
     "email": "E-mail",
     "address": "Cím",
-    "instagram": "Instagram",
-    "facebook": "Facebook",
-    "readMore": "Tovább",
     "backToTop": "Vissza az oldal tetejére",
-    "openInMaps": "Megnyitás térképen",
     "newTab": "(új lapon nyílik)",
     "skipToContent": "Ugrás a tartalomra",
     "noscript": "Az oldal teljes működéséhez engedélyezd a JavaScriptet a böngésződben."
@@ -79,7 +75,7 @@
       "eyebrow": "Esküvői dekoráció · Zala megye és a Balaton",
       "title": "Fiore Vera",
       "subtitle": "virág és dekoráció",
-      "lead": "Álmaid esküvői dekorációja – a tervezéstől a másnapi elpakolásig, hogy a Nagy Napon csak az ünneplésre kelljen figyelnetek.",
+      "lead": "Álmaitok esküvői dekorációja – a tervezéstől a másnapi elpakolásig, hogy a Nagy Napon csak az ünneplésre kelljen figyelnetek.",
       "cta": "Nézd meg a munkáimat",
       "ctaSecondary": "Kérj árajánlatot"
     },
@@ -132,7 +128,8 @@
     },
     "testimonials": {
       "eyebrow": "Rólam mondták",
-      "title": "Párok, akik már bíztak bennem"
+      "title": "Párok, akik már bíztak bennem",
+      "quote": "„{{text}}”"
     },
     "about": {
       "eyebrow": "Rólam",
@@ -154,7 +151,6 @@
       "intro": "Három módon tudok segíteni: átvállalom a teljes dekorációt, elkészítem a virágdíszeket, vagy kölcsönadom a kellékeket, ha magatok díszítenétek. A szolgáltatások külön-külön is kérhetők."
     },
     "full": {
-      "eyebrow": "1 · Teljes körű esküvői dekoráció",
       "title": "Teljes körű esküvői dekoráció",
       "intro": "Ha nem szeretnél magad gondoskodni az esküvői dekoráció kivitelezéséről, válaszd a teljes körű dekorációs szolgáltatásomat. A tervezéstől kezdve a virágkötészeten át a helyszín díszítéséig és a másnapi elpakolásig minden beletartozik. Tökéletes megoldás, ha a Nagy Napon stresszmentes készülődésről álmodozol.",
       "scope": "Kérhetitek a polgári szertartás helyszínének dekorációját, a templomi szertartás helyszínének feldíszítését és a vacsora helyszínének ünnepi díszbe öltöztetését. Ha nincs mindháromra szükség, semmi baj – a szolgáltatás kérhető külön-külön is.",
@@ -194,7 +190,6 @@
       }
     },
     "floristry": {
-      "eyebrow": "2 · Esküvői virágkötészet",
       "title": "Esküvői virágkötészet szezonális virágokkal",
       "intro": "Romantikus, színes, illatos virágdíszek az éppen nyíló, szezonális virágokból – természetes színvilágban, a helyszínhez és az egyéniségetekhez igazítva.",
       "body": "A virágokat helyi termelőktől és nagykereskedésből szerzem be, közvetlenül a Nagy Nap előtt, így frissen és tartósan kerülnek a csokrokba és díszekbe. Ha ti magatok készítenétek a dekorációt, akkor is szívesen megkötöm nektek a csokrokat és elkészítem a virágdíszeket – a virágkötészet önállóan is kérhető.",
@@ -203,7 +198,6 @@
       "cta": "Kérj árajánlatot virágdíszekre"
     },
     "rental": {
-      "eyebrow": "3 · Kellékbérlés",
       "title": "Kellékbérlés",
       "intro": "Te magad készítenéd el az esküvői dekorációt, de nem szeretnél nagy összeget fektetni a kellékekbe, és gondot okoz, hol tárold őket? Ebben is segíthetek.",
       "body": "Boldogságkapu, fényfüggöny, vázák, mécsesek, gyertyatartók, ládák, kaspók, vörös szőnyeg és egyéb dekorációs eszközök állnak rendelkezésetekre. Nézzük át együtt, mire lehet szükségetek!",
@@ -223,7 +217,8 @@
     },
     "albumAlt": "Esküvői dekoráció – {{title}}, {{venue}}, {{n}}. kép",
     "albumAltNoVenue": "Esküvői dekoráció – {{title}}, {{n}}. kép",
-    "photoCount": "{{count}} kép",
+    "photoCount_one": "{{count}} kép",
+    "photoCount_other": "{{count}} kép",
     "albumTitles": {
       "eskuvo-classic-magazin-fotozas": "Esküvő Classic Magazin fotózás",
       "teli-fotozas-2022": "Téli fotózás 2022"
@@ -234,6 +229,7 @@
     },
     "carousel": {
       "label": "Képek: {{title}}",
+      "labelWithVenue": "Képek: {{title}}, {{venue}}",
       "prev": "Előző kép",
       "next": "Következő kép",
       "status": "{{n}}. kép, összesen {{total}}",
@@ -255,7 +251,7 @@
       "title": "Hogyan működik?",
       "steps": {
         "choose": "Válasszatok a bérelhető kellékeim közül.",
-        "reserve": "Foglaljátok le őket e-mailben a Nagy Napra – minél korábban, annál biztosabb. Vagy csak hívj fel, és megbeszéljük 🙂 {{phone}}",
+        "reserve": "Foglaljátok le őket e-mailben a Nagy Napra – minél korábban, annál biztosabb. Vagy csak hívj fel, és megbeszéljük 🙂 <0>{{phone}}</0>",
         "pickup": "Személyes átvétel Zalakaroson, előre egyeztetett időpontban.",
         "ask": "Bármilyen kérdés merül fel, keressetek nyugodtan telefonon is."
       }
@@ -269,10 +265,12 @@
       "pickup": "Átvétel",
       "pickupOnly": "csak személyesen",
       "pickupZalakaros": "csak személyesen, Zalakaroson",
-      "pieces": "{{count}} db",
-      "sets": "{{count}} szett",
-      "walls": "{{count}} db",
-      "available": "{{count}} áll rendelkezésre"
+      "pieces_one": "{{count}}\u00a0db",
+      "pieces_other": "{{count}}\u00a0db",
+      "sets_one": "{{count}}\u00a0szett",
+      "sets_other": "{{count}}\u00a0szett",
+      "walls_one": "{{count}}\u00a0db",
+      "walls_other": "{{count}}\u00a0db"
     },
     "units": {
       "occasion": "alkalom",
@@ -294,17 +292,17 @@
       "gold-flower-stands": {
         "name": "Arany virágállványok",
         "description": "Fémből készült virágállványaink körasztalos elrendezéshez a legalkalmasabbak, de táblaasztalos elrendezés esetén is mutatósak. Bármilyen virágdísz elkészíthető hozzájuk: élő, száraz, művirág.",
-        "notes": "Magasság 70 cm, arany színben."
+        "notes": "Magasság 70\u00a0cm, arany színben."
       },
       "cylinder-vase-set": {
         "name": "Hengerváza szett",
         "description": "Háromrészes üveg hengerváza szettünk tökéletes dísze az asztaloknak, de jól használható kiegészítő elemként szinte bárhol. Ha élvezni szeretnétek a gyertyafényt, úszógyertyával használjátok.",
-        "notes": "Tömbgyertyát ne gyújtsatok meg benne: a viasz belefolyik a vázába és nem lehet kitakarítani – ebben az esetben a vázákat meg kell vásárolni. Méretek: 28×8 cm, 23×10 cm, 17×12 cm (magasság × átmérő)."
+        "notes": "Tömbgyertyát ne gyújtsatok meg benne: a viasz belefolyik a vázába és nem lehet kitakarítani – ebben az esetben a vázákat meg kell vásárolni. Méretek: 28×8\u00a0cm, 23×10\u00a0cm, 17×12\u00a0cm (magasság × átmérő)."
       },
       "gold-candle-holder-set": {
         "name": "Arany fém talpas gyertyatartó szett",
         "description": "Ha igazán exkluzív megjelenésű talpas gyertyatartót szeretnél a dekorációdba, ezzel a szettel nem fogsz mellé. Karcsú, szálas gyertyával használható, ideális körasztalos és táblaasztalos elrendezéshez is.",
-        "notes": "Három részre szétszerelhető, így praktikus a szállítása. Magasságok: 23, 28 és 33 cm; belső szájátmérő 2,2 cm."
+        "notes": "Három részre szétszerelhető, így praktikus a szállítása. Magasságok: 23, 28 és 33\u00a0cm; belső szájátmérő 2,2\u00a0cm."
       },
       "champagne-wall": {
         "name": "Pezsgőfal",
@@ -341,6 +339,7 @@
     },
     "facts": {
       "based": "Zalakaros, Zala megye",
+      "styleLabel": "Stílus",
       "style": "Természetes, szezonális, romantikus"
     },
     "cta": {
@@ -377,6 +376,8 @@
       "success": "Köszönöm az üzenetet! Hamarosan jelentkezem a megadott elérhetőségen.",
       "error": "Az üzenetet nem sikerült elküldeni. Kérlek, próbáld újra, vagy írj közvetlenül e-mailben.",
       "mailFallback": "Megnyitás a levelezőprogramban",
+      "errorSummary_one": "Egy mezőt még javítani kell.",
+      "errorSummary_other": "{{count}} mezőt még javítani kell.",
       "errors": {
         "required": "Ez a mező kötelező.",
         "email": "Kérlek, érvényes e-mail címet adj meg.",
@@ -393,7 +394,12 @@
     "sections": {
       "form": {
         "title": "Kapcsolatfelvételi űrlap",
-        "body": "Az űrlapon megadott adatokat (név, e-mail cím, opcionálisan telefonszám, esküvő dátuma, helyszín, üzenet) kizárólag a megkeresésed megválaszolására és az árajánlat elkészítésére használom. Az adatokat az űrlapszolgáltató továbbítja az info.fiorevera@gmail.com címre, ahol a levelezésben őrzöm meg legfeljebb az árajánlat érvényességéig, megrendelés esetén a szerződéses kapcsolat lezárultáig. Az adatkezelés jogalapja a hozzájárulásod, amit bármikor visszavonhatsz."
+        "body": "Az űrlapon megadott adatokat (név, e-mail cím, opcionálisan telefonszám, esküvő dátuma, helyszín, üzenet) kizárólag a megkeresésed megválaszolására és az árajánlat elkészítésére használom. Az adatokat a Web3Forms űrlapszolgáltató továbbítja az info.fiorevera@gmail.com címre, ahol a levelezésben őrzöm meg legfeljebb az árajánlat érvényességéig, megrendelés esetén a szerződéses kapcsolat lezárultáig. Az adatkezelés jogalapja a hozzájárulásod, amit bármikor visszavonhatsz.",
+        "processor": "A Web3Forms (üzemeltetője a Web3Creative, India) adatfeldolgozóként jár el. A beküldött adatokat és a beküldéskor rögzített IP-címedet a saját rendszerében legfeljebb három évig tárolja; a spamszűréshez az IP-címedet és az e-mail címedet a partnerei (CleanTalk, Akismet – USA) is megkapják. Az Európai Unión kívülre irányuló adattovábbítást az Európai Bizottság általános szerződési feltételei (SCC) biztosítják, amelyek a szolgáltató adatfeldolgozási megállapodásának (DPA) részei."
+      },
+      "hosting": {
+        "title": "Tárhely",
+        "body": "A weboldalt a Vercel Inc. (USA) szerverei szolgálják ki. A kiszolgálás során az IP-címed és a lekért oldal címe rövid ideig technikai naplóba kerül; a számomra elérhető naplók legfeljebb egy napig maradnak meg. A Vercel az EU–USA adatvédelmi keretrendszer (Data Privacy Framework) tanúsított résztvevője; az adatkezelés jogalapja a weboldal biztonságos működtetéséhez fűződő jogos érdek."
       },
       "storage": {
         "title": "Nyelvi beállítás",

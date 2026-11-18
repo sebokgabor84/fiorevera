@@ -125,11 +125,14 @@ POST-2  npm test -- --run         → all green (hard gate)
 POST-3  npm run test:e2e          → all pass (hard gate)
 POST-4  npm run build && npm run test:visual
                                   → layout invariants + pixel baselines vs the production build (hard gate).
-                                    RED = show the owner the diff (npm run visual:review, or the diff PNGs
-                                    from test-results/) BEFORE anything else. Fix the code, or — only with
-                                    the owner's explicit GO on the new look — re-baseline:
+                                    RED = the owner reviews it on the review page, ALWAYS the same way
+                                    (docs/qa/visual-review-process.md): npm run visual:page → publish
+                                    .visual-review/ as an Artifact (or serve local.html) → give the link,
+                                    STOP → the owner pastes "Copy answers" → npm run visual:page -- --answers
+                                    <file> says whether the re-record and the commit are allowed. Only then:
                                     npm run test:visual:update -- --approved-by="<name>" --note="<why>"
-                                    (refuses without an approver; logs to docs/qa/visual-baselines-log.md)
+                                    (refuses without an approver; logs to docs/qa/visual-baselines-log.md).
+                                    Taste and copy choices go on the same page as picture options.
 POST-5  Visual verification       → real browser at 375 / 768 / 1280 / 1920, menu open, toast visible
 POST-6  Update BACKLOG.md         → mark [x], capture any new ideas as [ ]
 POST-7  Present Review Brief      → wait for "GO" (GO 1)
@@ -201,10 +204,10 @@ and dramatically improve. Do not copy verbatim — eliminate all known bugs.
 | `/rolunk/` | `/de/uebermich/` | `/en/about/` | About |
 | `/kapcsolat/` | `/de/kontakt/` | `/en/contact/` | Contact |
 | `/adatkezeles/` | `/de/datenschutz/` | `/en/privacy/` | Privacy (new — GDPR form notice) |
-| `/viragoskert/` → 301 `/rolunk/` | `/de/blumengarten/` → 301 `/de/uebermich/` | — | Flower Garden (paused, D-16; copy archived under `references/legacy/`) |
+| `/viragoskert/` → 308 `/rolunk/` | `/de/blumengarten/` → 308 `/de/uebermich/` | — | Flower Garden (paused, D-16; copy archived under `references/legacy/`) |
 | localized 404 on every prefix | | | 404 |
 
-Single source in code: `src/data/routes.ts` (router, `SeoHead`, hreflang, sitemap, prerender all read it).
+The two garden URLs are permanent redirects; Vercel sends them as **308** (not 301 — search engines treat both the same). Single source in code: `src/data/routes.ts` (router, `SeoHead`, hreflang, sitemap, prerender all read it).
 
 Live behaviour (verified 2026-11-16): all 14 legacy HU + DE page URLs answer 200 or the permanent redirect on https://www.fiorevera.hu. Vercel sends the two permanent redirects as HTTP **308**, not 301 (Google treats both as permanent); whether the wording changes or `vercel.json` forces a literal 301 is an owner decision in `BACKLOG.md`. Unknown URLs answer HTTP 404 with one `dist/404.html`; the client renders the 404 page in the path's locale.
 

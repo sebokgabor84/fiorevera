@@ -30,27 +30,29 @@ CSP and head → `seo-expert`. Gates → `qa-specialist`.)*
 - Choosing or changing a processor (form provider, newsletter provider, mailbox, analytics, hosting)
 - Before the Review Brief of any slice that touched the above
 
-## Architecture facts (verified against the code 2026-11-16)
+## Architecture facts (verified against the code 2026-11-18)
 
 | Fact | Where |
 |---|---|
-| One outbound request with personal data: `submitInquiry()` POSTs name, email, phone, wedding_date, venue, message, locale, subject, `from_name` ("Fiore Vera weboldal", no personal data) (+ `access_key`) to `VITE_FORM_ENDPOINT`; honeypot `website` dropped client-side; no endpoint → `config` error + prefilled `mailto:` | `src/lib/submitInquiry.ts`, `inquiryMailto.ts` |
+| One outbound request with personal data: `submitInquiry()` POSTs the seven fields under Hungarian keys (`Név`, `E-mail`, `Telefonszám`, `Esküvő dátuma`, `Helyszín`, `Üzenet`, `Nyelv` — `INQUIRY_MAIL_LABELS`; the keys are the labels of the delivered mail) plus the reserved `replyto` (the visitor's address, sets Reply-To), `subject`, `from_name` ("Fiore Vera weboldal", no personal data) (+ `access_key`); the register's `inquiryPayload` lists exactly these keys to `VITE_FORM_ENDPOINT`; honeypot `website` dropped client-side; no endpoint → `config` error + prefilled `mailto:` | `src/lib/submitInquiry.ts`, `inquiryMailto.ts` |
 | Mandatory inquiry consent checkbox (`consent`, `required`, error `contact.form.errors.consent`), label links to the privacy page via `<Trans>` | `InquiryForm.tsx` |
-| Privacy page = 4 hardcoded sections `form · storage · analytics · rights` from `privacy.sections.*`, date from `PRIVACY_UPDATED[locale]` (hand-formatted, D-18) | `PrivacyPage.tsx`, `contact.ts` |
+| Privacy page = 5 hardcoded sections `form · hosting · storage · analytics · rights` from `privacy.sections.*` (`form` has a second paragraph `processor`), date from `PRIVACY_UPDATED[locale]` (hand-formatted, D-18; bump it with every change of meaning) | `PrivacyPage.tsx`, `contact.ts` |
 | Storage: `fv-lang`, `fv-lang-toast-dismissed` only, effects only; `navigator.languages` read once, never stored | `languagePreference.ts`, `LanguageToast.tsx` |
 | No cookies, no banner (D-10). **Vercel Web Analytics is wired** (owner decision D5, `698b150`): `startAnalytics(window.location.hostname)` runs once on the client and calls `inject({ mode: 'production' })` only on `fiorevera.hu`, `www.fiorevera.hu` and `*.vercel.app` — never on dev, preview or the test runners; script and beacons are same-origin (`/_vercel/insights/*`). The dashboard switch "Analytics → Enabled" is still an unticked item in the launch plan's fast-lane checklist (A3) | `src/lib/analytics.ts`, `src/entry-client.tsx`, `tests/unit/analytics.test.ts` |
-| CSP allows `api.web3forms.com`, `formspree.io`, `va.vercel-scripts.com`, `vitals.vercel-insights.com` — the only hosts the browser may talk to | `vercel.json` |
+| CSP allows `api.web3forms.com`, `formspree.io`, `va.vercel-scripts.com` — the only hosts the browser may talk to. The Speed Insights host `vitals.vercel-insights.com` was removed on 2026-11-18 (owner decision; unused): add it back, with a register entry, in the change that switches Speed Insights on | `vercel.json` |
 | `VITE_*` values are inlined into the bundle: public by design. The Web3Forms access key only selects the delivery inbox and cannot be hidden in a static site (Vercel stores it as Config, not Secret); hiding it needs a server-side proxy — a proposal for the day spam appears, not built | `submitInquiry.ts`, `.env.example` |
-| Register `version` is still `2026-11-10` although the register was edited on 2026-11-12 and 2026-11-16 — see the version rule in §1 | `docs/gdpr/data-register.json` |
+| Register `version` is the date of its last change, stamped by `npm run audit:gdpr -- --seal` together with the fingerprint in `data-register.seal.json` (2026-11-18 after the site-polish changes) | `docs/gdpr/data-register.json` |
 
 ## Processors (who receives visitor data today)
 
 | Processor | Facts | Open |
 |---|---|---|
-| **Web3Forms** — form delivery, chosen by the owner 2026-11-11 | Free plan: 250 submissions/month, one recipient, 30-day history (not an archive); company in Kerala (India), servers US-East, DPA offered; logs purged after two months (read from web3forms.com 2026-11-10). Payload keys are the mail's field labels; `email` becomes Reply-To | **The privacy page still says "az űrlapszolgáltató" and does not name it** (Art. 13(1)(e)) — needs the three-locale copy GO (R-1) and a `PRIVACY_UPDATED` bump. DPA not yet accepted in the dashboard (owner step). Register `hosts` still call it a "candidate" |
-| **Vercel Inc.** — hosting since 2026-11-16 (Hobby), Web Analytics | Serving the site logs IP, user agent and URL → Art. 28 processor. US, certified under the EU-US Data Privacy Framework; its DPA text names Pro and Enterprise customers | **[CONFIRM]** whether a Hobby customer is covered by the DPA. `hosting` entry in the register and `privacy.sections.hosting` are both missing; the HU/DE/EN proposal is in the launch plan §7.4, not in the locale files (R-1) |
+| **Web3Forms** — form delivery, chosen by the owner 2026-11-11 | Operated by Web3Creative (India). Free plan: 250 submissions/month, one recipient, 30-day dashboard history (not an archive). DPA v1.0 (2026-07-13) is part of its Terms; EEA transfers under SCC 2021/914; sub-processors AWS, Cloudflare, Hetzner (EU), CleanTalk and Akismet (US, spam check on IP + e-mail); submissions kept up to 3 years on its side. Read on web3forms.com/privacy and /dpa on 2026-11-16 — the earlier "Kerala, US-East, logs purged after two months" is no longer on its pages; **re-read before changing the copy** (the pages answer 403 to plain fetches, open them in a browser). Payload keys are the mail's field labels (Hungarian since 2026-11-18); the visitor's address travels as `replyto` | Named on the privacy page since 2026-11-16 (`privacy.sections.form.processor`). DPA accepted by the owner in the dashboard 2026-11-18. Nothing open |
+| **Vercel Inc.** (Covina, CA) — hosting since 2026-11-16 (Hobby), Web Analytics | Serving the site logs IP, user agent and URL → Art. 28 processor. Listed as Active under the EU-U.S. Data Privacy Framework (dataprivacyframework.gov, checked 2026-11-16); logs visible to the owner 1 hour on Hobby (1 day on Pro). Its DPA names Pro and Enterprise customers only | `privacy.sections.hosting` and the register's `hosting` entry exist since 2026-11-16; the page **does not claim a DPA** and does not name a city. Open owner decision: Hobby without a written processor contract (`docs/gdpr/processing-record.md`) |
 | **Gmail** — `info.fiorevera@gmail.com`, where every inquiry ends up | Consumer mailbox, **no DPA** | Owner decision: keep it, or move to Google Workspace / a HU provider (session recommendation: Workspace, after the Rackhost transfer) |
 | `formspree.io` | In the CSP and the register as an unused alternative provider; nothing is sent to it | No decision to remove it |
+
+Art. 30 record of processing: `docs/gdpr/processing-record.md` — read by the owner 2026-11-18; four points there still need his explicit answer (mailbox retention rule, Gmail without a DPA, Vercel Hobby without a processor contract, two-step verification).
 
 Test sends: a real submission costs quota and lands in the owner's inbox — ask before each one, send only to the owner's inbox, and use a customer address that is not the inbox's own. Never ask for the access key or repeat it in chat; the owner pastes it into the git-ignored `.env.local`; verify by length only (36-character UUID).
 
@@ -72,7 +74,7 @@ an `https://` host in `src/` (code and CSS), `index.html` or the CSP that is nei
 
 Two more rules live in the tests: the request sent to the form provider carries **exactly** the keys listed under `inquiryPayload`
 (`tests/unit/gdpr.test.ts`, `tests/e2e/contact.spec.ts`; the honeypot and the consent flag are never sent), and **a register change needs a new seal**:
-`docs/gdpr/data-register.seal.json` holds the register's fingerprint and version, and the unit test fails until `npm run audit:gdpr -- --seal` was run.
+`docs/gdpr/data-register.seal.json` holds the register's fingerprint and version, and the unit test fails until `npm run audit:gdpr -- --seal` was run (the seal also stamps the register's `version` with the date of the change).
 **Fix by declaring the sink with a purpose and a privacy key — never by widening the regexes.** If the purpose cannot be
 written in one line, the sink should not exist. The script strips comments before matching (`code()`), so a host or key
 mentioned only in a comment is not a sink.
@@ -113,7 +115,7 @@ for double opt-in · how long consent proof may be kept · whether the Art. 30 r
 hour with a HU data-protection lawyer before the greetings list goes live; the current site ships without it.
 
 **Open owner decisions:** greetings provider and transfer path (recommended: an EU-hosted list tool with a DPA) · mailbox (Gmail vs Workspace) ·
-HU te/ti for the greetings copy · frequency ceiling and the anniversary opt-out · R-1 sign-off on the privacy lines for Web3Forms and hosting.
+HU te/ti for the greetings copy · frequency ceiling and the anniversary opt-out · the four open points of the processing record. (The privacy lines for Web3Forms and hosting shipped with the owner's approval of the privacy screens, 2026-11-16/18.)
 
 Legal statements are tagged **[INFO]** / **[CONFIRM]** / **[DECISION]** in the concept note and the launch plan; the skill repeats that tagging in every Review Brief.
 

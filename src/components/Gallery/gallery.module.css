@@ -1,5 +1,4 @@
 .album {
-  scroll-margin-top: calc(var(--header-h) + 1rem);
   padding-block: var(--space-6);
   border-top: var(--border-hairline);
 }
@@ -19,6 +18,8 @@
   margin: 0;
 }
 .albumVenue {
+  /* One unit: "– Venue, Town" moves to the next line as a whole when it does not fit beside the names. */
+  display: inline-block;
   font-weight: 400;
   color: var(--color-text-muted);
   font-size: 0.8em;
@@ -33,10 +34,13 @@
  * between slides or on load; images `cover` the box, so no letterbox bars — the few
  * portrait shots are centre-cropped instead. Controls are absolutely positioned above
  * the track (z-index 1) and always visible.
+ * z-index 81 puts the whole carousel above the fixed scroll-to-top button (80): below ~1180 px
+ * that button shares its column with the "next" arrow, and a tap meant for the arrow must never
+ * jump the page to the top. Header (100), menu (99) and toast (120) stay above.
  */
 .carousel {
   position: relative;
-  isolation: isolate;
+  z-index: 81;
   border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--color-surface-warm);
@@ -62,6 +66,8 @@
 .slide {
   flex: 0 0 100%;
   scroll-snap-align: start;
+  /* One slide per swipe, however fast the flick. */
+  scroll-snap-stop: always;
   display: grid;
   place-items: center;
 }

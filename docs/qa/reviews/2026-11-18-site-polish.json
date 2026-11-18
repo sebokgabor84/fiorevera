@@ -1,0 +1,18 @@
+{
+  "title": "Site polish review",
+  "round": 3,
+  "intro": "Round three, 18 November: the record of what gets re-recorded. One screen changed since round two — the rental page on desktop is back to the price order you approved in round one, as you asked. Phones keep the price first, which you marked OK. You answered both closing questions in round two (re-record: yes; commit: after this revert), so there is nothing to do here unless something looks wrong.",
+  "screens": {
+    "rental-1280": ["Back to the round-one look: price inside the grid, not on its own first row", "Step 2: the phone number is a link (approved in round one)"]
+  },
+  "approved": [
+    "about-1280", "about-375", "carousel-slide2-1280", "carousel-slide2-375", "contact-1280", "contact-375",
+    "gallery-1280", "gallery-375", "home-1280", "home-375", "home-de-375", "home-en-375", "notfound-1280",
+    "notfound-375", "privacy-1280", "privacy-375", "rental-375", "services-1280", "services-375"
+  ],
+  "ownerSteps": [
+    "Send one real inquiry from the Vercel preview of this branch with an address that is not Fiore Vera's; check in Gmail that the fields read Név, E-mail, Telefonszám, Esküvő dátuma, Helyszín, Üzenet, Nyelv and that Reply goes to the visitor.",
+    "Read docs/gdpr/processing-record.md (the Art. 30 record, marked \"owner to confirm\") and its six open points.",
+    "Web3Forms dashboard: accept the data processing agreement if it is offered there."
+  ]
+}

@@ -17,7 +17,11 @@ export const ScrollToTop = () => {
       className={`${styles.btn} ${visible ? styles.visible : ''}`}
       aria-label={t('common.backToTop')}
       tabIndex={visible ? 0 : -1}
-      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+      onClick={() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // The button fades out at the top; leave focus on the page, not on an invisible control.
+        document.getElementById('main-content')?.focus({ preventScroll: true });
+      }}
     >
       <FaChevronUp aria-hidden="true" />
     </button>

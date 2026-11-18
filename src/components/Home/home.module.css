@@ -23,7 +23,10 @@
   inset: 0;
   z-index: -1;
   background:
-    linear-gradient(180deg, rgba(44, 40, 37, 0.35) 0%, rgba(44, 40, 37, 0.12) 35%, rgba(44, 40, 37, 0.7) 100%),
+    /* Lower half measured, not eyeballed: with these stops the lead never drops under 4.8:1 and the
+       italic subtitle under 4.2:1 against any pixel behind them, 320–1920 px, HU/DE/EN (owner decision
+       D8, 2026-11-18; before: 3.0 and 2.4 at the worst pixel). Re-measure after changing the photo. */
+    linear-gradient(180deg, rgba(44, 40, 37, 0.35) 0%, rgba(44, 40, 37, 0.12) 30%, rgba(44, 40, 37, 0.55) 55%, rgba(44, 40, 37, 0.78) 100%),
     radial-gradient(70% 70% at 25% 85%, rgba(44, 40, 37, 0.55), transparent 70%);
 }
 .heroContent {
@@ -70,16 +73,21 @@
   color: rgba(255, 255, 255, 0.92);
   margin-bottom: var(--space-5);
 }
+/* Phones: both buttons full width, stacked — the same in every language (in HU and DE the second
+   one wrapped under the first at its own width, in EN it did not; owner decision D1, 2026-11-18). */
 .heroActions {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: stretch;
   gap: var(--space-3);
 }
-.heroGhost {
+/* Two classes on purpose: global.css (`.btn { border: 1px solid transparent }`) loads after this module,
+   so a single-class rule lost the cascade and the outline never rendered — the button read as loose text. */
+.heroActions .heroGhost {
   color: #fff;
   border-color: rgba(255, 255, 255, 0.6);
 }
-.heroGhost:hover {
+.heroActions .heroGhost:hover {
   background: rgba(255, 255, 255, 0.12);
   border-color: #fff;
   color: #fff;
@@ -270,6 +278,11 @@
 }
 
 @media (min-width: 48rem) {
+  .heroActions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+  }
   .cards {
     grid-template-columns: repeat(3, 1fr);
   }

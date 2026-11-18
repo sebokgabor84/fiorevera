@@ -29,7 +29,7 @@ text on DE, HU couple names on the DE gallery). The language is decided by the U
 |---|---|
 | **One pre-initialised i18next instance per locale**, `getI18n(locale)`, `initImmediate: false`, `fallbackLng: 'hu'`, `escapeValue: false`, `returnNull: false`. No detector, no `changeLanguage`, nothing async. `i18next-browser-languagedetector` sits in `package.json` **unused — never wire it in** (D-4). | `src/i18n/config.ts` |
 | Locale comes from the pathname (`localeFromPath`, `matchRoute`) and is passed down via `LocaleContext { locale, page }` | `src/data/routes.ts`, `src/i18n/localeContext.ts` |
-| Three files, same tree, **270 keys each** (counted 2026-11-16 — recount, never copy), 15 namespaces: `meta nav lang toast common home services gallery rental about contact privacy notFound footer testimonials` | `src/i18n/locales/{hu,de,en}.json` |
+| Three files, same tree, **274 keys each** (counted 2026-11-18 — recount, never copy), 15 namespaces: `meta nav lang toast common home services gallery rental about contact privacy notFound footer testimonials` | `src/i18n/locales/{hu,de,en}.json` |
 | Page intros and titles sit under `<page>.hero.{eyebrow,title,intro}` and are read through `PageHero` (`t('gallery.hero.intro')`); form errors are **codes** from `src/lib/validateInquiry.ts` that `InquiryForm` maps to `contact.form.errors.{required,email,phone,tooLong,consent}` | `src/pages/*.tsx`, `src/components/Contact/InquiryForm.tsx` |
 | Data files hold **keys and proper nouns only** (`nameKey`, `descriptionKey`, `titleKey`, `partners`, venue names); Zod rejects anything else | `src/data/*.ts`, `src/data/types.ts` |
 | `<html lang>` is set by `scripts/prerender.ts` per route and by a `Layout` effect on client navigation | `scripts/prerender.ts`, `Layout.tsx` |
@@ -54,18 +54,18 @@ text on DE, HU couple names on the DE gallery). The language is decided by the U
 | **Edit existing copy** | **First find the key the component reads**: `grep -rn "gallery\." src/pages src/components` (quote the pattern, zsh). An intro edit once went to `gallery.intro`, a key the page never read — the page reads `gallery.hero.intro`. Then change all three locales and look at the page |
 | Add key | write HU → DE → EN in the same namespace position; `npm run validate:i18n`; use via `t('ns.key')` |
 | Rename key | update every `t()` / `*Key` field / `tests/e2e/locales.ts` consumer + all three files; grep the old key: `grep -rn "old.key" src tests scripts` |
-| Remove key | delete from all three; grep proves zero consumers. Known dead keys (QA minor): `common.instagram|facebook|readMore|openInMaps`, `rental.labels.available` |
+| Remove key | delete from all three; grep proves zero consumers (the five dead keys of the 2026-11-09 QA report were removed on 2026-11-16) |
 | Identical by design | add to `IDENTICAL_WHITELIST` with a reason in the PR; never for CTAs or labels |
 | Placeholder | `{{name}}` identical in all three (`{{count}}`, `{{title}}`, `{{venue}}`, `{{n}}`, `{{total}}`, `{{date}}`, `{{areas}}`, `{{max}}` in `contact.form.errors.tooLong`, `{{phone}}` in the rental steps — Vera's number comes from `src/data/contact.ts`, never typed into copy); word order may change, names may not |
 | Copy that is only a proposal | Keep it out of the locale files until the owner's GO — one key forces all three locales through the parity gate. Today: the greetings-list copy (`docs/gdpr/newsletter-consent-concept.md` §7) and the privacy hosting / Web3Forms lines (`docs/launch/domain-and-hosting-plan.md` §7.4) |
 
 ## 2. Plurals
 
-i18next resolves `key_one` / `key_other` from `{{count}}` for all three locales (HU, DE and EN all have `one`/`other` rules). The locale files currently have **no plural suffixes**: `rental.labels.pieces = "{{count}} pcs"` renders **"1 pcs"** on EN (QA minor, open). Fix pattern: replace `pieces` with `pieces_one` + `pieces_other` in **all three** files (HU/DE do not inflect but need both keys for parity), same for `sets`, `walls`, `photoCount`; the parity gate flattens suffixed keys like any other.
+i18next resolves `key_one` / `key_other` from `{{count}}` for all three locales (HU, DE and EN all have `one`/`other` rules). Counted strings carry both suffixes in **all three** files (HU does not inflect but needs both keys for parity): `gallery.photoCount`, `rental.labels.pieces|sets|walls`, `contact.form.errorSummary`. Call them with the bare key, `t('rental.labels.pieces', { count })`; the parity gate flattens suffixed keys like any other. A new counted string follows the same pattern — never `"{{count}} pcs"` alone ("1 pcs").
 
 ## 3. Language follows the URL
 
-- `LanguageSwitch` links to `pathFor(page ?? 'home', code)` with `hrefLang` + `lang` attributes; accessible name starts with the visible code: `"DE – Deutsch"`, active one `"HU – Magyar (jelenlegi nyelv)"` (`lang.current`). Clicking calls `rememberLanguageChoice` (localStorage `fv-lang` + `fv-lang-toast-dismissed`). The switch keeps the page but drops `#album` hashes (QA minor).
+- `LanguageSwitch` links to `pathFor(page ?? 'home', code)` with `hrefLang` + `lang` attributes; accessible name starts with the visible code: `"DE – Deutsch"`, active one `"HU – Magyar (jelenlegi nyelv)"` (`lang.current`). Clicking calls `rememberLanguageChoice` (localStorage `fv-lang` + `fv-lang-toast-dismissed`). The switch keeps the page and the `#anchor` (`useLanguageLink`: the hash is read at click time, never rendered into the `href`, D-18).
 - **No redirect anywhere**, no `Accept-Language` logic, no root bounce (the legacy site bounced non-HU browsers to `/de/`).
 - Tests: `tests/e2e/locale.spec.ts` (switch lands on the same page, `lang` attribute), `tests/e2e/navigation.spec.ts` (`HU_LEAKS` list, DE CTAs only to `/de/…`, localized 404s).
 
@@ -98,15 +98,15 @@ Gate: `tests/unit/render.test.tsx` renders all 21 routes + 3 404s with `renderTo
 
 ## 7. Register — owner decision, not yours
 
-D-12 says informal first-person (HU *te*, DE *du*, EN *you*), but the shipped copy mixes HU singular/plural (*Álmaid … figyelnetek*) and DE *du* (4 strings) with *ihr* (~40).
+D-12 says informal first-person (HU *te*, DE *du*, EN *you*). What the owner decided since (review of 2026-11-16/18, `docs/qa/2026-11-16-minor-triage.md`):
 
 | Question | Status |
 |---|---|
-| DE address of the couple | **Decided by the owner 2026-11-10: *ihr*, no rewrite.** New and edited DE copy uses *ihr*; no sweep of the existing strings |
-| HU *te* vs *ti* | **Open.** Keep the register of the surrounding strings when editing, flag inconsistencies in the Review Brief, do not pick a side |
-| Hyphenation policy, emoji in the rental step, gold numerals, portrait crops | **Open** — `BACKLOG.md` `[CONTENT]` "Owner decisions from the QA session", `docs/qa/2026-11-09-qa-session.md#owner-decisions-needed` |
-| Services eyebrow repeats the H2; hero secondary CTA wraps on HU/DE at 375 (shorter labels are one option) | **Open**, copy sign-off R-1 |
-| Field labels in the delivered inquiry mail are the English payload keys ("Wedding date", "Venue"); subject and sender name ("Fiore Vera weboldal") are HU-only by design | **Open**: Hungarian labels for Vera, yes or no (`src/lib/submitInquiry.ts`) |
+| DE address of the couple | **Decided by the owner 2026-11-10: *ihr*.** New and edited DE copy uses *ihr*; the last five *du* strings were aligned on 2026-11-18 |
+| HU *te* vs *ti* | **Decided 2026-11-18:** *te* for what one reader does (buttons, form, "Hívj bátran"), *ti* for the couple and their wedding ("esküvőtök", "nektek"). Only a sentence that switches inside itself gets aligned (the hero lead now starts "Álmaitok …"). No sweep |
+| Hyphenation, emoji in the rental step, gold numerals, portrait crops | **Decided 2026-11-18:** no automatic hyphenation; the smiley stays; numerals done (QA M7); Vera picks landscape covers |
+| Services eyebrow, hero buttons on phones | **Decided 2026-11-18:** the eyebrow is the pillar's position ("1 / 3", rendered in code, no copy key); both hero buttons are full width and stacked on phones, labels unchanged |
+| Field labels in the delivered inquiry mail | **Decided and built:** Hungarian (`INQUIRY_MAIL_LABELS` in `src/lib/submitInquiry.ts`), confirmed by a delivered mail on 2026-11-18. Subject and sender name ("Fiore Vera weboldal") stay HU-only by design |
 | Copy sign-off per locale (R-1), Vera's phone check of the three locales | **Open** (MASTER-PLAN 2.3/2.4, 4.2) |
 
 Testimonials are verbatim (typo fixes only).
@@ -117,10 +117,10 @@ Testimonials are verbatim (typo fixes only).
 |---|---|---|---|
 | Quotes | „…” | „…“ | “…” |
 | Dash in titles / ranges | spaced en dash ` – ` (never em dash) | same | same |
-| Decimal / units | `2,8 m`, NBSP before units | `2,8 m` | `2.8 m` (open minor: rental sizes are a shared `size` string with commas) |
+| Decimal / units | `2,8 m`, NBSP before units | `2,8 m` | `2.8 m` (`src/lib/rentalSize.ts` converts the shared `size` string) |
 | Apostrophe | — | — | typographic `’` preferred; the files use `'` today, keep one style per file |
 
-Open minor: testimonials use English curly quotes in all three locales. Hyphenation is CSS-side (`global.css`, mobile body text only) — not a copy concern.
+Testimonials take their quotation marks from `home.testimonials.quote` (`„{{text}}”` / `„{{text}}“` / `“{{text}}”`). Number and unit are joined by `\u00a0` in the locale files (rental notes, counts) and by `formatSize()` for rental sizes, which also gives EN a decimal point. There is no automatic hyphenation (owner decision 2026-11-18) — long HU/DE compounds wrap as whole words, so check new copy at 320 px.
 
 **Length budgets**: DE runs ~30 % longer than HU/EN. Nav labels must fit the desktop header at 1024 px and the mobile menu at 320 px without wrapping; CTA buttons (`nav.quote`, `toast.cta`, form submit) stay single-line at 320 px; eyebrows/pills (`home.hero.eyebrow`) must not hyphenate at 320 px (QA: "ZALA ME-GYE"). Check at 320 / 375 / 1024 in the browser before sign-off.
 

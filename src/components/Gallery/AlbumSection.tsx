@@ -98,7 +98,13 @@ export const AlbumSection = ({ album, priority = false }: Props) => {
       <header className={styles.albumHead}>
         <h2 id={`${album.id}-title`} className={styles.albumTitle}>
           {title}
-          {venue && <span className={styles.albumVenue}> — {venue}</span>}
+          {/* The dash belongs to the venue block (inline-block): it wraps together with the venue, never orphaned at a line end. */}
+          {venue && (
+            <>
+              {' '}
+              <span className={styles.albumVenue}>– {venue}</span>
+            </>
+          )}
         </h2>
         <p className={`muted ${styles.count}`}>{t('gallery.photoCount', { count: total })}</p>
       </header>
@@ -109,7 +115,8 @@ export const AlbumSection = ({ album, priority = false }: Props) => {
           role="region"
           aria-roledescription="carousel"
           // The venue keeps the landmark name unique: two albums share a couple's names (axe landmark-unique).
-          aria-label={t('gallery.carousel.label', { title: venue ? `${title} — ${venue}` : title })}
+          // A keyed string, not a concatenation: word order and punctuation belong to each locale.
+          aria-label={venue ? t('gallery.carousel.labelWithVenue', { title, venue }) : t('gallery.carousel.label', { title })}
           aria-describedby={statusId}
         >
           {/* The scrollable track is the keyboard target (arrow keys); scrollable regions must be focusable. */}

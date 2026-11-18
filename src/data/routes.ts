@@ -23,7 +23,7 @@ export const ROUTES: Record<PageId, Record<Locale, string>> = {
   privacy: { hu: '/adatkezeles/', de: '/de/datenschutz/', en: '/en/privacy/' },
 };
 
-/** Legacy URLs that 301 to a page (PRD D-16); mirrored in vercel.json. */
+/** Legacy URLs that redirect permanently to a page (PRD D-16); mirrored in vercel.json, which answers 308 — Vercel's permanent redirect, equal to a 301 for search engines. */
 export const REDIRECTS: { from: string; to: string }[] = [
   { from: '/viragoskert/', to: ROUTES.about.hu },
   { from: '/de/blumengarten/', to: ROUTES.about.de },
@@ -37,8 +37,9 @@ export const pathFor = (page: PageId, locale: Locale): string => ROUTES[page][lo
 
 export const absoluteUrl = (path: string): string => `${SITE_URL}${path}`;
 
+/** Collapses double slashes, adds the trailing slash and lower-cases: routes are ASCII and case-insensitive. */
 const normalize = (pathname: string): string => {
-  const p = pathname.replace(/\/{2,}/g, '/');
+  const p = pathname.replace(/\/{2,}/g, '/').toLowerCase();
   return p.endsWith('/') ? p : `${p}/`;
 };
 

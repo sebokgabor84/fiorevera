@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { submitInquiry, type InquiryPayload } from '../../src/lib/submitInquiry';
+import { INQUIRY_MAIL_LABELS, submitInquiry, type InquiryPayload } from '../../src/lib/submitInquiry';
 
 const ENDPOINT = 'https://api.web3forms.com/submit';
 const ACCESS_KEY = 'test-access-key';
@@ -40,7 +40,19 @@ describe('submitInquiry (PRD D-9, MASTER-PLAN 2.10)', () => {
     expect(fetchImpl).not.toHaveBeenCalled();
   });
 
-  it('posts JSON to the configured endpoint with the provider field names and the access key (Web3Forms)', async () => {
+  it('labels the mail fields in Hungarian (the keys are what Vera reads in the delivered mail)', () => {
+    expect(INQUIRY_MAIL_LABELS).toEqual({
+      name: 'Név',
+      email: 'E-mail',
+      phone: 'Telefonszám',
+      date: 'Esküvő dátuma',
+      venue: 'Helyszín',
+      message: 'Üzenet',
+      locale: 'Nyelv',
+    });
+  });
+
+  it('posts JSON to the configured endpoint with the Hungarian field labels, the reserved keys and the access key (Web3Forms)', async () => {
     vi.stubEnv('VITE_FORM_ENDPOINT', ENDPOINT);
     vi.stubEnv('VITE_FORM_ACCESS_KEY', ACCESS_KEY);
     const fetchImpl = fetchAnswering(200);
@@ -53,19 +65,35 @@ describe('submitInquiry (PRD D-9, MASTER-PLAN 2.10)', () => {
     expect(init?.headers).toEqual({ 'Content-Type': 'application/json', Accept: 'application/json' });
 
     const body = sentBody(fetchImpl);
-    expect(Object.keys(body).sort()).toEqual(
-      ['access_key', 'email', 'from_name', 'locale', 'message', 'name', 'phone', 'subject', 'venue', 'wedding_date'].sort()
-    );
-    expect(body).toMatchObject({
-      name: payload.name,
-      email: payload.email,
-      phone: payload.phone,
-      wedding_date: payload.date,
-      venue: payload.venue,
-      message: payload.message,
-      locale: 'hu',
+    // The exact key set, in mail order: seven labelled fields, then the reserved Web3Forms keys.
+    expect(Object.keys(body)).toEqual([
+      'Név',
+      'E-mail',
+      'Telefonszám',
+      'Esküvő dátuma',
+      'Helyszín',
+      'Üzenet',
+      'Nyelv',
+      'replyto',
+      'subject',
+      'from_name',
+      'access_key',
+    ]);
+    expect(body).toEqual({
+      Név: payload.name,
+      'E-mail': payload.email,
+      Telefonszám: payload.phone,
+      'Esküvő dátuma': payload.date,
+      Helyszín: payload.venue,
+      Üzenet: payload.message,
+      Nyelv: 'hu',
+      replyto: payload.email, // Reply in the mail client goes to the visitor
+      subject: 'Árajánlatkérés – fiorevera.hu (Teszt Anna)',
+      from_name: 'Fiore Vera weboldal',
       access_key: ACCESS_KEY,
     });
+    // The provider's English-labelled keys are gone, so the mail cannot show "Wedding date" next to "Esküvő dátuma".
+    for (const legacy of ['name', 'email', 'phone', 'wedding_date', 'venue', 'message', 'locale']) expect(body).not.toHaveProperty(legacy);
     expect(body.subject).toBe('Árajánlatkérés – fiorevera.hu (Teszt Anna)');
     expect(body.from_name).toBe('Fiore Vera weboldal');
     expect(body).not.toHaveProperty('website'); // the honeypot never reaches the provider

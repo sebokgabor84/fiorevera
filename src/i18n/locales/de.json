@@ -3,7 +3,7 @@
     "siteName": "Fiore Vera",
     "tagline": "Blumen & Deko",
     "home": {
-      "title": "Hochzeitsdekoration & Floristik – Fiore Vera | Burgenland",
+      "title": "Hochzeitsdekoration & Floristik im Burgenland – Fiore Vera",
       "description": "Komplette Hochzeitsdekoration, Hochzeitsfloristik und Dekoverleih aus Zalakaros – für Burgenland, Wien, Niederösterreich und Steiermark. Jetzt Angebot anfragen!"
     },
     "services": {
@@ -24,11 +24,11 @@
     },
     "contact": {
       "title": "Kontakt & Angebot anfragen – Fiore Vera",
-      "description": "Frag ein Angebot für Hochzeitsdekoration, Floristik oder Dekoverleih an. Telefon, E-Mail, Instagram – Zalakaros, Westungarn."
+      "description": "Fragt ein Angebot für Hochzeitsdekoration, Floristik oder Dekoverleih an. Telefon, E-Mail, Instagram – Zalakaros, Westungarn."
     },
     "privacy": {
       "title": "Datenschutzerklärung – Fiore Vera",
-      "description": "Informationen darüber, wie wir die Daten aus dem Kontaktformular und deine Spracheinstellung auf fiorevera.hu verarbeiten."
+      "description": "Informationen darüber, wie wir die Daten aus dem Kontaktformular und eure Spracheinstellung auf fiorevera.hu verarbeiten."
     },
     "notFound": {
       "title": "Seite nicht gefunden – Fiore Vera",
@@ -65,11 +65,7 @@
     "phone": "Telefon",
     "email": "E-Mail",
     "address": "Adresse",
-    "instagram": "Instagram",
-    "facebook": "Facebook",
-    "readMore": "Mehr",
     "backToTop": "Zurück nach oben",
-    "openInMaps": "In Karten öffnen",
     "newTab": "(öffnet in neuem Tab)",
     "skipToContent": "Zum Inhalt springen",
     "noscript": "Für die volle Funktion der Seite aktiviert bitte JavaScript in eurem Browser."
@@ -132,7 +128,8 @@
     },
     "testimonials": {
       "eyebrow": "Meinungen",
-      "title": "Paare, die mir vertraut haben"
+      "title": "Paare, die mir vertraut haben",
+      "quote": "„{{text}}“"
     },
     "about": {
       "eyebrow": "Über mich",
@@ -141,7 +138,7 @@
       "cta": "Mehr über mich"
     },
     "cta": {
-      "title": "Gefallen dir meine Arbeiten?",
+      "title": "Gefallen euch meine Arbeiten?",
       "body": "Erzählt mir von eurer Hochzeit – Ort, Datum, Vorstellungen – und ich erstelle euch ein detailliertes Angebot.",
       "button": "Angebot anfragen",
       "or": "oder ruft einfach an:"
@@ -154,7 +151,6 @@
       "intro": "Auf drei Arten kann ich helfen: Ich übernehme die komplette Dekoration, fertige den Blumenschmuck an oder verleihe euch die Deko, wenn ihr selbst gestalten möchtet. Die Leistungen sind auch einzeln buchbar."
     },
     "full": {
-      "eyebrow": "1 · Komplette Hochzeitsdekoration",
       "title": "Komplette Hochzeitsdekoration",
       "intro": "Wenn ihr euch nicht selbst um die Umsetzung der Hochzeitsdekoration kümmern möchtet, wählt meinen umfassenden Dekorationsservice. Von der Planung über die Floristik bis zur Dekoration des Veranstaltungsorts und dem Abbau am nächsten Tag ist alles enthalten. Die perfekte Lösung, wenn ihr euch eine stressfreie Vorbereitung am großen Tag wünscht.",
       "scope": "Ihr könnt die Dekoration für den Ort der standesamtlichen Trauung, den Blumenschmuck für die kirchliche Zeremonie und die festliche Gestaltung des Festsaals anfragen. Falls ihr nicht alle drei braucht, kein Problem – die Leistungen können auch einzeln gebucht werden.",
@@ -194,7 +190,6 @@
       }
     },
     "floristry": {
-      "eyebrow": "2 · Hochzeitsfloristik",
       "title": "Hochzeitsfloristik mit saisonalen Blumen",
       "intro": "Romantischer, bunter, duftender Blumenschmuck aus saisonalen Blumen, die gerade blühen – in natürlichen Farben, abgestimmt auf den Ort und eure Persönlichkeit.",
       "body": "Die Blumen beziehe ich von regionalen Produzenten und aus dem Großhandel, direkt vor dem großen Tag – so kommen sie frisch und haltbar in Sträuße und Gestecke. Wenn ihr die Dekoration selbst gestalten möchtet, binde ich trotzdem gerne eure Sträuße und fertige den Blumenschmuck an – die Floristik ist auch einzeln buchbar.",
@@ -203,7 +198,6 @@
       "cta": "Angebot für Blumenschmuck anfragen"
     },
     "rental": {
-      "eyebrow": "3 · Dekoverleih",
       "title": "Dekoverleih",
       "intro": "Ihr möchtet die Hochzeitsdekoration selbst gestalten, aber nicht viel Geld in Deko investieren und euch keine Gedanken über die Lagerung machen? Auch dabei kann ich helfen.",
       "body": "Traubogen, Lichtervorhang, Vasen, Teelichter, Kerzenständer, Kisten, Übertöpfe, roter Teppich und weitere Dekorationsartikel stehen euch zur Verfügung. Lasst uns gemeinsam durchgehen, was ihr braucht!",
@@ -223,7 +217,8 @@
     },
     "albumAlt": "Hochzeitsdekoration – {{title}}, {{venue}}, Bild {{n}}",
     "albumAltNoVenue": "Hochzeitsdekoration – {{title}}, Bild {{n}}",
-    "photoCount": "{{count}} Bilder",
+    "photoCount_one": "{{count}} Bild",
+    "photoCount_other": "{{count}} Bilder",
     "albumTitles": {
       "eskuvo-classic-magazin-fotozas": "Fotoshooting für das Magazin Esküvő Classic",
       "teli-fotozas-2022": "Winter-Fotoshooting 2022"
@@ -234,6 +229,7 @@
     },
     "carousel": {
       "label": "Bilder: {{title}}",
+      "labelWithVenue": "Bilder: {{title}}, {{venue}}",
       "prev": "Vorheriges Bild",
       "next": "Nächstes Bild",
       "status": "Bild {{n}} von {{total}}",
@@ -255,7 +251,7 @@
       "title": "So funktioniert es",
       "steps": {
         "choose": "Wählt aus meinem Mietangebot.",
-        "reserve": "Reserviert die Artikel per E-Mail für den großen Tag – je früher, desto sicherer. Oder ruft einfach an und wir besprechen alles 🙂 {{phone}}",
+        "reserve": "Reserviert die Artikel per E-Mail für den großen Tag – je früher, desto sicherer. Oder ruft einfach an und wir besprechen alles 🙂 <0>{{phone}}</0>",
         "pickup": "Abholung persönlich in Zalakaros zu einem vereinbarten Termin.",
         "ask": "Bei Fragen könnt ihr mich auch gerne anrufen."
       }
@@ -269,10 +265,12 @@
       "pickup": "Abholung",
       "pickupOnly": "nur Selbstabholung",
       "pickupZalakaros": "nur Selbstabholung in Zalakaros",
-      "pieces": "{{count}} Stück",
-      "sets": "{{count}} Sets",
-      "walls": "{{count}} Stück",
-      "available": "{{count}} verfügbar"
+      "pieces_one": "{{count}}\u00a0Stück",
+      "pieces_other": "{{count}}\u00a0Stück",
+      "sets_one": "{{count}}\u00a0Set",
+      "sets_other": "{{count}}\u00a0Sets",
+      "walls_one": "{{count}}\u00a0Stück",
+      "walls_other": "{{count}}\u00a0Stück"
     },
     "units": {
       "occasion": "Anlass",
@@ -294,17 +292,17 @@
       "gold-flower-stands": {
         "name": "Goldene Blumenständer",
         "description": "Unsere Blumenständer aus Metall eignen sich am besten für runde Tische, machen aber auch an langen Tafeln eine gute Figur. Jeder Blumenschmuck ist möglich: frisch, getrocknet oder künstlich.",
-        "notes": "Höhe 70 cm, goldfarben."
+        "notes": "Höhe 70\u00a0cm, goldfarben."
       },
       "cylinder-vase-set": {
         "name": "Zylindervasen-Set",
         "description": "Unser dreiteiliges Glas-Zylindervasen-Set ist eine perfekte Tischdekoration und lässt sich auch als Akzent fast überall einsetzen. Wer Kerzenlicht genießen möchte, verwendet Schwimmkerzen.",
-        "notes": "Stumpenkerzen bitte nicht darin anzünden: Das Wachs läuft in die Vase und lässt sich nicht entfernen – in diesem Fall müssen die Vasen gekauft werden. Maße: 28×8 cm, 23×10 cm, 17×12 cm (Höhe × Durchmesser)."
+        "notes": "Stumpenkerzen bitte nicht darin anzünden: Das Wachs läuft in die Vase und lässt sich nicht entfernen – in diesem Fall müssen die Vasen gekauft werden. Maße: 28×8\u00a0cm, 23×10\u00a0cm, 17×12\u00a0cm (Höhe × Durchmesser)."
       },
       "gold-candle-holder-set": {
         "name": "Goldene Metall-Kerzenständer, Set",
         "description": "Wenn ihr wirklich exklusive Kerzenständer für eure Dekoration sucht, liegt ihr mit diesem Set richtig. Schlank gestaltet, für Stabkerzen, ideal für runde Tische wie für lange Tafeln.",
-        "notes": "In drei Teile zerlegbar und dadurch leicht zu transportieren. Höhen: 23, 28 und 33 cm; Innendurchmesser 2,2 cm."
+        "notes": "In drei Teile zerlegbar und dadurch leicht zu transportieren. Höhen: 23, 28 und 33\u00a0cm; Innendurchmesser 2,2\u00a0cm."
       },
       "champagne-wall": {
         "name": "Sektwand",
@@ -341,6 +339,7 @@
     },
     "facts": {
       "based": "Zalakaros, Komitat Zala (Ungarn)",
+      "styleLabel": "Stil",
       "style": "Natürlich, saisonal, romantisch"
     },
     "cta": {
@@ -377,10 +376,12 @@
       "success": "Danke für eure Nachricht! Ich melde mich bald über die angegebenen Kontaktdaten.",
       "error": "Die Nachricht konnte nicht gesendet werden. Bitte versucht es noch einmal oder schreibt mir direkt per E-Mail.",
       "mailFallback": "Im E-Mail-Programm öffnen",
+      "errorSummary_one": "Ein Feld muss noch korrigiert werden.",
+      "errorSummary_other": "{{count}} Felder müssen noch korrigiert werden.",
       "errors": {
         "required": "Dieses Feld ist erforderlich.",
-        "email": "Bitte gib eine gültige E-Mail-Adresse an.",
-        "consent": "Zum Absenden musst du der Datenschutzerklärung zustimmen.",
+        "email": "Bitte gebt eine gültige E-Mail-Adresse an.",
+        "consent": "Zum Absenden müsst ihr der Datenschutzerklärung zustimmen.",
         "phone": "Bitte nur Ziffern, Leerzeichen und ein führendes + verwenden (6–15 Ziffern).",
         "tooLong": "Maximal {{max}} Zeichen sind möglich."
       }
@@ -393,7 +394,12 @@
     "sections": {
       "form": {
         "title": "Kontaktformular",
-        "body": "Die im Formular angegebenen Daten (Name, E-Mail-Adresse, optional Telefonnummer, Hochzeitsdatum, Veranstaltungsort, Nachricht) verwende ich ausschließlich, um eure Anfrage zu beantworten und ein Angebot zu erstellen. Der Formulardienst leitet die Daten an info.fiorevera@gmail.com weiter, wo ich sie in meinem Postfach höchstens bis zum Ablauf des Angebots aufbewahre, bei Beauftragung bis zum Abschluss des Vertragsverhältnisses. Rechtsgrundlage ist eure Einwilligung, die ihr jederzeit widerrufen könnt."
+        "body": "Die im Formular angegebenen Daten (Name, E-Mail-Adresse, optional Telefonnummer, Hochzeitsdatum, Veranstaltungsort, Nachricht) verwende ich ausschließlich, um eure Anfrage zu beantworten und ein Angebot zu erstellen. Der Formulardienst Web3Forms leitet die Daten an info.fiorevera@gmail.com weiter, wo ich sie in meinem Postfach höchstens bis zum Ablauf des Angebots aufbewahre, bei Beauftragung bis zum Abschluss des Vertragsverhältnisses. Rechtsgrundlage ist eure Einwilligung, die ihr jederzeit widerrufen könnt.",
+        "processor": "Web3Forms (Betreiber: Web3Creative, Indien) handelt als Auftragsverarbeiter. Der Dienst speichert die übermittelten Daten und die beim Absenden erfasste IP-Adresse höchstens drei Jahre in seinem eigenen System; zur Spam-Abwehr erhalten auch seine Partner (CleanTalk, Akismet – USA) eure IP-Adresse und E-Mail-Adresse. Die Übermittlung in Länder außerhalb der Europäischen Union ist durch die Standardvertragsklauseln der Europäischen Kommission (SCC) abgesichert, die Teil des Auftragsverarbeitungsvertrags (DPA) des Dienstes sind."
+      },
+      "hosting": {
+        "title": "Hosting",
+        "body": "Die Website wird von Vercel Inc. (USA) ausgeliefert. Dabei werden eure IP-Adresse und die aufgerufene Seite kurzzeitig in technischen Protokollen gespeichert; die für mich einsehbaren Protokolle bleiben höchstens einen Tag erhalten. Vercel ist unter dem EU-US Data Privacy Framework zertifiziert; Rechtsgrundlage ist das berechtigte Interesse am sicheren Betrieb der Website."
       },
       "storage": {
         "title": "Spracheinstellung",

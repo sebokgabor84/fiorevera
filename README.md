@@ -95,7 +95,7 @@ Per AGENTS.md, every plan must challenge its own assumptions. The risks below we
 - [x] **Locales** — **multilingual HU / EN / DE**, like GaborPortfolio (HU primary). `i18n-guardian` stays multi-locale. *(confirmed)*
 - [x] **Brand palette & typography** — locked in `design-system-expert` (linen / sage / blush / gold; Cormorant Garamond + Inter). *(confirmed 2026-09-26)*
 - [/] **Inspiration references** — seed list (more to come; treated as basic starting points): [akerteszlanya.hu](https://www.akerteszlanya.hu/), [naturalweddingdecor.hu](https://naturalweddingdecor.hu/). Expanded + audited in step 3.
-- [x] **Page list** — **7 pages**: Home, Services, Gallery, Prop Rental, About, Contact, Privacy. Flower Garden **paused** (garden on hold through the dry summers, planned to return; 301 → About, revertible). Routes for HU/DE/EN in PRD D-3. *(confirmed 2026-11-09)*
+- [x] **Page list** — **7 pages**: Home, Services, Gallery, Prop Rental, About, Contact, Privacy. Flower Garden **paused** (garden on hold through the dry summers, planned to return; permanent redirect (308 on Vercel) → About, revertible). Routes for HU/DE/EN in PRD D-3. *(confirmed 2026-11-09)*
 - [x] **Hosting** — **Vercel**, Hobby plan by owner decision (risk accepted in writing, Pro is the fall-back). *(live 2026-11-16; the new site serves `fiorevera.hu` and `www.fiorevera.hu`)*
 - [x] **Content / photography** — reuse the legacy site's ~169 professional wedding photos from the Webnode CDN as a replaceable first set; asset structure built for swapping (PRD D-5, risk R-2). *(confirmed 2026-11-09)*
 - [x] **Rendering** — prerender every route to static HTML at build time to protect current rankings (PRD D-18). *(confirmed 2026-11-09)*

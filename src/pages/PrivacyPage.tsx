@@ -5,7 +5,9 @@ import { SeoHead } from '../components/Seo/SeoHead';
 import { PageHero } from '../components/Common/PageHero';
 import styles from './pages.module.css';
 
-const SECTIONS = ['form', 'storage', 'analytics', 'rights'] as const;
+const SECTIONS = ['form', 'hosting', 'storage', 'analytics', 'rights'] as const;
+/** Sections with a second paragraph (the named processor, GDPR Art. 13(1)(e)). */
+const EXTRA: Partial<Record<(typeof SECTIONS)[number], string>> = { form: 'processor' };
 
 /** Localized data-processing notice (PRD D-2/D-4/D-10, MASTER-PLAN 2.11). */
 export const PrivacyPage = () => {
@@ -24,6 +26,7 @@ export const PrivacyPage = () => {
           <section key={s} className={styles.privacySection}>
             <h2>{t(`privacy.sections.${s}.title`)}</h2>
             <p>{t(`privacy.sections.${s}.body`)}</p>
+            {EXTRA[s] && <p>{t(`privacy.sections.${s}.${EXTRA[s]}`)}</p>}
           </section>
         ))}
       </div>

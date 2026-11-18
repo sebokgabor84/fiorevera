@@ -1,4 +1,5 @@
-import { useTranslation } from 'react-i18next';
+import type { ReactNode } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import { useLocale } from '../i18n/localeContext';
 import { rentalItems } from '../data/rentalItems';
 import { contact } from '../data/contact';
@@ -9,6 +10,13 @@ import rentalStyles from '../components/Rental/rental.module.css';
 import styles from './pages.module.css';
 
 const HOW_TO = ['choose', 'reserve', 'pickup', 'ask'] as const;
+
+/** The phone number inside the "reserve" step (`<0>…</0>` in the copy): a tel: link like everywhere else. */
+const TelLink = ({ children }: { children?: ReactNode }) => (
+  <a href={contact.phoneHref} className={rentalStyles.tel}>
+    {children}
+  </a>
+);
 
 /** Data-driven rental catalog, identical in all locales (PRD D-8, MASTER-PLAN 2.6). */
 export const RentalPage = () => {
@@ -25,7 +33,9 @@ export const RentalPage = () => {
           <h2 style={{ fontSize: 'var(--fs-xl)' }}>{t('rental.howTo.title')}</h2>
           <ol className={rentalStyles.howTo}>
             {HOW_TO.map((k) => (
-              <li key={k}>{t(`rental.howTo.steps.${k}`, { phone: contact.phoneDisplay })}</li>
+              <li key={k}>
+                <Trans i18nKey={`rental.howTo.steps.${k}`} values={{ phone: contact.phoneDisplay }} components={[<TelLink key="tel" />]} />
+              </li>
             ))}
           </ol>
           {locale !== 'hu' && <p className={rentalStyles.note}>{t('rental.currencyNote')}</p>}

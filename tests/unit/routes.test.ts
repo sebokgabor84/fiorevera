@@ -40,10 +40,24 @@ describe('route table (PRD D-3)', () => {
     expect(alts.at(-1)?.href).toBe('https://www.fiorevera.hu/kellekberles/');
   });
 
-  it('301s the garden pages to About (D-16)', () => {
+  it('redirects the garden pages permanently to About (D-16; 308 on Vercel)', () => {
     expect(REDIRECTS).toEqual([
       { from: '/viragoskert/', to: '/rolunk/' },
       { from: '/de/blumengarten/', to: '/de/uebermich/' },
     ]);
+  });
+});
+
+describe('letter case in the path (QA minor: /DE/kontakt/ answered the Hungarian 404)', () => {
+  it('resolves the locale prefix whatever its case', () => {
+    expect(localeFromPath('/DE/kontakt/')).toBe('de');
+    expect(localeFromPath('/En/')).toBe('en');
+    expect(localeFromPath('/Kapcsolat/')).toBe('hu');
+  });
+
+  it('matches a route written in upper case to the same page', () => {
+    expect(matchRoute('/DE/Kontakt/')).toEqual({ locale: 'de', page: 'contact' });
+    expect(matchRoute('/EN/RENTALS')).toEqual({ locale: 'en', page: 'rental' });
+    expect(matchRoute('/DE/gibt-es-nicht/')).toEqual({ locale: 'de', page: null });
   });
 });
