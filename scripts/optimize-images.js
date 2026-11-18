@@ -18,7 +18,11 @@
  * album. The dimension manifest src/data/generated/imageMeta.ts is rewritten
  * on every run. Idempotent: unchanged sources are skipped (mtime check).
  *
- * Usage: node scripts/optimize-images.js [--force]
+ * Usage: node scripts/optimize-images.js [--force] [--tier=full|medium|small]
+ *   --force        re-encode every tier of every photo (ignores the mtime check)
+ *   --tier=small   re-encode only that tier of every photo (e.g. after changing its quality
+ *                  ceiling) and leave the other tiers' files byte-identical — keeps the git diff
+ *                  to the files that actually changed (web-vitals 2026-11-16)
  */
 import { readdir, stat, mkdir, unlink, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -36,6 +40,8 @@ const SMALL_EDGE = 800;
 const TIER_QUALITY = { full: 82, medium: 76, small: 70 };
 const BRAND_SMALL_EDGE = 240;
 const FORCE = process.argv.includes('--force');
+const TIER = (process.argv.find((a) => a.startsWith('--tier=')) ?? '').slice('--tier='.length) || null;
+if (TIER && !['full', 'medium', 'small'].includes(TIER)) throw new Error(`--tier must be full, medium or small (got "${TIER}")`);
 const IMAGE_RE = /\.(jpe?g|png|webp|tiff?|heic)$/i;
 
 const slugify = (s) =>
@@ -142,14 +148,17 @@ const processSlot = async (slotRel, { brand = false } = {}) => {
     const small = path.join(outDir, `${name}-w800.webp`);
     expected.add(path.basename(medium));
     expected.add(path.basename(small));
-    let m;
-    if ((await isFresh(src, full)) && (await isFresh(src, medium)) && (await isFresh(src, small))) m = await dims(full);
+    // --tier=X re-encodes exactly that tier; otherwise a stale (or missing) output re-encodes all three.
+    let todo;
+    if (TIER) todo = { full: TIER === 'full', medium: TIER === 'medium', small: TIER === 'small' };
     else {
-      m = await encodePhoto(src, full, FULL_EDGE, TIER_QUALITY.full);
-      await encodePhoto(src, medium, MEDIUM_EDGE, TIER_QUALITY.medium);
-      await encodePhoto(src, small, SMALL_EDGE, TIER_QUALITY.small);
-      done++;
+      const stale = !((await isFresh(src, full)) && (await isFresh(src, medium)) && (await isFresh(src, small)));
+      todo = { full: stale, medium: stale, small: stale };
     }
+    const m = todo.full ? await encodePhoto(src, full, FULL_EDGE, TIER_QUALITY.full) : await dims(full);
+    if (todo.medium) await encodePhoto(src, medium, MEDIUM_EDGE, TIER_QUALITY.medium);
+    if (todo.small) await encodePhoto(src, small, SMALL_EDGE, TIER_QUALITY.small);
+    if (todo.full || todo.medium || todo.small) done++;
     entries.push({
       src: publicFull,
       srcMedium: `/assets/${slotRel}/${name}-w1280.webp`,

@@ -22,6 +22,7 @@ interface ServerEntry {
 const DIST = path.resolve('dist');
 const SSR_ENTRY = path.resolve('dist-ssr/entry-server.js');
 const HEAD_TAG_RE = /<(title|meta|link)\b[^>]*>(?:[^<]*<\/title>)?/g;
+const STYLESHEET_RE = /<link rel="stylesheet" crossorigin href="(\/assets\/[^"]+\.css)">/;
 const NOSCRIPT_RE = /(<p data-noscript>)[^<]*(<\/p>)/;
 
 const noscriptText = (locale: Locale): string => {
@@ -50,8 +51,18 @@ const splitHoistables = (markup: string): { head: string; body: string } => {
 };
 
 const main = async () => {
-  const template = readFileSync(path.join(DIST, 'index.html'), 'utf8');
+  let template = readFileSync(path.join(DIST, 'index.html'), 'utf8');
   if (!template.includes('<!--app-html-->')) throw new Error('dist/index.html lacks <!--app-html--> marker');
+  // Inline the single stylesheet (≈ 7 KB gzipped): on slow 4G the extra render-blocking request cost
+  // ≈ 150–300 ms of FCP (web-vitals 2026-11-16, docs/qa/web-vitals-log.md). The .css file stays in
+  // dist/assets for anything that still links it.
+  const css = STYLESHEET_RE.exec(template);
+  if (!css) throw new Error('dist/index.html has no <link rel="stylesheet"> to inline');
+  template = template.replace(STYLESHEET_RE, `<style>${readFileSync(path.join(DIST, css[1]), 'utf8').trim()}</style>`);
+  // The page is complete static HTML; hydration can wait behind the fonts and the hero image.
+  // Measured on slow 4G: FCP 1.8 → 0.9 s, LCP 3.16 → 3.01 s, time-to-interactive unchanged (3.1 s).
+  if (!/<script type="module" crossorigin src=/.test(template)) throw new Error('dist/index.html has no module script to deprioritise');
+  template = template.replace('<script type="module" crossorigin src=', '<script type="module" crossorigin fetchpriority="low" src=');
   const { render } = (await import(pathToFileURL(SSR_ENTRY).href)) as ServerEntry;
 
   const targets = allRoutes().map(({ path: p }) => ({ url: p, out: path.join(DIST, p, 'index.html') }));
