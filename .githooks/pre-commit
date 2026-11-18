@@ -1,9 +1,27 @@
 #!/bin/sh
-# Pre-commit: when component code, styles, the HTML shell or the visual specs are staged, run the
-# visual regression suite against a fresh production build. A red run blocks the commit until the
-# diff was reviewed (npm run visual:review) and either the code is fixed or the owner approved the
-# new look (npm run test:visual:update -- --approved-by="<name>" --note="…").
+# Pre-commit.
+# 1. FV-GUARD: refuses a commit on main. Vercel deploys production from every push to main, so
+#    work is committed on a branch and reaches main only through a pull request the owner merges
+#    (.agent/skills/release-manager/SKILL.md).
+# 2. When component code, styles, the HTML shell or the visual specs are staged, runs the visual
+#    regression suite against a fresh production build. A red run blocks the commit until the
+#    diff was reviewed (npm run visual:review) and either the code is fixed or the owner approved
+#    the new look (npm run test:visual:update -- --approved-by="<name>" --note="…").
+# Emergency bypass for the owner, in his own terminal only: FV_SKIP_HOOKS=1 git commit …
 if [ "$FV_SKIP_HOOKS" = "1" ]; then exit 0; fi
+
+branch=$(git symbolic-ref --short -q HEAD || true)
+case "$branch" in
+  main | master)
+    echo ""
+    echo "pre-commit: REFUSED — you are on '$branch', and '$branch' is production."
+    echo "    Nothing was committed. Move the work to a branch (staged changes travel with you):"
+    echo "        git switch -c <feature|fix|chore|docs|content>/<short-desc>"
+    echo "    then commit again. Rules: .agent/skills/release-manager/SKILL.md"
+    exit 1
+    ;;
+esac
+
 if git diff --cached --name-only | grep -Eq '^(src/|index\.html$|public/fonts/|tests/visual/)'; then
   echo "pre-commit: UI files staged → build + visual regression"
   npm run build >/dev/null 2>&1 || { echo "pre-commit: build failed"; exit 1; }

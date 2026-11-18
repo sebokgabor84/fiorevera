@@ -1,0 +1,132 @@
+#!/usr/bin/env bash
+# Release-guard self-test: replays the dangerous moves against THIS checkout's hooks inside a
+# throw-away repository (own bare "origin", stub npm gates) and prints what each guard answered.
+# Run after any change to .claude/hooks/ or .githooks/:   npm run release:selftest
+# It touches nothing outside its temp folder. Exit 1 when a guard did not behave as expected.
+# Add -v to print every refusal text, not only the first line.
+
+set -u
+verbose=0
+[ "${1:-}" = "-v" ] && verbose=1
+src="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+tmp="$(mktemp -d "${TMPDIR:-/tmp}/fv-release-selftest.XXXXXX")"
+trap 'rm -rf "$tmp"' EXIT
+pass=0
+fail=0
+
+ok() { pass=$((pass + 1)); printf '  PASS  %s\n' "$1"; }
+bad() { fail=$((fail + 1)); printf '  FAIL  %s\n' "$1"; }
+show() { # print the guard's own words
+  if [ "$verbose" = 1 ]; then printf '%s\n' "$1" | sed 's/^/        | /'; else printf '%s\n' "$1" | grep -m1 -E 'REFUSED|BLOCKED|gates skipped' | cut -c1-150 | sed 's/^/        | /'; fi
+}
+
+# --- scratch repository ---------------------------------------------------------------------------
+export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null
+unset FV_SKIP_HOOKS
+git init -q --bare "$tmp/origin.git"
+git init -q -b main "$tmp/repo"
+cd "$tmp/repo" || exit 1
+git config user.name selftest && git config user.email selftest@example.invalid
+git remote add origin "$tmp/origin.git"
+mkdir -p .claude/hooks .githooks
+cp "$src"/.claude/hooks/*.sh .claude/hooks/
+cp "$src"/.githooks/* .githooks/
+cat >package.json <<'JSON'
+{ "name": "fv-selftest", "private": true, "scripts": {
+  "lint": "echo GATE-lint", "test": "sh -c 'echo GATE-unit'", "audit:gdpr": "echo GATE-gdpr",
+  "build": "echo GATE-build", "test:visual": "echo GATE-visual" } }
+JSON
+printf 'secret.local\n' >.gitignore
+echo one >page.txt
+git add -A && git commit -q -m "seed" # hooks not installed yet: the seed commit lands on main
+git push -q origin main
+git config core.hooksPath .githooks
+
+edit_guard() { jq -n --arg f "$1" --arg c "$tmp/repo" '{tool_name:"Edit",cwd:$c,tool_input:{file_path:$f}}' | .claude/hooks/guard-main-edit.sh; }
+bash_guard() { jq -n --arg cmd "$1" --arg c "$tmp/repo" '{tool_name:"Bash",cwd:$c,tool_input:{command:$cmd}}' | .claude/hooks/guard-bash.sh; }
+expect_deny() { # label, output
+  if printf '%s' "$2" | grep -q '"permissionDecision": *"deny"'; then ok "$1"; show "$(printf '%s' "$2" | jq -r '.hookSpecificOutput.permissionDecisionReason')"; else bad "$1 — expected a deny, got: ${2:-<no output>}"; fi
+}
+expect_quiet() { if [ -z "$2" ]; then ok "$1"; else bad "$1 — expected no objection, got: $2"; fi; }
+expect_refused() { # label, exit code, output
+  if [ "$2" -ne 0 ] && printf '%s' "$3" | grep -q 'REFUSED'; then ok "$1"; show "$3"; else bad "$1 — expected a refusal, exit=$2: $3"; fi
+}
+
+echo "1. Claude edit guard (.claude/hooks/guard-main-edit.sh)"
+expect_deny "Edit of a tracked file on main is denied" "$(edit_guard "$tmp/repo/page.txt")"
+expect_deny "Write of a NEW file in a new folder on main is denied" "$(edit_guard "$tmp/repo/src/new/thing.ts")"
+expect_quiet "git-ignored file on main is left alone" "$(edit_guard "$tmp/repo/secret.local")"
+expect_quiet "file outside the repository is left alone" "$(edit_guard "$tmp/elsewhere.txt")"
+
+echo "2. Git hooks on main (.githooks/)"
+echo two >>page.txt && git add page.txt
+out="$(git commit -m "direct commit on main" 2>&1)"; expect_refused "git commit on main is refused" $? "$out"
+git reset -q --hard # drop the refused change
+out2="$(FV_SKIP_HOOKS=1 git commit -q --allow-empty -m "owner emergency" 2>&1)"; c2=$?
+[ "$c2" -eq 0 ] && ok "FV_SKIP_HOOKS=1 still lets the owner commit on main (emergency switch)" || bad "FV_SKIP_HOOKS=1 commit failed: $out2"
+out="$(git push origin main 2>&1)"; expect_refused "git push origin main is refused" $? "$out"
+out="$(git push origin :main 2>&1)"; expect_refused "deleting main on origin is refused" $? "$out"
+git reset -q --hard origin/main
+
+echo "3. The same moves on a feature branch"
+git switch -q -c feature/selftest
+expect_quiet "Edit on a feature branch is left alone" "$(edit_guard "$tmp/repo/page.txt")"
+echo three >>page.txt && git add page.txt
+out="$(git commit -m "work on a branch" 2>&1)" && ok "git commit on a feature branch works" || bad "commit on a branch failed: $out"
+out="$(git push origin HEAD:main 2>&1)"; expect_refused "git push origin HEAD:main from a branch is refused" $? "$out"
+out="$(git push -u origin feature/selftest 2>&1)"; code=$?
+gates="$(printf '%s\n' "$out" | grep -E '^GATE-[a-z]+$' | tr '\n' ' ')" # npm also echoes the script line
+if [ "$code" -eq 0 ] && [ "$gates" = "GATE-lint GATE-unit GATE-gdpr GATE-build GATE-visual " ]; then ok "push of a branch runs the gates in order: $gates"; else bad "branch push: exit=$code gates='$gates'"; fi
+out="$(git push origin --delete feature/selftest 2>&1)"; code=$?
+if [ "$code" -eq 0 ] && printf '%s' "$out" | grep -q 'gates skipped' && ! printf '%s' "$out" | grep -q 'GATE-'; then ok "a push that only deletes a branch skips the gates"; show "$out"; else bad "delete push: exit=$code: $out"; fi
+
+echo "4. Merge commit on main (.githooks/pre-merge-commit)"
+git switch -q main
+echo other >other.txt && git add other.txt && FV_SKIP_HOOKS=1 git commit -q -m "diverge (test setup)"
+out="$(git merge --no-edit feature/selftest 2>&1)"; expect_refused "a merge commit on main is refused" $? "$out"
+git merge --abort 2>/dev/null
+git reset -q --hard origin/main
+
+echo "5. Claude Bash guard (.claude/hooks/guard-bash.sh), while on main"
+while IFS='|' read -r want cmd; do
+  [ -z "$want" ] && continue
+  res="$(bash_guard "$cmd")"
+  if [ "$want" = "deny" ]; then expect_deny "denied:  $cmd" "$res"; else expect_quiet "allowed: $cmd" "$res"; fi
+done <<'CASES'
+deny|git push origin main
+deny|rtk git push origin HEAD:main
+deny|git push origin feature/x:refs/heads/main
+deny|git push origin --delete main
+deny|git push --all origin
+deny|git push --force-with-lease origin feature/x
+deny|git push -f origin feature/x
+deny|git push origin +feature/x
+deny|git commit --no-verify -m "quick fix"
+deny|git commit -nm "quick fix"
+deny|FV_SKIP_HOOKS=1 git push origin feature/x
+deny|export FV_SKIP_HOOKS=1 && git commit -m x
+deny|git -c core.hooksPath=/dev/null commit -m x
+deny|git config core.hooksPath /tmp/none
+deny|git config --unset core.hooksPath
+deny|git merge feature/x
+deny|cd /tmp && npx vercel --prod
+deny|vercel promote https://example.vercel.app
+deny|vercel rollback
+allow|git push -u origin feature/x
+allow|git push origin --delete feature/x
+allow|git push -u origin feature/main-menu
+allow|git commit -m "docs: never push to main with --no-verify or FV_SKIP_HOOKS=1"
+allow|git commit --amend --no-edit
+allow|git config --get core.hooksPath
+allow|git config core.hooksPath
+allow|git merge --ff-only origin/main
+allow|grep -rn "FV_SKIP_HOOKS=1" .githooks
+allow|git log --oneline -5 main
+allow|git diff main...HEAD
+allow|vercel --version
+allow|npm run build && npm test -- --run
+CASES
+
+echo ""
+echo "release selftest: $pass passed, $fail failed"
+[ "$fail" -eq 0 ]

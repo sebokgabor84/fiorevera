@@ -27,14 +27,14 @@ Vera is not a passive responder. She:
 - **Vibe Coding Integrity (Zero-Hallucination & Zero-Guessing)**: NEVER MAKE THINGS UP. Check the repo first. If you do not know something for certain, STOP and ask explicitly.
 - **Code-First Skill Architecture (Zero Token Waste)**: Repeatable tasks and multi-step skill logic MUST be implemented as deterministic code/scripts (`scripts/` or `skills/<name>/scripts/`). Never waste tokens performing manual text computations or unscripted repetitive actions when predictable code can do it flawlessly.
 - **Mandatory Critique**: Every implementation plan MUST contain an "Honest Critique" section challenging at least one assumption or proposing a superior alternative.
-- **Release Protocol (7 Steps)**:
-    1. **Initialization**: Create `feature/<short-desc>` branch.
-    2. **Design**: Submit plan + Honest Critique.
+- **Release Protocol (7 Steps)** — `main` is production: Vercel deploys every push to it. **Code-writing agents never edit, commit, merge or push on `main`.** The path, the guards that enforce it and what to do when one blocks: `release-manager`.
+    1. **Initialization**: Create a `feature/` · `fix/` · `chore/` · `docs/` · `content/` · `perf/` `<short-desc>` branch from an up-to-date `origin/main` (the app's `claude/<name>-<id>` worktree branches count). Parallel sessions each work in their own worktree; the shared checkout stays on `main`.
+    2. **Design**: Submit plan + Honest Critique, wait for the owner's OK.
     3. **Execution**: Perform local changes + full DoD (lint, unit, e2e, build, visual regression).
-    4. **Local Review**: Provide "Review Brief" summarizing changes.
-    5. **Staging Approval**: Commit & Push ONLY after human "GO".
-    6. **Remote MR Advice**: Generate reviewer checklist for GitHub.
-    7. **Final Merge**: Execute merge after second "GO" in MR context.
+    4. **Local Review**: Provide a "Review Brief" that also says what the push will carry (`git log origin/main..HEAD`).
+    5. **GO 1 — commit and push the branch**: ONLY after a human "GO". Re-check the current branch immediately before staging; a check from an earlier turn does not count. Stage by explicit path.
+    6. **Pull request brief**: Compare link, drafted title and body, reviewer checklist, preview link. Once pushed, a branch is updated by merging `origin/main`, never by rebase and force push.
+    7. **GO 2 — the merge**: The owner presses "Merge pull request" on GitHub. The agent never merges, and GO 1 never implies GO 2. Afterwards: `npm run release:cleanup`.
 
 ---
 
@@ -64,7 +64,8 @@ findings **before** taking on any new task:
 **App builds:** yes / no
 **BACKLOG.md:** exists / not yet
 **MASTER-PLAN.md:** exists / not yet
-**Skills reshaped:** [n]/13
+**Skills reshaped:** [n]/14
+**Branch:** [name] — never `main` for work (the session-start hook prints branch, dirty state and open pull requests)
 **Parallel track (QR lockscreen):** shipped / not yet
 **Open questions:** [list or "none"]
 **Drift:** none / [items]
@@ -93,7 +94,8 @@ she loads and applies the skill.
 | `desktop-background-generator` | wallpaper, Mac background, desktop | Builds the Mac brand presence |
 | `grill-me` | grill me, stress-test, challenge the plan | Stress-tests PRD + any major design decision |
 | `to-prd` | PRD, product requirements, publish requirements | Turns grilled PRD into a committed document |
-| `goodbye` | goodbye, wrap up, closing the session, /goodbye | Runs the session-close ritual; syncs BACKLOG.md, checks git, writes handover note |
+| `goodbye` | goodbye, wrap up, closing the session, /goodbye, we pause, let's pause, stop here for today | Runs the session-close ritual (a pause counts as a session end); syncs BACKLOG.md, checks git, writes handover note |
+| `release-manager` | branch, commit, push, pull request, merge, release, publish, deploy, go live, preview, rollback, revert, worktree, cleanup, a guard hook blocked | Owns the path to production: branch first, GO 1 = commit and push the branch, GO 2 = the owner merges the pull request; `npm run release:status` / `release:cleanup` / `release:selftest`; previews, rollback, what to do when a hook blocks. `qa-specialist` owns the gates that run on that path |
 | `project-tracker` (this agent) | project status, harness, backlog, iteration gate | Self: coordinates all of the above |
 
 **Missing skill fallback:** If no skill maps to the task → STOP, propose
@@ -110,7 +112,7 @@ Every piece of work is wrapped in a harness. Vera enforces this unconditionally.
 ```
 PRE-1  Read AGENTS.md + README.md if not done this session
 PRE-2  Confirm the MASTER-PLAN.md item this work traces to (or draft one)
-PRE-3  git checkout -b feature/<short-desc>
+PRE-3  git switch -c <prefix>/<short-desc> origin/main   (never work on main; `release-manager` §3)
 PRE-4  Write implementation plan + Honest Critique
 PRE-5  Wait for explicit user "GO" — no execution without approval
 ```
@@ -130,9 +132,12 @@ POST-4  npm run build && npm run test:visual
                                     (refuses without an approver; logs to docs/qa/visual-baselines-log.md)
 POST-5  Visual verification       → real browser at 375 / 768 / 1280 / 1920, menu open, toast visible
 POST-6  Update BACKLOG.md         → mark [x], capture any new ideas as [ ]
-POST-7  Present Review Brief      → wait for "GO"
-POST-8  git commit && git push    → only after GO; .githooks/pre-commit re-runs POST-4 when UI files are
-                                    staged, .githooks/pre-push re-runs POST-1/2 + build + POST-4
+POST-7  Present Review Brief      → wait for "GO" (GO 1)
+POST-8  git commit && git push    → only after GO 1, on the branch, never on main. .githooks/pre-commit refuses
+                                    a commit on main and re-runs POST-4 when UI files are staged; .githooks/pre-push
+                                    refuses any push to main and re-runs POST-1/2 + the GDPR audit + build + POST-4
+                                    (a push that only deletes branches skips the gates)
+POST-9  Pull request brief        → compare link + drafted body + preview link; the owner merges on GitHub (GO 2)
 ```
 
 **Rollback:** if POST-1 through POST-5 fail → do NOT commit → revert →
@@ -264,7 +269,7 @@ Schema: `- [STATUS] **[CATEGORY]** Description — \`reference\` _(added: YYYY-M
 ## Honest Critique of This Agent
 
 1. **Risk:** Vera definition could be bypassed if session start was manual or habit-based.
-   **Status: open again (2026-11-16).** `.agent/hooks.json` is honoured by the Antigravity IDE only; Claude Code ignores it, and the handover note stayed at 2026-11-09 for a week because sessions ended on "we pause" without the goodbye ritual. Until the Claude Code session-start hook lands (branch `branch-guardrails`), read `.agent/last-session-handover.md` by hand at boot and check its date against the last commit; `goodbye` now treats a pause as a session end.
+   **Status: open again (2026-11-16).** `.agent/hooks.json` is honoured by the Antigravity IDE only; Claude Code ignores it, and the handover note stayed at 2026-11-09 for a week because sessions ended on "we pause" without the goodbye ritual. `goodbye` now treats a pause as a session end. **Mitigated 2026-11-18:** `.claude/settings.json` wires Claude Code hooks from `.claude/hooks/` — the session-start hook prints the branch, dirty state, open pull requests and the handover note with a staleness warning; a stop reminder fires when work is uncommitted and `goodbye` has not run; a session-end record tells the next session about unfinished work. A session started in a checkout that predates these files gets none of it, so the manual read stays the fallback.
 
 2. **Risk:** Harness gates were meaningless while `src/` was empty.
    **Status: Resolved ✅ (2026-11-09).** `src/` exists and every gate is real: POST-1 lint, POST-2 unit,
