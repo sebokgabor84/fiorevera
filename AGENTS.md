@@ -112,7 +112,7 @@ Every piece of work is wrapped in a harness. Vera enforces this unconditionally.
 ```
 PRE-1  Read AGENTS.md + README.md if not done this session
 PRE-2  Confirm the MASTER-PLAN.md item this work traces to (or draft one)
-PRE-3  git switch -c <prefix>/<short-desc> origin/main   (never work on main; `release-manager` §3)
+PRE-3  git switch -c <prefix>/<short-desc> --no-track origin/main   (never work on main; `release-manager` §3)
 PRE-4  Write implementation plan + Honest Critique
 PRE-5  Wait for explicit user "GO" — no execution without approval
 ```

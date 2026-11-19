@@ -28,12 +28,12 @@ Session hooks: `session-start.sh` prints branch, dirty state, open pull requests
 | Command | Use |
 |---|---|
 | `npm run release:status` (`-- --fetch`, `-- --previews`, `-- --json`) | Branch, ahead/behind, open pull requests, every branch and worktree with a keep/delete verdict, hook health. Run it before GO 1, before cleanup and whenever unsure |
-| `npm run release:cleanup` (`-- --apply <branch>`) | Dry run by default. Deletes a merged branch: worktree, local, origin. Refuses a dirty worktree or one a process is still working in |
+| `npm run release:cleanup` (`-- --apply <branch>`) | Dry run by default. Deletes a merged branch: worktree, local, origin. Refuses a dirty worktree, one a process is still working in, and a branch checked out in the shared checkout |
 | `npm run release:selftest` (`-v`) | Replays the forbidden moves in a throw-away repository and prints each refusal. Run after any change to `.claude/hooks/` or `.githooks/` |
 
 ## 3. The path (maps to the 7-step Release Protocol in `AGENTS.md`)
 
-1. **Branch.** `git switch -c <prefix>/<short-desc> origin/main` after `git fetch`. Prefixes: `feature/`, `fix/`, `chore/`, `docs/`, `content/` (text, photo and price changes), `perf/`; the app's own `claude/<name>-<id>` worktree branches count as well.
+1. **Branch.** `git switch -c <prefix>/<short-desc> --no-track origin/main` after `git fetch` (`--no-track`: otherwise the new branch's upstream is `origin/main`). Prefixes: `feature/`, `fix/`, `chore/`, `docs/`, `content/` (text, photo and price changes), `perf/`; the app's own `claude/<name>-<id>` worktree branches count as well.
 2. **Plan + Honest Critique**, wait for the owner's OK (AGENTS.md PRE-4/5).
 3. **Build + gates** (POST-1…5; `qa-specialist` owns the gates).
 4. **Review Brief.** Say what the push will carry: `rtk proxy git log --oneline origin/main..HEAD` and `rtk proxy git status --porcelain`.
@@ -65,7 +65,7 @@ Vercel builds every pushed branch (on by default) and comments the preview URLs 
 | Situation | Path |
 |---|---|
 | The live site is broken now | Owner: Vercel → project → Production Deployment → **Instant Rollback**. Hobby plan: only to the immediately previous deployment. Afterwards Vercel stops putting new `main` pushes live until the owner undoes it (**Manage** → pick the deployment → Confirm) |
-| A merged change must go | `git switch -c fix/revert-<what> origin/main`, `git revert -m 1 <merge-sha>`, gates, GO 1, pull request, GO 2 |
+| A merged change must go | `git switch -c fix/revert-<what> --no-track origin/main`, `git revert -m 1 <merge-sha>`, gates, GO 1, pull request, GO 2 |
 | Never | `git reset` or a force push on `main`; pointing DNS back at Webnode (`docs/operations/runbook.md`) |
 
 ## 8. When a hook blocks

@@ -39,7 +39,14 @@ async function github(slug, query) {
       signal: AbortSignal.timeout(6000),
     });
     const body = await res.json();
-    return Array.isArray(body) ? body : { error: body.message ?? `HTTP ${res.status}` };
+    if (Array.isArray(body)) return body;
+    // GitHub's own text names the caller's IP address: keep that out of reports
+    const limited = /rate limit/i.test(body.message ?? '');
+    return {
+      error: limited
+        ? 'rate limit reached (60 requests an hour without a login); try again within the hour'
+        : (body.message ?? `HTTP ${res.status}`),
+    };
   } catch (e) {
     return { error: `GitHub not reachable (${e.name})` };
   }
@@ -108,7 +115,7 @@ export async function collect({ cwd = process.cwd(), fetchFirst = false, preview
   const worktrees = (g('worktree', 'list', '--porcelain') ?? '')
     .split('\n\n')
     .filter(Boolean)
-    .map((block) => {
+    .map((block, index) => {
       const get = (k) =>
         block
           .split('\n')
@@ -123,6 +130,8 @@ export async function collect({ cwd = process.cwd(), fetchFirst = false, preview
           ? (git(['status', '--porcelain'], wt) ?? '').split('\n').filter(Boolean).length
           : 0,
         current: wt === top,
+        // git lists the main working tree first: the shared checkout, which is never removed
+        shared: index === 0,
       };
     });
 
@@ -178,7 +187,15 @@ export async function collect({ cwd = process.cwd(), fetchFirst = false, preview
         ...verdict(name, sha, Boolean(wt)),
       };
     });
-  const remotes = remoteBranches.map((r) => ({ ...r, ...verdict(r.name, r.sha, false) }));
+  // a branch on origin counts as in use while its local twin is checked out in a worktree
+  const remotes = remoteBranches.map((r) => ({
+    ...r,
+    ...verdict(
+      r.name,
+      r.sha,
+      worktrees.some((w) => w.branch === r.name)
+    ),
+  }));
 
   const hooksPath = g('config', '--get', 'core.hooksPath');
   const hooksDir = hooksPath ? path.resolve(top, hooksPath) : null;
@@ -262,7 +279,7 @@ function print(s) {
   line('Worktrees');
   s.worktrees.forEach((w) =>
     line(
-      `  ${w.current ? '→' : ' '} ${w.path}  [${w.branch}]  ${w.dirty ? `${w.dirty} uncommitted` : 'clean'}${w.prunable ? '  ⚠ folder is gone: git worktree prune' : ''}`
+      `  ${w.current ? '→' : ' '} ${w.path}  [${w.branch}]  ${w.dirty ? `${w.dirty} uncommitted` : 'clean'}${w.shared ? (PRODUCTION.includes(w.branch) ? '  (shared checkout)' : '  ⚠ shared checkout is not on main: app worktrees run ITS git hooks') : ''}${w.prunable ? '  ⚠ folder is gone: git worktree prune' : ''}`
     )
   );
   line();
