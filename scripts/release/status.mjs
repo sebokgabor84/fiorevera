@@ -233,7 +233,7 @@ function print(s) {
   s.dirty.slice(0, 10).forEach((d) => line(`                  ${d}`));
   if (s.base)
     line(
-      `  vs ${s.base}  ${s.ahead} ahead, ${s.behind} behind${s.behind ? '   → git merge origin/main (never rebase a pushed branch)' : ''}`
+      `  vs ${s.base}  ${s.ahead} ahead, ${s.behind} behind${s.behind ? '   → git rebase origin/main (hard rule: rebase, never merge main in)' : ''}`
     );
   line(
     `  upstream      ${s.upstream ? `${s.upstream}, ${s.unpushed} commit(s) not pushed` : 'none (branch is not on origin)'}`
