@@ -6,6 +6,12 @@ import { albumAlt, albumImages, albumTitle, albumVenue } from '../../lib/albums'
 import { Picture } from '../Common/Picture';
 import styles from './gallery.module.css';
 
+/** Slide the track is on (or nearest to). */
+const positionOf = (track: HTMLUListElement): number => Math.round(track.scrollLeft / track.clientWidth);
+/** Frames without movement before a move counts as cut short (≈ 0.2 s at 60 Hz), and how often it is restarted. */
+const REST_FRAMES = 12;
+const MAX_RESTARTS = 3;
+
 interface Props {
   album: Album;
   /** First album on the page → eager first slide (LCP). */
@@ -34,6 +40,12 @@ export const AlbumSection = ({ album, priority = false }: Props) => {
   const [near, setNear] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLUListElement>(null);
+  /** The slide shown by the counter — the same value as `index`, readable in handlers without a stale closure. */
+  const shownRef = useRef(0);
+  /** The slide an arrow or key press is animating towards; null while the track rests or is moved by hand. */
+  const targetRef = useRef<number | null>(null);
+  /** requestAnimationFrame handle of the arrival check that runs while a move is in flight. */
+  const arrivalFrame = useRef(0);
   const statusId = useId();
   const title = albumTitle(album, t);
   const venue = albumVenue(album, t);
@@ -64,23 +76,75 @@ export const AlbumSection = ({ album, priority = false }: Props) => {
     if (track && slide) track.scrollTo({ left: slide.offsetLeft, behavior: 'smooth' });
   }, []);
 
+  const show = useCallback((i: number) => {
+    shownRef.current = i;
+    setIndex(i);
+  }, []);
+
+  // A browser may drop a smooth scroll half-way: Chromium and WebKit do when the scroll container takes
+  // focus (measured 2026-11-19: arrow click, then focus on the track — the track stayed where it was).
+  // So while a move is in flight, check once per frame that it is still moving; if the track has rested
+  // short of its target for about a fifth of a second, start the move again. After three attempts the
+  // counter is set to where the track really is — it never shows a photo that is not on screen.
+  const ensureArrival = useCallback(() => {
+    let lastLeft = -1;
+    let framesAtRest = 0;
+    let restarts = 0;
+    const tick = () => {
+      const track = trackRef.current;
+      const target = targetRef.current;
+      if (!track || target === null) return; // arrived (onScroll) or taken over by hand
+      if (track.scrollLeft !== lastLeft) {
+        lastLeft = track.scrollLeft;
+        framesAtRest = 0;
+      } else if (++framesAtRest >= REST_FRAMES) {
+        framesAtRest = 0;
+        if (positionOf(track) === target || ++restarts > MAX_RESTARTS) {
+          targetRef.current = null;
+          show(positionOf(track));
+          return;
+        }
+        scrollTo(target);
+      }
+      arrivalFrame.current = requestAnimationFrame(tick);
+    };
+    cancelAnimationFrame(arrivalFrame.current);
+    arrivalFrame.current = requestAnimationFrame(tick);
+  }, [scrollTo, show]);
+
+  useEffect(() => () => cancelAnimationFrame(arrivalFrame.current), []);
+
+  // Arrows and keys: the counter shows the destination at once and the track animates to it. A second
+  // press during the animation continues from that destination, not from wherever the track happens to be.
   const go = useCallback(
     (delta: number) => {
-      setIndex((i) => {
-        const next = (i + delta + total) % total;
-        scrollTo(next);
-        return next;
-      });
+      const next = ((targetRef.current ?? shownRef.current) + delta + total) % total;
+      targetRef.current = next;
+      show(next);
+      scrollTo(next);
+      ensureArrival();
     },
-    [scrollTo, total]
+    [ensureArrival, scrollTo, show, total]
   );
 
-  // Keep index in sync with manual swipes
+  // Swipes and scrolling by hand: the counter follows the track. While an arrow or key press is being
+  // animated the positions on the way are ignored — following them made the counter (a live region) run
+  // through every photo in between, and a key pressed early in the animation started from a stale slide
+  // (next, then previous, landed on the LAST photo).
   const onScroll = () => {
     const track = trackRef.current;
     if (!track) return;
-    const i = Math.round(track.scrollLeft / track.clientWidth);
-    if (i !== index && i >= 0 && i < total) setIndex(i);
+    const i = positionOf(track);
+    if (targetRef.current !== null) {
+      if (i === targetRef.current) targetRef.current = null;
+      return;
+    }
+    if (i !== shownRef.current && i >= 0 && i < total) show(i);
+  };
+
+  // A finger, the mouse or the wheel takes the track over: stop steering towards the animation's target.
+  const releaseTarget = () => {
+    targetRef.current = null;
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLUListElement>) => {
@@ -121,7 +185,16 @@ export const AlbumSection = ({ album, priority = false }: Props) => {
         >
           {/* The scrollable track is the keyboard target (arrow keys); scrollable regions must be focusable. */}
           {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex */}
-          <ul ref={trackRef} className={styles.track} onScroll={onScroll} onKeyDown={onKeyDown} tabIndex={0} aria-label={t('gallery.carousel.hint')}>
+          <ul tabIndex={0}
+            ref={trackRef}
+            className={styles.track}
+            onScroll={onScroll}
+            onPointerDown={releaseTarget}
+            onTouchStart={releaseTarget}
+            onWheel={releaseTarget}
+            onKeyDown={onKeyDown}
+            aria-label={t('gallery.carousel.hint')}
+          >
             {slides.map((slide, i) => (
               <li key={slide.asset.src} className={styles.slide} aria-hidden={i !== index}>
                 {(i === 0 || near) && (

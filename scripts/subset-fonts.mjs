@@ -10,6 +10,10 @@
  *                (U+2010–2027, U+2030–203A), € ™ arrows − ∕ and the BOM / replacement glyphs
  *   latin-ext  → the four Hungarian letters outside Latin-1: Ő ő Ű ű (U+0150-0151, U+0170-0171)
  *
+ * U+202F (narrow no-break space, used in every price by formatHuf) is absent on purpose: the source
+ * fonts have no glyph for it, so it has always come from the visitor's fallback font. It is a space —
+ * only the gap's width depends on that font.
+ *
  * The variable weight axis survives the subset (fvar/gvar kept). The @font-face unicode-range
  * values in src/styles/fonts.css MUST match these ranges — a glyph outside them silently falls
  * back to the system font. Re-run after swapping a source font:  node scripts/subset-fonts.mjs

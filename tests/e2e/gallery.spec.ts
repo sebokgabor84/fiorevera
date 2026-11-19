@@ -1,3 +1,4 @@
+import type { Locator, Page } from '@playwright/test';
 import { test, expect } from './fixtures';
 import { albums } from '../../src/data/albums';
 
@@ -54,6 +55,84 @@ test.describe('gallery (PRD D-6/D-7)', () => {
     await expect(status).toContainText('1.');
     // No jumping content: the carousel box keeps its size while slides change.
     expect(await size()).toEqual(sizeBefore);
+  });
+
+  /**
+   * The counter must only ever show where the carousel is heading. Before 2026-11-19 the scroll
+   * listener rewrote the index with every position the slide animation passed: the counter (a live
+   * region) ran through the photos in between, and a key pressed early in an animation started from
+   * a stale index — "next" then "previous" could land on the LAST photo instead of the first.
+   */
+  const watchCounter = async (page: Page, albumId: string) => {
+    const region = page.locator(`#${albumId}`).getByRole('region');
+    const status = region.locator('[aria-live="polite"]');
+    await region.getByRole('button').nth(1).scrollIntoViewIfNeeded();
+    await status.evaluate((el) => {
+      const seen: string[] = [];
+      (window as unknown as { fvCounterSeen: string[] }).fvCounterSeen = seen;
+      new MutationObserver(() => seen.push(el.textContent ?? '')).observe(el, { childList: true, characterData: true, subtree: true });
+    });
+    const numbersSeen = async (): Promise<number[]> => {
+      const seen = await page.evaluate(() => (window as unknown as { fvCounterSeen: string[] }).fvCounterSeen);
+      return [...new Set(seen.map((text) => parseInt(text, 10)))];
+    };
+    return { region, status, track: region.locator('ul'), numbersSeen };
+  };
+  const settledAt = (track: Locator, slide: number) =>
+    expect.poll(() => track.evaluate((el) => Math.round(el.scrollLeft / el.clientWidth)), { timeout: 10_000 }).toBe(slide);
+
+  test('a key pressed while a slide is still moving continues from its target, never from a stale position', async ({ page }) => {
+    await page.goto('/munkaim/');
+    const { region, status, track, numbersSeen } = await watchCounter(page, albums[0].id);
+    await region.getByRole('button').nth(1).click();
+    await expect(status).toHaveText(/^2\./);
+    // The slide has started to move and is not there yet: the moment the old code read index 0 from the scroll position.
+    await track.evaluate((el) => new Promise<void>((resolve) => {
+      const tick = () => (el.scrollLeft > 2 ? resolve() : requestAnimationFrame(tick));
+      tick();
+    }));
+    await track.focus();
+    await page.keyboard.press('ArrowLeft');
+    await expect(status).toHaveText(/^1\./);
+    await settledAt(track, 0);
+    expect(await numbersSeen(), 'the counter showed only the photos that were asked for').toEqual([2, 1]);
+  });
+
+  test('three quick presses of "next" move three photos on', async ({ page }) => {
+    await page.goto('/munkaim/');
+    const { region, status, track, numbersSeen } = await watchCounter(page, albums[0].id);
+    const next = region.getByRole('button').nth(1);
+    await next.click();
+    await next.click();
+    await next.click();
+    await expect(status).toHaveText(/^4\./);
+    await settledAt(track, 3);
+    expect(await numbersSeen()).toEqual([2, 3, 4]);
+  });
+
+  test('moving focus onto the photos does not drop a slide that is on its way', async ({ page }) => {
+    // Chromium cancels a running smooth scroll when its scroll container is focused; the carousel resumes it.
+    await page.goto('/munkaim/');
+    const { region, status, track, numbersSeen } = await watchCounter(page, albums[0].id);
+    await region.getByRole('button').nth(1).click();
+    await track.focus();
+    await settledAt(track, 1);
+    await expect(status).toHaveText(/^2\./);
+    expect(await numbersSeen()).toEqual([2]);
+  });
+
+  test('going back from the first photo shows the last one at once, not every photo on the way', async ({ page }) => {
+    await page.goto('/munkaim/');
+    const { region, status, track, numbersSeen } = await watchCounter(page, albums[0].id);
+    const total = await region.locator('ul > li').count();
+    await track.focus();
+    await page.keyboard.press('ArrowLeft');
+    await expect(status).toHaveText(new RegExp(`^${total}\\.`));
+    await settledAt(track, total - 1);
+    expect(await numbersSeen(), 'the counter jumped straight to the last photo').toEqual([total]);
+    // Swiping by hand afterwards is still followed: scroll back to the first photo without the arrows.
+    await track.evaluate((el) => el.scrollTo({ left: 0, behavior: 'instant' }));
+    await expect(status).toHaveText(/^1\./);
   });
 
   test('deep link to an album anchor scrolls it into view', async ({ page }) => {
