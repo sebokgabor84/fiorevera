@@ -169,6 +169,29 @@ if [ "$code" -eq 0 ] && [ "$gates" = "GATE-lint GATE-unit GATE-build GATE-visual
 merges="$(git rev-list --merges --count origin/main..HEAD)"
 if [ "$merges" = 0 ] && [ "$(git rev-parse HEAD)" = "$(git rev-parse origin/feature/rebase-rule)" ]; then ok "the branch is on origin, on top of main, without a merge commit"; else bad "after the rebase: merges=$merges"; fi
 
+echo "7. Hard rule in code: a branch with a merge commit of its own is refused at push (.githooks/pre-push)"
+git switch -q -c feature/part-a --no-track origin/main
+echo a >part-a.txt && git add part-a.txt && git commit -q -m "part a" >/dev/null 2>&1
+git switch -q -c feature/part-b --no-track origin/main
+echo b >part-b.txt && git add part-b.txt && git commit -q -m "part b" >/dev/null 2>&1
+git merge -q --no-ff --no-edit feature/part-a >/dev/null 2>&1 # merging another feature branch is possible locally
+out="$(git push -u origin feature/part-b 2>&1)"; code=$?
+if [ "$code" -ne 0 ] && printf '%s' "$out" | grep -q "REFUSED — 'feature/part-b' carries a merge commit" && ! printf '%s' "$out" | grep -q 'GATE-'; then ok "the push of a branch with a merge commit is refused before any gate runs"; show "$out"; else bad "merge-commit push: exit=$code: $out"; fi
+report="$(node "$src/scripts/release/status.mjs" 2>&1)"
+if printf '%s' "$report" | grep -q 'merge commit(s) of its own: the push will be refused → git fetch && git rebase origin/main'; then ok "release:status flags the merge commit and prints the rebase command"; else bad "status did not flag the merge commit: $(printf '%s' "$report" | head -8)"; fi
+out="$(git rebase origin/main 2>&1)"; merges="$(git rev-list --merges --count origin/main..HEAD)"
+if [ "$merges" = 0 ] && [ -f part-a.txt ] && [ -f part-b.txt ]; then ok "git rebase origin/main makes the branch linear and keeps both commits"; else bad "rebase left merges=$merges: $out"; fi
+out="$(git push -u origin feature/part-b 2>&1)"; code=$?
+gates="$(printf '%s\n' "$out" | grep -E '^GATE-[a-z]+$' | tr '\n' ' ')"
+if [ "$code" -eq 0 ] && [ "$gates" = "GATE-lint GATE-unit GATE-build GATE-visual " ]; then ok "the linear branch is pushed and the gates run"; else bad "push after rebase: exit=$code gates='$gates': $out"; fi
+git switch -q main
+echo six >main-moves-again.txt && git add main-moves-again.txt && FV_SKIP_HOOKS=1 git commit -q -m "main moves on again (test setup)"
+FV_SKIP_HOOKS=1 git push -q origin main >/dev/null 2>&1
+git switch -q feature/part-b
+report="$(node "$src/scripts/release/status.mjs" 2>&1)"
+if printf '%s' "$report" | grep -q '1 behind   ⚠ behind main → git fetch && git rebase origin/main'; then ok "release:status flags a branch that is behind main with the rebase command"; else bad "status did not flag the branch as behind: $(printf '%s' "$report" | head -8)"; fi
+out="$(git push origin "$(git rev-parse feature/part-b)":refs/tags/selftest-tag 2>&1)" && ok "a tag push is not subject to the branch rule" || bad "tag push failed: $out"
+
 echo ""
 echo "release selftest: $pass passed, $fail failed"
 [ "$fail" -eq 0 ]

@@ -39,7 +39,14 @@ async function github(slug, query) {
       signal: AbortSignal.timeout(6000),
     });
     const body = await res.json();
-    return Array.isArray(body) ? body : { error: body.message ?? `HTTP ${res.status}` };
+    if (Array.isArray(body)) return body;
+    // GitHub's own text names the caller's IP address: keep that out of reports
+    const limited = /rate limit/i.test(body.message ?? '');
+    return {
+      error: limited
+        ? 'rate limit reached (60 requests an hour without a login); try again within the hour'
+        : (body.message ?? `HTTP ${res.status}`),
+    };
   } catch (e) {
     return { error: `GitHub not reachable (${e.name})` };
   }
@@ -78,7 +85,7 @@ export async function collect({ cwd = process.cwd(), fetchFirst = false, preview
   const branch = g('symbolic-ref', '--short', '-q', 'HEAD') ?? '';
   const dirty = (g('status', '--porcelain') ?? '').split('\n').filter(Boolean);
   const base = g('rev-parse', '-q', '--verify', 'origin/main') ? 'origin/main' : null;
-  const count = (range) => Number(g('rev-list', '--count', range) ?? 0);
+  const count = (range) => Number(g('rev-list', '--count', ...[].concat(range)) ?? 0);
   const upstream = g('rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}');
 
   const slug =
@@ -108,7 +115,7 @@ export async function collect({ cwd = process.cwd(), fetchFirst = false, preview
   const worktrees = (g('worktree', 'list', '--porcelain') ?? '')
     .split('\n\n')
     .filter(Boolean)
-    .map((block) => {
+    .map((block, index) => {
       const get = (k) =>
         block
           .split('\n')
@@ -123,6 +130,8 @@ export async function collect({ cwd = process.cwd(), fetchFirst = false, preview
           ? (git(['status', '--porcelain'], wt) ?? '').split('\n').filter(Boolean).length
           : 0,
         current: wt === top,
+        // git lists the main working tree first: the shared checkout, which is never removed
+        shared: index === 0,
       };
     });
 
@@ -169,16 +178,28 @@ export async function collect({ cwd = process.cwd(), fetchFirst = false, preview
     .map((l) => {
       const [name, sha, up, ...track] = l.split(' ');
       const wt = worktrees.find((w) => w.branch === name);
+      const mine = base && !PRODUCTION.includes(name);
       return {
         name,
         sha,
         upstream: up || null,
         upstreamGone: track.join(' ').includes('gone'),
         worktree: wt?.path ?? null,
+        // rebase rule: a branch is linear and sits on top of main
+        behind: mine ? count(`${sha}..${base}`) : 0,
+        merges: mine ? count(`--merges ${base}..${sha}`.split(' ')) : 0,
         ...verdict(name, sha, Boolean(wt)),
       };
     });
-  const remotes = remoteBranches.map((r) => ({ ...r, ...verdict(r.name, r.sha, false) }));
+  // a branch on origin counts as in use while its local twin is checked out in a worktree
+  const remotes = remoteBranches.map((r) => ({
+    ...r,
+    ...verdict(
+      r.name,
+      r.sha,
+      worktrees.some((w) => w.branch === r.name)
+    ),
+  }));
 
   const hooksPath = g('config', '--get', 'core.hooksPath');
   const hooksDir = hooksPath ? path.resolve(top, hooksPath) : null;
@@ -199,6 +220,9 @@ export async function collect({ cwd = process.cwd(), fetchFirst = false, preview
     behind: base ? count(`HEAD..${base}`) : null,
     upstream,
     unpushed: upstream ? count('@{u}..HEAD') : null,
+    // merge commits in the branch's own range: the pre-push hook refuses them (rebase rule)
+    merges:
+      base && branch && !PRODUCTION.includes(branch) ? count(['--merges', `${base}..HEAD`]) : 0,
     slug,
     githubError: open.error ?? closed.error ?? null,
     openPrs,
@@ -233,7 +257,11 @@ function print(s) {
   s.dirty.slice(0, 10).forEach((d) => line(`                  ${d}`));
   if (s.base)
     line(
-      `  vs ${s.base}  ${s.ahead} ahead, ${s.behind} behind${s.behind ? '   → git rebase origin/main (hard rule: rebase, never merge main in)' : ''}`
+      `  vs ${s.base}  ${s.ahead} ahead, ${s.behind} behind${s.behind && !s.onProduction ? '   ⚠ behind main → git fetch && git rebase origin/main (hard rule: rebase, never merge main in)' : ''}`
+    );
+  if (s.merges)
+    line(
+      `                ⚠ ${s.merges} merge commit(s) of its own: the push will be refused → git fetch && git rebase origin/main, then git push --force-with-lease origin ${s.branch} (if already pushed)`
     );
   line(
     `  upstream      ${s.upstream ? `${s.upstream}, ${s.unpushed} commit(s) not pushed` : 'none (branch is not on origin)'}`
@@ -253,7 +281,7 @@ function print(s) {
   line('Local branches');
   s.locals.forEach((b) =>
     line(
-      `  ${b.keep ? ' ' : '✗'} ${b.name.padEnd(34)} ${b.why}${b.upstreamGone ? ' · its branch on origin is gone' : ''}${b.worktree ? ` · worktree ${path.relative(s.top, b.worktree) || '.'}` : ''}`
+      `  ${b.keep ? ' ' : '✗'} ${b.name.padEnd(34)} ${b.why}${b.upstreamGone ? ' · its branch on origin is gone' : ''}${b.keep && b.merges ? ` · ⚠ ${b.merges} merge commit(s): rebase` : ''}${b.keep && b.behind ? ` · ⚠ ${b.behind} behind main: rebase` : ''}${b.worktree ? ` · worktree ${path.relative(s.top, b.worktree) || '.'}` : ''}`
     )
   );
   line('Branches on origin');
@@ -262,7 +290,7 @@ function print(s) {
   line('Worktrees');
   s.worktrees.forEach((w) =>
     line(
-      `  ${w.current ? '→' : ' '} ${w.path}  [${w.branch}]  ${w.dirty ? `${w.dirty} uncommitted` : 'clean'}${w.prunable ? '  ⚠ folder is gone: git worktree prune' : ''}`
+      `  ${w.current ? '→' : ' '} ${w.path}  [${w.branch}]  ${w.dirty ? `${w.dirty} uncommitted` : 'clean'}${w.shared ? (PRODUCTION.includes(w.branch) ? '  (shared checkout)' : '  ⚠ shared checkout is not on main: app worktrees run ITS git hooks') : ''}${w.prunable ? '  ⚠ folder is gone: git worktree prune' : ''}`
     )
   );
   line();

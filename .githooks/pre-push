@@ -3,8 +3,11 @@
 # 1. FV-GUARD: refuses every push that creates, updates or deletes main. Vercel deploys
 #    production from main; the only way onto it is a pull request the owner merges on GitHub
 #    (.agent/skills/release-manager/SKILL.md).
-# 2. A push that only deletes refs (branch cleanup after a merge) pushes no code: gates skipped.
-# 3. Otherwise the Definition of Done (AGENTS.md): lint → unit → production build → visual
+# 2. FV-RULE (owner, 2026-11-18): refuses a branch that carries a merge commit of its own
+#    (git rev-list --merges <remote>/main..<pushed commit>). A feature branch takes main in by
+#    rebase, never by a merge, so its own range is linear.
+# 3. A push that only deletes refs (branch cleanup after a merge) pushes no code: gates skipped.
+# 4. Otherwise the Definition of Done (AGENTS.md): lint → unit → production build → visual
 #    regression. (The GDPR data-sink audit runs inside the unit suite: tests/unit/gdpr.test.ts.)
 # Emergency bypass for the owner, in his own terminal only: FV_SKIP_HOOKS=1 git push …
 # (record why in the pull request).
@@ -13,6 +16,11 @@ if [ "$FV_SKIP_HOOKS" = "1" ]; then
 fi
 
 # git feeds one line per pushed ref: <local ref> <local sha> <remote ref> <remote sha>
+remote="${1:-origin}"
+# measure the range below against today's main (stdin stays untouched: it carries the ref list)
+git fetch -q "$remote" main </dev/null 2>/dev/null || true
+base="$remote/main"
+git rev-parse -q --verify "$base" >/dev/null 2>&1 || base="origin/main"
 refs=0
 only_deletes=1
 while read -r local_ref local_sha remote_ref remote_sha; do
@@ -29,7 +37,26 @@ while read -r local_ref local_sha remote_ref remote_sha; do
   esac
   case "$local_sha" in
     *[!0]*) only_deletes=0 ;;
+    *) continue ;; # a deletion pushes no commits
   esac
+  case "$remote_ref" in
+    refs/heads/*) ;;
+    *) continue ;; # tags and other refs are not branches
+  esac
+  git rev-parse -q --verify "$base" >/dev/null 2>&1 || continue
+  merges=$(git rev-list --merges "$base..$local_sha" 2>/dev/null | head -3)
+  if [ -n "$merges" ]; then
+    b="${remote_ref#refs/heads/}"
+    echo ""
+    echo "pre-push: REFUSED — '$b' carries a merge commit of its own. Hard rule: a branch is linear;"
+    echo "    it takes main in by rebase, never by a merge:"
+    for m in $merges; do echo "        $(git log -1 --format='%h %s' "$m" | cut -c1-110)"; done
+    echo "    Nothing was pushed. Fix (a rebase replays the commits and drops the merge):"
+    echo "        git fetch && git rebase $base"
+    echo "        git push --force-with-lease origin $b     (only if the branch is already on origin)"
+    echo "    Rules: .agent/skills/release-manager/SKILL.md §5"
+    exit 1
+  fi
 done
 if [ "$refs" -gt 0 ] && [ "$only_deletes" = 1 ]; then
   echo "pre-push: only ref deletions — gates skipped"; exit 0

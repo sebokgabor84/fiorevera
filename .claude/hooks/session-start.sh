@@ -58,7 +58,7 @@ fi
 slug="$(git -C "$top" remote get-url origin 2>/dev/null | sed -E 's#^(https://github\.com/|git@github\.com:)##; s#\.git$##')"
 if [ -n "$slug" ] && command -v curl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
   prs="$(curl -s --max-time 4 "https://api.github.com/repos/$slug/pulls?state=open&per_page=20" 2>/dev/null |
-    jq -r 'if type == "array" then (if length == 0 then "none" else .[] | "#\(.number) \(.head.ref) → \(.base.ref): \(.title)" end) else "unknown (GitHub answered: \(.message // "no list"))" end' 2>/dev/null)"
+    jq -r 'if type == "array" then (if length == 0 then "none" else .[] | "#\(.number) \(.head.ref) → \(.base.ref): \(.title)" end) else "unknown (GitHub: \((.message // "no list") | if test("rate limit"; "i") then "rate limit reached, 60 requests an hour without a login" else . end))" end' 2>/dev/null)"
   echo "Open pull requests: ${prs:-unknown (GitHub not reachable)}" | sed '2,$s/^/    /'
 fi
 
