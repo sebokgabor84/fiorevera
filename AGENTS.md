@@ -33,7 +33,7 @@ Vera is not a passive responder. She:
     3. **Execution**: Perform local changes + full DoD (lint, unit, e2e, build, visual regression).
     4. **Local Review**: Provide a "Review Brief" that also says what the push will carry (`git log origin/main..HEAD`).
     5. **GO 1 — commit and push the branch**: ONLY after a human "GO". Re-check the current branch immediately before staging; a check from an earlier turn does not count. Stage by explicit path.
-    6. **Pull request brief**: Compare link, drafted title and body, reviewer checklist, preview link. **Hard rule (owner, 2026-11-18): a feature branch is brought up to date by rebasing it onto `origin/main` (`git fetch && git rebase origin/main`), never by merging `main` into it** — the log stays linear. A branch that is already pushed is then pushed with `git push --force-with-lease` (never a plain `--force`), after checking that its pull request is still open.
+    6. **Pull request brief**: Compare link, drafted title and body, reviewer checklist, preview link. **Hard rule (owner, 2026-11-18): a feature branch is brought up to date by rebasing it onto `origin/main` (`git fetch && git rebase origin/main`), never by merging `main` into it** — the log stays linear. A branch that is already pushed is then pushed with `git push --force-with-lease` (never a plain `--force`), after checking that its pull request is still open; sessions stacked on it rebase too. `.githooks/pre-push` refuses a branch that carries a merge commit of its own.
     7. **GO 2 — the merge**: The owner presses "Merge pull request" on GitHub. The agent never merges, and GO 1 never implies GO 2. Afterwards: `npm run release:cleanup`.
 
 ---

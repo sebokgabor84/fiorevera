@@ -85,7 +85,7 @@ export async function collect({ cwd = process.cwd(), fetchFirst = false, preview
   const branch = g('symbolic-ref', '--short', '-q', 'HEAD') ?? '';
   const dirty = (g('status', '--porcelain') ?? '').split('\n').filter(Boolean);
   const base = g('rev-parse', '-q', '--verify', 'origin/main') ? 'origin/main' : null;
-  const count = (range) => Number(g('rev-list', '--count', range) ?? 0);
+  const count = (range) => Number(g('rev-list', '--count', ...[].concat(range)) ?? 0);
   const upstream = g('rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}');
 
   const slug =
@@ -178,12 +178,16 @@ export async function collect({ cwd = process.cwd(), fetchFirst = false, preview
     .map((l) => {
       const [name, sha, up, ...track] = l.split(' ');
       const wt = worktrees.find((w) => w.branch === name);
+      const mine = base && !PRODUCTION.includes(name);
       return {
         name,
         sha,
         upstream: up || null,
         upstreamGone: track.join(' ').includes('gone'),
         worktree: wt?.path ?? null,
+        // rebase rule: a branch is linear and sits on top of main
+        behind: mine ? count(`${sha}..${base}`) : 0,
+        merges: mine ? count(`--merges ${base}..${sha}`.split(' ')) : 0,
         ...verdict(name, sha, Boolean(wt)),
       };
     });
@@ -216,6 +220,9 @@ export async function collect({ cwd = process.cwd(), fetchFirst = false, preview
     behind: base ? count(`HEAD..${base}`) : null,
     upstream,
     unpushed: upstream ? count('@{u}..HEAD') : null,
+    // merge commits in the branch's own range: the pre-push hook refuses them (rebase rule)
+    merges:
+      base && branch && !PRODUCTION.includes(branch) ? count(['--merges', `${base}..HEAD`]) : 0,
     slug,
     githubError: open.error ?? closed.error ?? null,
     openPrs,
@@ -250,7 +257,11 @@ function print(s) {
   s.dirty.slice(0, 10).forEach((d) => line(`                  ${d}`));
   if (s.base)
     line(
-      `  vs ${s.base}  ${s.ahead} ahead, ${s.behind} behind${s.behind ? '   → git rebase origin/main (hard rule: rebase, never merge main in)' : ''}`
+      `  vs ${s.base}  ${s.ahead} ahead, ${s.behind} behind${s.behind && !s.onProduction ? '   ⚠ behind main → git fetch && git rebase origin/main (hard rule: rebase, never merge main in)' : ''}`
+    );
+  if (s.merges)
+    line(
+      `                ⚠ ${s.merges} merge commit(s) of its own: the push will be refused → git fetch && git rebase origin/main, then git push --force-with-lease origin ${s.branch} (if already pushed)`
     );
   line(
     `  upstream      ${s.upstream ? `${s.upstream}, ${s.unpushed} commit(s) not pushed` : 'none (branch is not on origin)'}`
@@ -270,7 +281,7 @@ function print(s) {
   line('Local branches');
   s.locals.forEach((b) =>
     line(
-      `  ${b.keep ? ' ' : '✗'} ${b.name.padEnd(34)} ${b.why}${b.upstreamGone ? ' · its branch on origin is gone' : ''}${b.worktree ? ` · worktree ${path.relative(s.top, b.worktree) || '.'}` : ''}`
+      `  ${b.keep ? ' ' : '✗'} ${b.name.padEnd(34)} ${b.why}${b.upstreamGone ? ' · its branch on origin is gone' : ''}${b.keep && b.merges ? ` · ⚠ ${b.merges} merge commit(s): rebase` : ''}${b.keep && b.behind ? ` · ⚠ ${b.behind} behind main: rebase` : ''}${b.worktree ? ` · worktree ${path.relative(s.top, b.worktree) || '.'}` : ''}`
     )
   );
   line('Branches on origin');

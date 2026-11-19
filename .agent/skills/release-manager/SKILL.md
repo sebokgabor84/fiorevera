@@ -18,7 +18,7 @@ description: >-
 |---|---|---|---|
 | Claude edit guard | `.claude/hooks/guard-main-edit.sh` | Edit / Write in a checkout on `main` (git-ignored files stay writable) | shell writes — caught by the next layers |
 | Claude Bash guard | `.claude/hooks/guard-bash.sh` | `--no-verify`, `FV_SKIP_HOOKS=1`, changing `core.hooksPath`, push to `main`, plain force push (`--force-with-lease` is allowed), merging `main` into a branch, merge into local `main`, `vercel --prod / promote / rollback` | `sh -c '…'` (quoted text is not inspected) |
-| Git hooks | `.githooks/pre-commit`, `pre-merge-commit`, `pre-push` | commit and merge commit on `main`, a merge of `main` into a branch, any push to `main`; runs lint → unit → build → visual on every other push | the owner's `FV_SKIP_HOOKS=1`; a clone where `npm install` never ran |
+| Git hooks | `.githooks/pre-commit`, `pre-merge-commit`, `pre-push` | commit and merge commit on `main`, a merge of `main` into a branch, any push to `main`, the push of a branch that carries a merge commit of its own; runs lint → unit → build → visual on every other push | the owner's `FV_SKIP_HOOKS=1`; a clone where `npm install` never ran |
 | GitHub ruleset on `main` | GitHub → Settings → Rules (§8) | every direct push, force push and deletion, for everybody | nobody on the bypass list = nobody |
 
 Session hooks: `session-start.sh` prints branch, dirty state, open pull requests, hook health and the handover note; `stop-reminder.sh` reminds once an hour when work is uncommitted and `goodbye` has not run; `session-end.sh` records how a session ended for the next one.
@@ -50,7 +50,7 @@ Vercel builds every pushed branch (on by default) and comments the preview URLs 
 | Rule | Why |
 |---|---|
 | One worktree per code-writing session; the shared checkout stays on an up-to-date `main` and is not edited | Shared checkouts mixed `.env.local`, dev servers and commits of four sessions. App worktrees also run the git hooks of the shared checkout (absolute `core.hooksPath`) |
-| **Hard rule (owner, 2026-11-18): a feature branch is brought up to date by rebasing it onto `origin/main` (`git fetch && git rebase origin/main`), never by merging `main` into it** — the log stays linear. After the rebase of a pushed branch: `git push --force-with-lease`, never a plain `--force` | The owner's rule. Before any force push ask whether the pull request is still open: on 2026-11-16 a force push landed on a branch the owner was merging |
+| **Hard rule (owner, 2026-11-18): a feature branch is brought up to date by rebasing it onto `origin/main` (`git fetch && git rebase origin/main`), never by merging `main` into it** — the log stays linear. After the rebase of a pushed branch: re-run the gates, `git push --force-with-lease` on that branch only, never a plain `--force`, and tell every session stacked on it to rebase too. `pre-push` refuses a branch whose own range (`git rev-list --merges origin/main..HEAD`) holds a merge commit; `npm run release:status` flags such a branch and one that is behind `main`. GitHub's "Update branch" button adds exactly such a merge commit unless "Update with rebase" is chosen | The owner's rule. Before any force push ask whether the pull request is still open: on 2026-11-16 a force push landed on a branch the owner was merging |
 | Never remove a worktree or branch a session may still use; cleanup goes through the script and the owner's yes | A worktree vanished under a running visual suite |
 | Git facts that decide a commit, push or delete come from `rtk proxy git …` | The rtk hook reformats and has shown stale refs |
 | Never `git stash` | The stash is shared by every worktree and session |
@@ -75,6 +75,7 @@ Vercel builds every pushed branch (on by default) and comments the preview URLs 
 | `BLOCKED by the branch guard` (edit) / `pre-commit: REFUSED` | You are on `main`. `git switch -c <prefix>/<short-desc>` — the changes travel with you — and repeat |
 | `BLOCKED by the release guard` (Bash) | Do not rephrase the command. Tell the owner what you wanted and why; he runs it in his terminal if it is really needed |
 | `pre-push: REFUSED` or GitHub answers "protected branch" | The push targeted `main`. Push the branch and go through the pull request |
+| `pre-push: REFUSED — … carries a merge commit of its own` | `git fetch && git rebase origin/main` (the rebase drops the merge; resolve conflicts commit by commit, never `--skip` one silently), re-run the gates, then `git push --force-with-lease origin <branch>` if it was already pushed |
 | A gate in `pre-push` is red | Fix the code, not the gate (`qa-specialist`). `FV_SKIP_HOOKS=1` is the owner's emergency switch only, recorded in the pull request |
 | `release:status` says hooks are not installed or have no main guard | `npm run prepare`; bring the shared checkout up to date with `main` |
 
