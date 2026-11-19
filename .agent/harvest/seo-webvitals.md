@@ -1,5 +1,5 @@
 # Harvest: Webpage build and local setup — web-vitals branch (PageSpeed + image tiers)
-Session: seo-webvitals (sub-thread of the main build session) · period: 2026-11-09–2026-11-16 · commits: `2f97d84` (on main via `feature/site-build`)
+Session: seo-webvitals (sub-thread of the main build session) · period: 2026-11-09–2026-11-19 · commits: `2f97d84` (on main via `feature/site-build`), `dc973c7` (pull request 7), `db34bff` (pull request 16)
 
 ## 1. What this session delivered
 - PageSpeed Insights mobile run of the live home page read and recorded (16 Nov 2026 10:15 MEZ, Lighthouse 13.6.0, Moto G Power, slow 4G): Performance 90 · Accessibility 100 · Best Practices 100 · SEO 100; FCP 0.9 s · LCP 3.6 s · TBT 30 ms · CLS 0 · SI 2.2 s. No field (CrUX) data yet — domain live since the same day. Source: https://pagespeed.web.dev/analysis/https-fiorevera-hu/mhbi5rn5qc?hl=de&form_factor=mobile
@@ -30,15 +30,15 @@ Session: seo-webvitals (sub-thread of the main build session) · period: 2026-11
 | Vercel Hobby chosen, risk accepted | owner 2026-11-12 | `BACKLOG.md` [LAUNCH] D1 | no |
 
 ## 4. Improvements NOT implemented yet
-- [ ] Font subsetting + preload only the heading face — biggest remaining LCP lever (800 ms render delay) — `index.html`, `src/styles/fonts.css`, `public/fonts/*` (Inter latin-ext 83 KB, latin 47 KB; Cormorant 33+37 KB) — acceptance: PageSpeed mobile LCP < 2.5 s, no FOIT, HU/DE/EN glyphs render (ő ű ß ä ö ü) — M — owner decision: none (already BACKLOG [PERF] 2026-11-09)
-- [ ] Web-vitals log in `docs/qa/` — keeps measurements comparable across commits — new `docs/qa/web-vitals-log.md` — acceptance: one row per run with date, URL, tool/version, device, scores, metrics, commit — S — n
-- [ ] Re-run PageSpeed after `2f97d84` deploys to production — proves the image fix — acceptance: image-delivery audit lists only the hero compression hint or nothing; logo row gone — S — n
-- [ ] Set `fetchpriority="high"` + `<link rel="preload" imagesrcset imagesizes>` for the hero in the prerendered HTML — cuts the 150 ms resource-load delay — `scripts/prerender.ts` or `SeoHead` — acceptance: breakdown "resource load delay" ≈ 0 — S — n
-- [ ] Inline critical CSS for above-the-fold (hero + header) — attacks the 100 ms render-blocking request — `scripts/prerender.ts` — acceptance: no render-blocking audit on home — M — n
+- [x] (done in `dc973c7`, fonts subset; heading-only preload rejected, see § 8) Font subsetting + preload only the heading face — biggest remaining LCP lever (800 ms render delay) — `index.html`, `src/styles/fonts.css`, `public/fonts/*` (Inter latin-ext 83 KB, latin 47 KB; Cormorant 33+37 KB) — acceptance: PageSpeed mobile LCP < 2.5 s, no FOIT, HU/DE/EN glyphs render (ő ű ß ä ö ü) — M — owner decision: none (already BACKLOG [PERF] 2026-11-09)
+- [x] (`docs/qa/web-vitals-log.md`, `dc973c7`) Web-vitals log in `docs/qa/` — keeps measurements comparable across commits — new `docs/qa/web-vitals-log.md` — acceptance: one row per run with date, URL, tool/version, device, scores, metrics, commit — S — n
+- [x] (live rows 2026-11-16 11:05 and 2026-11-18 in the log) Re-run PageSpeed after `2f97d84` deploys to production — proves the image fix — acceptance: image-delivery audit lists only the hero compression hint or nothing; logo row gone — S — n
+- [x] (already the case: React SSR emits the hero preload with fetchPriority high, verified 2026-11-16) Set `fetchpriority="high"` + `<link rel="preload" imagesrcset imagesizes>` for the hero in the prerendered HTML — cuts the 150 ms resource-load delay — `scripts/prerender.ts` or `SeoHead` — acceptance: breakdown "resource load delay" ≈ 0 — S — n
+- [x] (`scripts/prerender.ts` inlines the whole 7 KB stylesheet, `dc973c7`) Inline critical CSS for above-the-fold (hero + header) — attacks the 100 ms render-blocking request — `scripts/prerender.ts` — acceptance: no render-blocking audit on home — M — n
 - [ ] Reduce unused JS 56 KiB — route-level code splitting (`React.lazy` per page) or dropping `react-icons` for inline SVGs — `src/App.tsx`, footer/contact icons — acceptance: unused-JS audit < 20 KiB — M — n
 - [ ] Lower-quality ceiling for the full tier too (82 → 76 would cut ~12 % of 45 MB, desktop DPR-2 hero 200 → ~160 KB) — not done to keep today's diff to the two small tiers — `scripts/optimize-images.js` — acceptance: 109 visual green, owner eyeballs the hero at 1920 — S — y (taste)
 - [ ] Hero source photo: a sharper/cleaner original would compress better (q70 at 800 px = 57 KB is high for a 800×533 image, typical is 35–45 KB) — needs Vera's cover pick (MASTER-PLAN 1.3) — L — y
-- [ ] Add a `--tier small|medium|full` flag to `optimize-images.js` so one tier can be re-encoded without the restore dance from § 2 — S — n
+- [x] (`--tier=full|medium|small`, `dc973c7`) Add a `--tier small|medium|full` flag to `optimize-images.js` so one tier can be re-encoded without the restore dance from § 2 — S — n
 - [ ] CrUX / field data check in 28 days (Search Console → Core Web Vitals) once the domain has traffic — S — n
 - [ ] `sizes` hint for the hero on desktop: `100vw` makes DPR-2 desktops download the 1920 full tier (200 KB) although the hero box is capped; verify the real rendered width at 1280/1440/1920 and tighten `sizes` — S — n
 
@@ -59,3 +59,23 @@ Session: seo-webvitals (sub-thread of the main build session) · period: 2026-11
 - `sharp` not resolvable from the scratchpad → absolute import path.
 - Full-tier churn from `--force` → the `--tier` flag in § 4.
 - PageSpeed UI in German ("Bildübermittlung verbessern") — the audits needed two expand clicks (`find` + click by ref) before `get_page_text` showed the per-image rows; the first text read only had the headlines.
+
+## 8. Update 2026-11-19 — font / CSS / script step and the live result (chat closed)
+
+### Delivered since § 1
+- `dc973c7` (pull request 7, merged 2026-11-18 as `0d1f481`): fonts subset by `scripts/subset-fonts.mjs` from the committed originals in `scripts/fonts-src/` (243 → 93 KB, variable `wght` axis kept; `src/styles/fonts.css` unicode-ranges equal the subset); `scripts/prerender.ts` inlines the stylesheet and sets `fetchpriority="low"` on the module script; `scripts/optimize-images.js --tier=…`; `docs/qa/web-vitals-log.md` created with every measured variant.
+- `db34bff` (pull request 16, merged 2026-11-19 as `f36f3a2`): the live row after the merge.
+- Live, Lighthouse 12.8.2 mobile ×3 median, `main` 5c211c7: perf 98 · FCP 0.97 s · LCP 2.42 s · TBT 14 ms · CLS 0 · fonts 93 KB (before the two steps: 90 / 0.9 s / 3.6 s / ~200 KB). Full table: `docs/qa/web-vitals-log.md`.
+
+### Learnings added
+- **Preloading only the heading face shifts the hero copy** (CLS 0.019, FCP worse) because Inter swaps in late; all four regular faces stay preloaded. Evidence: log row 2026-11-16 12:10. [design] [seo]
+- **Live beats the local `vite preview` by ~0.6 s LCP** (brotli + HTTP/2 from the CDN); judge a step locally by its delta, never by the absolute number. Evidence: 95 / 3.01 s local vs 98 / 2.42 s live for the same build. [testing] [seo]
+- **`preview_start` serves the main checkout's `dist/`, not the worktree's** — in a worktree run `./node_modules/.bin/vite preview --port 4175` in the background and measure that port. [tooling]
+- **A remote merge check needs a fresh `git fetch` first.** This chat reported "not merged" on a stale fetch while `0d1f481` was already on `origin/main`. [workflow]
+- **`npm install` of a new dev dependency was refused in this chat's permission mode** → the script was run from a scratchpad copy; the dependency is still missing (below). [tooling]
+
+### Still open (hand over)
+- [ ] `"subset-font": "^2"` as devDependency in `package.json` + lockfile — `node scripts/subset-fonts.mjs` fails on a clean checkout without it — S — n
+- [ ] Route-level code splitting + per-locale JSON for the 152 KB bundle (56 KiB unused JS; LCP load-delay phase 0.4–1.2 s is the last lever) — `src/App.tsx`, `src/i18n/config.ts` — acceptance: unused-JS audit < 20 KiB, LCP < 2.0 s live — M — n — **unowned**
+- [ ] Field data (CrUX) in Search Console around 2026-12-16 — S — n
+- Cleanup after this chat is archived (owner's yes, via `npm run release:cleanup -- --apply <branch>`): local `perf/web-vitals` (remote gone), `perf/web-vitals-live-log` (merged, still on origin), worktree `.claude/worktrees/seo-webvitals`.
