@@ -36,7 +36,7 @@ npm run preview          # serve dist/
 npm run lint             # eslint . (0 errors AND 0 warnings) + tsc -p tsconfig.scripts.json (type-check of scripts/, skill scripts, Playwright configs, tests/)
 npm run format           # prettier --write .
 npm test -- --run        # vitest (147 tests in 19 files: routes, data, i18n parity, server render of every route, archive, assets, form logic, GDPR audit + register seal, sitemap + lastmod, font coverage of every rendered character, favicon set, rental sizes, visual review page, self-tests of the gates)
-npm run test:e2e         # playwright, 4 browsers, incl. axe on every route × locale (tests/e2e/a11y.spec.ts); reuses a running dev server only if it was started in THIS checkout (397 passed / 7 skipped on 2026-11-16: compare the total, a piped `| tail` hides the exit code)
+npm run test:e2e         # playwright, 4 browsers, incl. axe on every route × locale (tests/e2e/a11y.spec.ts); reuses a running dev server only if it was started in THIS checkout (413 passed / 7 skipped on 2026-11-19: compare the total, a piped `| tail` hides the exit code)
 npm run test:vitals      # only tests/e2e/vitals.spec.ts
 npm run test:visual      # visual regression + layout invariants vs the PRODUCTION build (vite preview :4173); chromium; baselines in tests/visual/__screenshots__/
 npm run visual:review    # the same run with the HTML report (expected / actual / diff per snapshot) — for your own look at a red run

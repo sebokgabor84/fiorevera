@@ -119,7 +119,7 @@ Run home, gallery, rental, contact in HU + one DE/EN each; rerun a Performance o
 | Title/description lengths | `npm test -- --run tests/unit/i18n.test.ts` |
 | One `<h1>` per route, lang attribute, HU leaks on DE/EN | `./node_modules/.bin/playwright test tests/e2e/navigation.spec.ts` (the rtk hook rewrites `npx`) |
 | Live redirects and 404 | `npm run verify:live` (read-only: DNS, certificate names, legacy-URL sweep, 404 and redirects); by hand: `curl -I https://www.fiorevera.hu/viragoskert/` → 308 to `/rolunk/`; `curl -I https://www.fiorevera.hu/nincs-ilyen/` → 404; after a DNS change verify with `dig @8.8.8.8` / `curl --resolve`, the local cache lies for up to an hour |
-| Sitemap = routes, lastmod current | `npm test -- --run tests/unit/sitemap.test.ts` (red → `npm run sitemap`, commit `public/sitemap.xml` + `scripts/sitemap-lastmod.json`) |
+| Sitemap = routes, lastmod current | `npm test -- --run tests/unit/sitemap.test.ts` (red → `npm run sitemap`, commit `public/sitemap.xml` + `scripts/sitemap-lastmod.json`). The fingerprint covers every byte of `src/data/**`, comments included: a note added to a data file moves the date of all 21 routes |
 
 ## 8. DoD hooks
 
