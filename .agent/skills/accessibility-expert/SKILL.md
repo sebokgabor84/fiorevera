@@ -80,6 +80,7 @@ readers can navigate by region.
 - **A region replaces another** (form → success card, form → failure box): give the new region `tabIndex={-1}`, a live role, then in an effect `scrollIntoView` and `focus({ preventScroll: true })`. Otherwise the page clamps to the footer and a screen reader hears nothing.
 - **Validation**: field messages are plain `<p id>` linked by `aria-describedby` and read when the field is focused (the first invalid one is focused on submit). Exactly **one** `role="alert"` summary announces how many fields need attention — never one alert per field.
 - **Forms have an accessible name** (`aria-labelledby` their heading); required markers are joined to the label with `\u00a0` so the asterisk never wraps alone.
+- **A live region for an animated move shows the destination at once**, never the positions on the way: the carousel counter ran through 18 photos when going back from the first one (fixed 2026-11-19, `AlbumSection.tsx`).
 - **A fixed control must never sit above another control's tap target** — hit-test with `elementFromPoint` (scroll-to-top vs the carousel arrow, 2026-11-16).
 
 ### 5. Visual & Media

@@ -2,7 +2,7 @@
 
 > Single source of truth for persistent architectural learnings, workflow rules, user preferences, and self-improvement directives discovered across working sessions.
 >
-> **Last consolidated:** 2026-11-16, from the eight session notes in `.agent/harvest/` (the raw record, kept in the repo) plus the entries that were here since 2026-09-26.
+> **Last consolidated:** 2026-11-16, from the eight session notes in `.agent/harvest/`; **2026-11-19: learnings of the site-polish session added (`.agent/harvest/site-polish.md`)**. First consolidation: from the eight session notes in `.agent/harvest/` (the raw record, kept in the repo) plus the entries that were here since 2026-09-26.
 > **Format:** one line per learning — **rule** — why — evidence (file, commit or date) — tag as in `.agent/harvest/README.md` — source note in brackets. If a line contradicts the code, the code wins: fix the line in the same change.
 
 ---
@@ -38,6 +38,10 @@
 - **For a design round, write the catalogue and the builder in the repo from the first variant** — scratchpad drafts (`build.mjs`, `page.mjs`) were thrown away when ported to `scripts/favicon/`. [favicon]. [workflow]
 - **When the owner steers a side session directly (scope grows, "push to remote" overrides a "no commit" brief), say so in the reply and record it in the shared note at once** — so the coordinating session is not surprised. 2026-11-09, [favicon]. [workflow]
 - **Run long commands in the background and keep the task id + output path in the hand-over note** — context compaction hit mid-push. [gdpr]. [workflow]
+- **A visual change is approved on the generated review page only: `npm run visual:page` → publish `.visual-review/` as an Artifact (or serve `local.html`) → the owner pastes "Copy answers" → `npm run visual:page -- --answers <file>` says whether the re-record and the commit are allowed** — owner, 2026-11-18: "always do this artifact like review … build this into code", so that Vera's Claude on another Mac runs the same review. `docs/qa/visual-review-process.md`, `scripts/visual-review-page.ts`, [site-polish]. [workflow] [owner-preference]
+- **Before any push to a branch that has a pull request, check that the pull request is still open (`npm run release:status`)** — the owner merged pull request 11 while gates ran; the push re-created the deleted branch with a stray commit that another session had to carry over as pull request 13. 2026-11-18, [site-polish]. [workflow]
+- **Check a copy proposal's facts against the provider's own pages on the day it ships, and do not ship the part the source contradicts** — the launch plan's privacy draft said "bound by a DPA" (Vercel's DPA names Pro and Enterprise only) and "San Francisco" (Covina, CA); the register's Web3Forms facts were no longer on its pages. 2026-11-16, [site-polish]. [legal] [workflow]
+- **Do not name a cause before reading the "before"** — "the font subsetting dropped U+202F" was wrong: the full source fonts never had the glyph (cmap read from the `.woff2` with Node alone). 2026-11-19, `src/styles/fonts.css`, [site-polish]. [workflow]
 
 ### Architecture
 
@@ -53,6 +57,9 @@
 - **React 19 emits hoistable `<title>/<meta>/<link>` at the start of `renderToString` output; `scripts/prerender.ts` moves them into `<head>`** — handover 2026-11-09. [architecture]
 - **`entry-client` checks `root.firstElementChild`, not `hasChildNodes()`, before hydrating** — the dev `index.html` keeps the `<!--app-html-->` marker inside `#root` — `src/entry-client.tsx:20`. [architecture]
 - **`react-hooks/set-state-in-effect` is an error here: derive state or set it inside a callback (`requestAnimationFrame`) in the effect** — handover 2026-11-09, `CLAUDE.md` "Hydration safety". [architecture]
+- **`global.css` is imported after the component modules, so at equal specificity a global utility beats a module class on the same element** — `.btn` hid the hero ghost button's outline, `.container` cancelled `.prose` (150-character lines). A module rule that overrides a utility needs two classes (`.heroActions .heroGhost`) or targets the children (`.prose > *`). `3741eb4`, [site-polish]. [architecture] [design]
+- **A counter or live region for an animated move shows the destination, never the positions on the way; `scrollend` is not "came to rest"** — Chromium fires it for an animation that a newer programmatic scroll replaced, and Chromium and WebKit drop a smooth scroll when its scroll container takes focus. The carousel keeps the target in a ref and checks arrival per frame while a move is in flight. `AlbumSection.tsx` (`ensureArrival`), `a9150b0`, [site-polish]. [architecture]
+- **Anything locale- or time-dependent that the form needs is set after mount through a ref** (the date input's `min`), never in render — PRD D-18. `InquiryForm.tsx`, [site-polish]. [architecture]
 
 ### Testing
 
@@ -78,6 +85,9 @@
 - **`hrefLang` is emitted camel-cased in the prerendered HTML — assert and grep case-insensitively** — handover 2026-11-09, `curl https://fiorevera.vercel.app/de/verleih/`. [domain-move]. [testing]
 - **Node ESM (Playwright) needs import attributes for JSON — specs read locale JSON via `fs`** — `tests/e2e/locales.ts`, handover 2026-11-09. [testing]
 - **For an audit script write the negative test first** (remove two register entries, expect two findings) — the first `audit:gdpr` run produced false positives from comments. 2026-11-10, [gdpr]. [testing]
+- **A flaky e2e test is a bug report until proven otherwise: make the race deterministic in a test first, then fix** — "arrows and keys" failed 1 run in 16 in Firefox; the cause was a real stale-index race in the carousel. Technique: wait for `scrollLeft > 2`, record every counter text with a MutationObserver, repeat the spec (`--repeat-each`) in all four browsers. `tests/e2e/gallery.spec.ts`, `a9150b0`, [site-polish]. [testing]
+- **Measure contrast over a photo on every pixel behind the text, with transitions switched off** — a `color` transition mid-flight produced a false 1.98:1; the real worst cases were 3.0 (lead) and 2.4 (subtitle). The hero gradient stops in `home.module.css` are measured values (320–1920 px, three locales). [site-polish]. [testing] [design]
+- **Show a taste option as the real page with the option applied, at the width where it matters, before it is built** — "price first" was picked from a crop and rejected on desktop once built. Review round 2, 2026-11-18, [site-polish]. [testing] [owner-preference]
 
 ### Tooling
 
@@ -100,6 +110,10 @@
 - **Strip comments before pattern-matching source** — the first audit flagged hosts and keys that lived in JSDoc only — `code()` helper, `.agent/skills/gdpr-guardian/scripts/audit-personal-data.ts:29-30`. [gdpr]. [tooling]
 - **Do not read a huge binary to find a cause when an experiment answers faster** — a `grep -o` on the 161 MB `XUL` library ran past the 2-minute limit (`grep -c -a` to locate at most). [firefox-e2e]. [tooling]
 - **Docs connector: `projection` reads cannot ride in a `batch`; load the standalone `read` tool first.** [domain-move]. [tooling]
+- **The app's Browser pane is a background page while it is hidden: no `requestAnimationFrame`, no smooth scrolling** — a manual check of the carousel there proved nothing; `tabs_context` says whether the pane is hidden. Use the e2e engines for anything animated. 2026-11-19, [site-polish]. [tooling]
+- **`rtk` rewrites `curl` output as well: use `rtk proxy curl` for JSON; the unauthenticated GitHub API allows 60 calls an hour** — `release:cleanup` could not ask GitHub after a series of status checks. 2026-11-19, [site-polish]. [tooling]
+- **web3forms.com answers 403 to plain fetches — read it in a browser; unknown payload keys are forwarded to the mail as-is, reserved keys are `access_key`, `email`, `subject`, `replyto`, `ccemail`, `redirect`, `botcheck`, `from_name`** — 2026-11-16, [site-polish]. [tooling] [ops]
+- **Scratch test files inside the repo are picked up by Vitest and ESLint** — a private copy of a spec turned the unit run red. Keep them in the session scratchpad or delete them before the gates. [site-polish]. [tooling]
 
 ### Design
 
@@ -123,6 +137,8 @@
 - **A DPR-2 desktop picks the 1920 full tier for a `sizes="100vw"` hero** — the 1280 tier only serves 1280-px DPR-1 screens and DPR-2 phones. [seo-webvitals]. [architecture]
 - **Vercel sends `permanent: true` redirects as 308, not 301** — Google treats both as permanent; the MASTER-PLAN "301" DoD is met in substance — `curl -I https://www.fiorevera.hu/viragoskert/`, 2026-11-16. [domain-move]. [seo]
 - **Reference measurement, live home page, 2026-11-16 10:15 (PageSpeed mobile, Lighthouse 13.6.0, before `2f97d84` was deployed):** Performance 90 · Accessibility 100 · Best Practices 100 · SEO 100; FCP 0.9 s · LCP 3.6 s · TBT 30 ms · CLS 0; no field data yet. [seo-webvitals] §1. [seo]
+- **The sitemap `lastmod` fingerprint covers every byte of `src/data/**`: a comment there moves the date of all 21 routes** — keep notes out of data files. 2026-11-19, [site-polish]. [seo]
+- **U+202F (the narrow no-break space in every price) is not in the brand fonts and never was** — it comes from the visitor's fallback font; a space draws no ink, only the gap's width varies. Nothing to add to the subset. `src/styles/fonts.css`, [site-polish]. [seo] [design]
 
 ### Legal/GDPR
 
