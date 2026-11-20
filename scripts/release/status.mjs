@@ -76,6 +76,22 @@ async function preview(slug, pr) {
   };
 }
 
+// BACKLOG.md "In flight" table: the branch names in the first cell of each row.
+// A row that names a branch which no longer exists, or one that is merged, is drift.
+export function inFlightBranches(text) {
+  const start = text.search(/^## .*In flight/m);
+  if (start < 0) return null; // no such section
+  const rest = text.slice(start).split('\n').slice(1);
+  const end = rest.findIndex((l) => /^(## |---\s*$)/.test(l));
+  const rows = (end < 0 ? rest : rest.slice(0, end)).filter((l) => l.startsWith('|'));
+  const names = [];
+  for (const row of rows) {
+    const cell = row.split('|')[1] ?? '';
+    for (const m of cell.matchAll(/`([a-z]+\/[A-Za-z0-9._\/-]+)`/g)) names.push(m[1]);
+  }
+  return names;
+}
+
 export async function collect({ cwd = process.cwd(), fetchFirst = false, previews = false } = {}) {
   const top = git(['rev-parse', '--show-toplevel'], cwd);
   if (!top) throw new Error(`${cwd} is not inside a git checkout`);
@@ -209,6 +225,31 @@ export async function collect({ cwd = process.cwd(), fetchFirst = false, preview
     readFileSync(path.join(hooksDir, f), 'utf8').includes('FV-GUARD');
   const note = '.agent/last-session-handover.md';
 
+  // BACKLOG.md drift: pull requests merged since the file last changed on main, and rows of its
+  // "In flight" table that name a branch which is gone or merged (goodbye step 4 fixes both)
+  const backlogFile = path.join(top, 'BACKLOG.md');
+  let mergedSince = null;
+  if (base && existsSync(backlogFile)) {
+    mergedSince = 0;
+    for (const m of (g('rev-list', '--first-parent', '--merges', '-n', '30', base) ?? '')
+      .split('\n')
+      .filter(Boolean)) {
+      if (g('diff', '--name-only', `${m}^1`, m, '--', 'BACKLOG.md')) break;
+      mergedSince += 1;
+    }
+  }
+  const named = existsSync(backlogFile)
+    ? inFlightBranches(readFileSync(backlogFile, 'utf8'))
+    : null;
+  const staleInFlight = (named ?? [])
+    .map((name) => {
+      const known = [...locals, ...remotes].filter((b) => b.name === name);
+      if (!known.length) return { name, why: 'no such branch here or on origin' };
+      if (known.every((b) => !b.keep)) return { name, why: known[0].why };
+      return null;
+    })
+    .filter(Boolean);
+
   return {
     top,
     branch,
@@ -239,6 +280,13 @@ export async function collect({ cwd = process.cwd(), fetchFirst = false, preview
     handover: {
       lastCommitted: g('log', '-1', '--format=%cs', '--', note),
       headCommitted: g('log', '-1', '--format=%cs'),
+    },
+    backlog: {
+      exists: existsSync(backlogFile),
+      lastChangedOnMain: base ? g('log', '-1', '--format=%cs', base, '--', 'BACKLOG.md') : null,
+      mergedSince,
+      inFlightSection: named !== null,
+      staleInFlight,
     },
   };
 }
@@ -303,6 +351,15 @@ function print(s) {
   );
   line(
     `Handover note   last committed ${s.handover.lastCommitted ?? 'never'} (latest commit here: ${s.handover.headCommitted})`
+  );
+  const b = s.backlog;
+  line(
+    `BACKLOG.md      last changed on main ${b.lastChangedOnMain || 'never'}${b.mergedSince ? `   ⚠ ${b.mergedSince} pull request(s) merged since without touching it: check that their items are closed (goodbye step 4)` : ''}`
+  );
+  if (b.exists && !b.inFlightSection)
+    line('                ⚠ no "In flight" section: add it (goodbye step 4)');
+  b.staleInFlight.forEach((r) =>
+    line(`                ⚠ "In flight" names \`${r.name}\`: ${r.why} → update the table`)
   );
   const dead = [...s.locals, ...s.remotes].filter((b) => !b.keep);
   if (dead.length) line(`\n${dead.length} branch(es) marked ✗ can go: npm run release:cleanup`);

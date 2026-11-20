@@ -52,7 +52,8 @@ Run these steps in order, then report the results as a table (see below).
    - rtk proxy git branch -r --merged origin/main → merged-but-undeleted remote branches
    - rtk proxy git worktree list                  → leftover worktrees
    - curl -s "https://api.github.com/repos/sebokgabor84/fiorevera/pulls?state=open"   → open pull requests (no gh CLI; keep the quotes in zsh)
-   - If dirty: ask user whether to stash, commit, or leave as-is
+   - If dirty: ask the user whether to commit on the branch or leave as-is. Never stash: the stash is
+     shared by every worktree and session
    - List merged branches, leftover worktrees and open pull requests in the report; delete nothing
      without the owner's yes. A branch with no commits of its own also shows as "merged" — check
      whether a live sub chat owns it. Never remove a worktree or branch while its session may be
@@ -67,10 +68,20 @@ Run these steps in order, then report the results as a table (see below).
      the harvest files stay in the repo as the raw record
    - Kept sub chats are listed in the handover with branch, worktree and scope
 
-4. BACKLOG.md sync:
-   - Mark completed items as [x]
-   - Append emergent ideas as [ ]
-   - Note in-progress items [/] in handover
+4. BACKLOG.md sync — MANDATORY at every close and every pause, never "skipped" (owner, 2026-11-20):
+   - npm run release:status                     → its BACKLOG.md lines are the drift report: pull requests
+     merged since the file last changed on main, and "In flight" rows whose branch is gone or merged
+   - For every pull request merged since the last close (rtk proxy git log --first-parent --merges
+     origin/main): find the lines it closes and mark them [x] with the date and the pull request number.
+     Close the twin too: an item under "Harvest" often has a second line under "Owner decisions"
+   - Rewrite the "In flight" table from `git worktree list` and the open pull requests, with today's
+     date in its heading; a merged branch leaves the table
+   - Every item in section 4 and section 6 of a harvest note written this session has a line
+     (append as [ ]; owner decisions as **[OWNER]** under "Owner decisions")
+   - Append emergent ideas as [ ]; note in-progress items [/] in the handover
+   - Done when `npm run release:status` prints the BACKLOG.md line without a ⚠, or each remaining ⚠ is
+     explained in the report (a merge that closed no item is a valid explanation — say which)
+   - The edit lands like any other: on the close branch, through a pull request (step 9)
 
 5. README.md & AGENTS.md freshness:
    - Confirm "Current iteration" matches actual state
@@ -110,7 +121,7 @@ Run these steps in order, then report the results as a table (see below).
 | **Git state** | clean / dirty — [detail]; branch [name], [n] commits ahead of `origin/main` |
 | **Branches, worktrees, pull requests** | merged-but-undeleted: [list or none] · leftover worktrees: [list or none] · open pull requests: [list or none] |
 | **Side-session harvest** | [n] notes in `.agent/harvest/` · consolidated yes / no · chats removed / kept: [names] |
-| **BACKLOG.md** | synced / [items updated] |
+| **BACKLOG.md** | [n] closed · [n] added · "In flight" table dated [date] · `release:status`: clean / [each ⚠ explained] — never "skipped" |
 | **README.md & AGENTS.md** | fresh / updated / open questions resolved |
 | **Session Learnings Logged** | `.agent/memory.md` updated with [summary of key learnings] |
 | **Improvement Ideas** | 1–3 self-improvement proposals for future sessions |
@@ -124,9 +135,10 @@ Run these steps in order, then report the results as a table (see below).
 ## Rules
 
 - **Do not end silently** — if the user starts saying goodbye or says "we pause" without invoking this skill, ask once whether to run the close routine.
-- **A pause counts** — the ritual runs at every pause, not only at the end of the work. A short pause may report DoD steps as "skipped — <reason>", but steps 0, 2, 6 and 8 always run.
+- **A pause counts** — the ritual runs at every pause, not only at the end of the work. A short pause may report DoD steps as "skipped — <reason>", but steps 0, 2, 4, 6 and 8 always run.
 - **No commit without GO** — if uncommitted changes exist, ask the user whether to commit before closing. Never commit silently.
 - **Never commit on `main`** — `main` deploys production. The close commit goes on a branch and through a pull request.
+- **The backlog is part of every goodbye** — step 4 runs at every close and pause and is checked by code (`npm run release:status`, and the session-start report prints the same warning). On 2026-11-20 the "In flight" table still named three branches that had been merged and deleted two days earlier, and two owner decisions were listed as open although their work had shipped.
 - **Harvest before delete** — no sub chat is archived or deleted before its `.agent/harvest/<name>.md` exists and has been consolidated.
 - **Git facts through `rtk proxy`** — anything that decides a delete, a merge or a push is read with `rtk proxy git …`, never from rtk-reformatted output.
 - **Memory Persistence** — always update `.agent/memory.md` with session learnings and write `.agent/last-session-handover.md` so Vera's next session boot inherits the latest intelligence (`.agent/hooks.json` injects the note in the Antigravity IDE only; in Claude Code the boot sequence reads it by hand).

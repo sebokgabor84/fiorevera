@@ -129,9 +129,8 @@ Run home, gallery, rental, contact in HU + one DE/EN each; rerun a Performance o
 
 | Item | Reference |
 |---|---|
-| `Product`/`Offer` on the rental page, `priceRange`/`geo` on the business | `BACKLOG.md` `[SEO]` M3 entry; QA minors |
+| `Product`/`Offer` on the rental page, `priceRange`/`geo` on the business | `BACKLOG.md` `[SEO]` "Structured data left over from QA M3" |
 | `BreadcrumbList` | `docs/qa/2026-11-09-qa-session.md` → Minor findings → SEO |
-| Sitemap `lastmod` | `BACKLOG.md` `[SEO]` M3 entry |
 | `og:image:width/height/alt`, `twitter:image:alt`, `og:locale:alternate`, per-page og:image | QA minors → SEO |
 | Home `<h1>` is brand-only ("Fiore Vera"); topic words live in the subtitle | QA minors → SEO (copy sign-off, R-1) |
 | Contact pages thinnest (≈ 700 chars) | QA minors → SEO |

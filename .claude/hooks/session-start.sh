@@ -106,5 +106,18 @@ if [ -f "$note" ]; then
       ;;
   esac
 fi
+if [ -f "$top/BACKLOG.md" ] && git -C "$top" rev-parse -q --verify origin/main >/dev/null 2>&1; then
+  b_n=0
+  for m in $(git -C "$top" rev-list --first-parent --merges -n 30 origin/main 2>/dev/null); do
+    git -C "$top" diff --quiet "$m^1" "$m" -- BACKLOG.md 2>/dev/null || break
+    b_n=$((b_n + 1))
+  done
+  b_day="$(git -C "$top" log -1 --format=%cs origin/main -- BACKLOG.md 2>/dev/null)"
+  if [ "$b_n" -gt 0 ]; then
+    echo "BACKLOG.md: last changed on main ${b_day:-never} — ⚠ $b_n pull request(s) merged since without touching it. Check that their items are closed (npm run release:status, goodbye step 4)."
+  else
+    echo "BACKLOG.md: last changed on main ${b_day:-never}"
+  fi
+fi
 echo "Release rules: .agent/skills/release-manager/SKILL.md — GO 1 = commit and push the branch, GO 2 = the owner merges the pull request. Close or pause with the goodbye ritual."
 exit 0

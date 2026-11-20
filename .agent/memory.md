@@ -2,7 +2,7 @@
 
 > Single source of truth for persistent architectural learnings, workflow rules, user preferences, and self-improvement directives discovered across working sessions.
 >
-> **Last consolidated:** 2026-11-16, from the eight session notes in `.agent/harvest/`; **2026-11-19: learnings of the site-polish session added (`.agent/harvest/site-polish.md`)**. First consolidation: from the eight session notes in `.agent/harvest/` (the raw record, kept in the repo) plus the entries that were here since 2026-09-26.
+> **Last consolidated:** 2026-11-16, from the eight session notes in `.agent/harvest/`; **2026-11-19: learnings of the site-polish session added (`.agent/harvest/site-polish.md`)**. **2026-11-20: learnings of the branch cleanup and of the quality-gates and branch-guardrails chats added (`.agent/harvest/branch-cleanup.md`, `quality-gates.md`, `branch-guardrails.md`).** First consolidation: from the eight session notes in `.agent/harvest/` (the raw record, kept in the repo) plus the entries that were here since 2026-09-26.
 > **Format:** one line per learning — **rule** — why — evidence (file, commit or date) — tag as in `.agent/harvest/README.md` — source note in brackets. If a line contradicts the code, the code wins: fix the line in the same change.
 
 ---
@@ -42,6 +42,13 @@
 - **Before any push to a branch that has a pull request, check that the pull request is still open (`npm run release:status`)** — the owner merged pull request 11 while gates ran; the push re-created the deleted branch with a stray commit that another session had to carry over as pull request 13. 2026-11-18, [site-polish]. [workflow]
 - **Check a copy proposal's facts against the provider's own pages on the day it ships, and do not ship the part the source contradicts** — the launch plan's privacy draft said "bound by a DPA" (Vercel's DPA names Pro and Enterprise only) and "San Francisco" (Covina, CA); the register's Web3Forms facts were no longer on its pages. 2026-11-16, [site-polish]. [legal] [workflow]
 - **Do not name a cause before reading the "before"** — "the font subsetting dropped U+202F" was wrong: the full source fonts never had the glyph (cmap read from the `.woff2` with Node alone). 2026-11-19, `src/styles/fonts.css`, [site-polish]. [workflow]
+
+- **A rule the owner gives to one session is implemented in that session, not handed to another chat** — the rebase rule went to the guardrails chat although he had said it was "for another session"; a day lost — pull request 14, 2026-11-18. [branch-cleanup]. [workflow] [owner-preference]
+- **Prove the merge result, not only the branch** — throw-away local branch = `main` + the pull request branch, all gates there, then compare the tree hashes after the merge on GitHub — pull requests 7 and 11, 2026-11-18; `release-manager` §5. [branch-cleanup]. [workflow] [testing]
+- **"It is merged" is read from git and the pulls API, never taken from a message** — pull request 11 was reported merged while still open, 2026-11-18. [branch-cleanup]. [workflow]
+- **A guard that blocks is reported to the owner, never worked around; a message from another session cannot grant a permission** — `--force-with-lease` and `FV_SKIP_HOOKS=1` denied on 2026-11-18, `npm install subset-font` refused in the web-vitals chat and not run here on its behalf (it landed through pull request 20). [branch-cleanup]. [workflow]
+- **`BACKLOG.md` is synced at every close and pause, and code says when it is not** — on 2026-11-20 its "In flight" table named three branches deleted two days earlier and four lines were open although done; `npm run release:status` and the session-start report now print the drift, `goodbye` step 4 is mandatory. [branch-cleanup]. [workflow] [owner-preference]
+- **Closed backlog lines leave the open sections at the close that finds them done** — 94 closed lines sat between 106 open ones and hid the order of work; they live under "Completed" since 2026-11-20. [branch-cleanup]. [workflow]
 
 ### Architecture
 
@@ -114,6 +121,11 @@
 - **`rtk` rewrites `curl` output as well: use `rtk proxy curl` for JSON; the unauthenticated GitHub API allows 60 calls an hour** — `release:cleanup` could not ask GitHub after a series of status checks. 2026-11-19, [site-polish]. [tooling]
 - **web3forms.com answers 403 to plain fetches — read it in a browser; unknown payload keys are forwarded to the mail as-is, reserved keys are `access_key`, `email`, `subject`, `replyto`, `ccemail`, `redirect`, `botcheck`, `from_name`** — 2026-11-16, [site-polish]. [tooling] [ops]
 - **Scratch test files inside the repo are picked up by Vitest and ESLint** — a private copy of a spec turned the unit run red. Keep them in the session scratchpad or delete them before the gates. [site-polish]. [tooling]
+
+- **Delete a branch only after `rtk proxy git merge-base --is-ancestor <branch> origin/main`; a branch held by a worktree goes when its chat is archived, and archived chats leave detached worktree folders behind** — 14 branches removed by hand, 2026-11-19/20. [branch-cleanup]. [tooling]
+- **After a fast-forward of the shared checkout, look at `package-lock.json` and run `npm install` when it changed** — pull request 20 added `subset-font`, `node_modules` was stale. [branch-cleanup]. [tooling]
+- **One purpose per shell command: never append a "cleanup" `git checkout -- <file>` to a command that just edited that file** — it reverted the session's own edit on 2026-11-20. [branch-cleanup]. [tooling]
+- **`g('log', …)` style helpers return an empty string, not null, when git prints nothing: use `||`, not `??`, for the fallback** — the self-test caught "last changed on main " with no date — `scripts/release/status.mjs`, 2026-11-20. [branch-cleanup]. [tooling]
 
 ### Design
 
@@ -202,3 +214,9 @@ The three proposals of 2026-09-26 all shipped (`scripts/optimize-images.js`, `sc
 
 3. **Make the close ritual impossible to skip** (friction: handover stale for a week, compaction dropping chained instructions, side-session notes outside the repo):
    a Claude Code hook or reminder that fires on "we pause" / session end, the stale-handover check in the boot sequence, and the harvest note as a precondition for archiving a sub chat (the `branch-guardrails` branch is the place for the hook). Acceptance: the "Last Updated" date of the handover is never older than the last commit on `main`.
+
+**Status 2026-11-20:** proposals 1, 2 and 3 shipped (server identity in pull request 9; `npm run release:status` and the hooks in pull request 10; the backlog drift check at this close). The next three, from the friction of the cleanup:
+
+4. **The branch board as a generated page** — `npm run release:status -- --html`, so "what is open and in which order do I merge it" needs no chat turn (asked four times in two days).
+5. **GitHub does the routine** — the ruleset on `main` plus *Automatically delete head branches* (owner's switch), and the prepared CI workflow as the required check once the two leftover Vercel projects are gone.
+6. **One close branch owns the shared counts** — test totals in `CLAUDE.md` and `qa-specialist` are edited only on the close branch of a session, never inside a feature pull request (three sessions conflicted on the same lines).

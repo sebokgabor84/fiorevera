@@ -193,5 +193,15 @@ if printf '%s' "$report" | grep -q '1 behind   ⚠ behind main → git fetch && 
 out="$(git push origin "$(git rev-parse feature/part-b)":refs/tags/selftest-tag 2>&1)" && ok "a tag push is not subject to the branch rule" || bad "tag push failed: $out"
 
 echo ""
+echo "8. BACKLOG.md drift is reported (scripts/release/status.mjs, goodbye step 4)"
+printf '%s\n' '# Backlog' '' '## In flight (test)' '' '| Branch / chat | Takes |' '|---|---|' '| `feature/part-b` | still here |' '| `feature/long-gone` | merged and deleted |' '| kept chat "x" | mentions `docs/some/file.md` in the second cell: `feature/not-a-row-name` |' '' '---' >BACKLOG.md
+report="$(node "$src/scripts/release/status.mjs" 2>&1)"
+if printf '%s' "$report" | grep -q '"In flight" names `feature/long-gone`: no such branch'; then ok "release:status flags an In-flight row whose branch is gone"; else bad "status did not flag the stale In-flight row: $(printf '%s' "$report" | tail -6)"; fi
+if printf '%s' "$report" | grep -q -e 'names `feature/part-b`' -e 'names `feature/not-a-row-name`'; then bad "status flagged a live branch or a name outside the first cell: $(printf '%s' "$report" | tail -6)"; else ok "a live branch and names outside the first cell are left alone"; fi
+rm -f BACKLOG.md
+report="$(node "$src/scripts/release/status.mjs" 2>&1)"
+if printf '%s' "$report" | grep -q 'BACKLOG.md      last changed on main never'; then ok "a checkout without BACKLOG.md is reported, not an error"; else bad "status without BACKLOG.md: $(printf '%s' "$report" | tail -4)"; fi
+
+echo ""
 echo "release selftest: $pass passed, $fail failed"
 [ "$fail" -eq 0 ]
