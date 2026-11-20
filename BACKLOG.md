@@ -41,8 +41,8 @@ Work that sits on a branch or in a kept chat right now, rewritten at every close
 
 | Branch / chat | Takes |
 |---|---|
-| `claude/vera-concierge-7826b5` | concept of Vera's CMS-manager agent: `docs/vera-agent/PRD.md` (51 KB) is **uncommitted** in that chat's worktree, the branch has no commit of its own; waits for the owner's design interview |
-| kept chat "Domain move" (no branch) | Rackhost transfer (launch plan §0a Track B) |
+| Vera concierge concept (pull request 22, open) | `docs/vera-agent/PRD.md` and the chat's note `.agent/harvest/vera-concierge.md`, committed on 2026-11-20 (`d8f41c4`). Concept only, nothing is built; the merge puts the text into git and does not approve it. The chat is closed |
+| Rackhost transfer (no branch, no chat) | launch plan §0a Track B. The "Domain move" chat was closed on 2026-11-20 with nothing new since its note of 2026-11-16; the next step is the owner's: read registrant and registrar on domain.hu |
 
 ---
 
@@ -113,7 +113,7 @@ Every open item from section 4 of the session notes in `.agent/harvest/` (first 
 
 ### Added at the close of 2026-11-20
 
-From the notes of the last closed chats (`site-polish`, `seo-webvitals`, `branch-cleanup`) that had no line here.
+From the notes of the last closed chats (`site-polish`, `seo-webvitals`, `quality-gates`, `branch-guardrails`, `vera-concierge`, `branch-cleanup`) that had no line here.
 
 - [ ] **[A11Y]** Mobile menu: `main` is not `inert` while the menu is open, so a screen reader can still walk the page behind it; acceptance: axe green and the page behind is unreachable by VoiceOver swipe; size S — `src/components/Layout/Header.tsx`, `.agent/harvest/site-polish.md` _(added: 2026-11-20)_
 - [ ] **[A11Y]** Gallery carousel: 45 tab stops across the gallery and the arrow buttons of all 15 albums share two names; options: one tab stop per carousel, album name in the button label; owner: y — `src/components/Gallery/AlbumSection.tsx`, `.agent/harvest/site-polish.md` _(added: 2026-11-20)_
@@ -137,6 +137,13 @@ From the notes of the last closed chats (`site-polish`, `seo-webvitals`, `branch
 - [ ] **[QA]** Tests pin content counts (15 albums, 169 images, 7 rental items), so adding one album turns the gates red by design; the concierge asks for invariants derived from the data; size M; owner: y — `tests/unit/data.test.ts`, `tests/e2e/gallery.spec.ts`, `tests/e2e/rental.spec.ts`, `.agent/harvest/branch-guardrails.md` _(added: 2026-11-20)_
 - [ ] **[ASSETS]** Check: `npm run optimize:assets` on a checkout without the full `assets-src/` rebuilds `imageMeta.ts` from the folders present and deletes "orphans" (noted by the concierge, not verified); size S — `scripts/optimize-images.js`, `.agent/harvest/branch-guardrails.md` _(added: 2026-11-20)_
 - [ ] **[DOCS]** Document the fields of `npm run release:status -- --json` (the concierge reads them); size S — `.agent/skills/release-manager/SKILL.md`, `.agent/harvest/branch-guardrails.md` _(added: 2026-11-20)_
+- [ ] **[FEATURE]** CMS Coordinator, the foundation (stage 0): the `cms-coordinator` skill, `scripts/content/*` with unit tests, the Hungarian one-page guide, the registry entries; blocked by the owner's approval of the PRD; size L; owner: y — `docs/vera-agent/PRD.md` §3.7, `.agent/harvest/vera-concierge.md` _(added: 2026-11-20)_
+- [ ] **[ASSETS]** Slot-scoped photo intake with a shared encoder module (R2): the global script must refuse to run when `assets-src/` lacks a slot the manifest has, otherwise it can empty the gallery on a machine without the originals; HEIC intake through `sips` for iPhone photos (R3); size M; owner: y — `scripts/optimize-images.js`, `.agent/harvest/vera-concierge.md` _(added: 2026-11-20)_
+- [ ] **[QA]** Review page for Vera: Hungarian mode and an approver line (R4); "Before" built from `main` on the same machine, so a second Mac or a cloud session compares like with like; size M; owner: y — `scripts/visual-review-page.ts`, `playwright.visual.config.ts`, `.agent/harvest/vera-concierge.md` _(added: 2026-11-20)_
+- [ ] **[FEATURE]** Announcement strip / opening information on the site: no data model and no component exist; size M; owner: y — `docs/vera-agent/PRD.md` §8, `.agent/harvest/vera-concierge.md` _(added: 2026-11-20)_
+- [ ] **[AGENTS]** Persona rename (R8: the coordinator persona "Vera" shares its name with the owner Vera; two skill lines mean the persona) and the agent file `.claude/agents/cms-coordinator.md` (R9); owner: y — `AGENTS.md`, `.agent/harvest/vera-concierge.md` _(added: 2026-11-20)_
+- [ ] **[DOCS]** `docs/vera-agent/PRD.md` has three lines that went stale between 2026-11-18 and 2026-11-20 (the review page is on `main`, `CLAUDE.md` is current); correct them when the PRD is next edited — `.agent/harvest/vera-concierge.md` §4 _(added: 2026-11-20)_
+- [ ] **[HARNESS]** `.agent/hooks.json` is an Antigravity file Claude Code does not read; `.claude/hooks/session-start.sh` does that job now — keep or remove; owner: y — `.agent/hooks.json`, `.agent/harvest/vera-concierge.md` _(added: 2026-11-20)_
 
 
 ---
@@ -180,8 +187,8 @@ Every item from section 6 of the session notes: decisions and manual steps that 
 - [ ] **[OWNER]** Confirm that Search Console → Sitemaps shows *Success* for `https://www.fiorevera.hu/sitemap.xml`, and look at the field Core Web Vitals there in about 4 weeks (no CrUX data yet) — `docs/launch/domain-and-hosting-plan.md`, `.agent/harvest/domain-move.md`, `.agent/harvest/seo-webvitals.md` _(added: 2026-11-16)_
 - [ ] **[OWNER]** May the full image tier also drop to quality 76? Look at the hero at 1920 px on a Retina screen. Recommendation: yes, the gain is small but free — `scripts/optimize-images.js`, `.agent/harvest/seo-webvitals.md` _(added: 2026-11-16)_
 - [ ] **[OWNER]** Bring Vera's own checkout to the current `main`, so her Claude has `npm run visual:page` and the release guards — `.agent/harvest/site-polish.md` _(added: 2026-11-20)_
-- [ ] **[OWNER]** Vera concierge: answer the design interview, and give a GO to commit `docs/vera-agent/PRD.md` on `claude/vera-concierge-7826b5` — the 51 KB concept exists only as an uncommitted file in that chat's worktree. Recommendation: commit first, interview second — `.agent/harvest/branch-cleanup.md` _(added: 2026-11-20)_
-- [ ] **[OWNER]** Vera concierge, two questions its concept asks: approve or reject the content lane (the agent would merge content-only pull requests itself; needs the `gh` CLI), and keep the fixed content counts in the tests or derive them from the data. No recommendation in the notes — `.agent/harvest/branch-guardrails.md` §6 _(added: 2026-11-20)_
+- [/] **[OWNER]** Vera concierge: the concept is in git since 2026-11-20 (`d8f41c4`, pull request 22). Still the owner's: approve or change the PRD — nothing may be built before that; confirm the channel reading (Mac first, cloud second — recommended); the photo fallback for cloud sessions (shared cloud folder recommended); the escalation channel from Vera to Gabor; the setup by hand on Vera's Mac (app, Git, Node 22, clone, `npm ci`) — `docs/vera-agent/PRD.md`, `.agent/harvest/vera-concierge.md` §6 _(added: 2026-11-20)_
+- [ ] **[OWNER]** Vera concierge, the requests R1–R9 of its concept, each yes or no: derived content counts (R1), slot-scoped photo intake (R2), HEIC intake (R3), Hungarian review page (R4), content lane where the agent merges content-only pull requests itself and needs the `gh` CLI (R5), gate set for content changes: two browsers plus axe (recommended) or all four (R6), the ruleset on `main` (R7), persona rename (R8), agent file (R9). R1, R2 and R5 come before the first real album — `docs/vera-agent/PRD.md` §7, `.agent/harvest/vera-concierge.md` §4 and §6 _(added: 2026-11-20)_
 
 ---
 
