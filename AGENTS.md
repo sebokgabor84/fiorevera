@@ -209,7 +209,7 @@ and dramatically improve. Do not copy verbatim — eliminate all known bugs.
 
 The two garden URLs are permanent redirects; Vercel sends them as **308** (not 301 — search engines treat both the same). Single source in code: `src/data/routes.ts` (router, `SeoHead`, hreflang, sitemap, prerender all read it).
 
-Live behaviour (verified 2026-11-16): all 14 legacy HU + DE page URLs answer 200 or the permanent redirect on https://www.fiorevera.hu. Vercel sends the two permanent redirects as HTTP **308**, not 301 (Google treats both as permanent); whether the wording changes or `vercel.json` forces a literal 301 is an owner decision in `BACKLOG.md`. Unknown URLs answer HTTP 404 with one `dist/404.html`; the client renders the 404 page in the path's locale.
+Live behaviour (verified 2026-11-16): all 14 legacy HU + DE page URLs answer 200 or the permanent redirect on https://www.fiorevera.hu. Vercel sends the two permanent redirects as HTTP **308**, not 301 (Google treats both as permanent); the owner decided on 2026-11-18 to keep 308. Unknown URLs answer HTTP 404 with one `dist/404.html`; the client renders the 404 page in the path's locale.
 
 ### Confirmed Visual Design Direction (from live site audit, 2026-09-26)
 
@@ -243,8 +243,9 @@ The existing aesthetic is **correct and should be elevated, not replaced**:
 
 | Hook | Action |
 |---|---|
-| Session start | Scan for stale statuses; surface drift |
+| Session start | Scan for stale statuses; surface drift — the session-start report and `npm run release:status` print a ⚠ when pull requests were merged without touching the file or when the "In flight" table names a branch that is gone |
 | Task completion | Mark `[x]`, update before commit |
+| Session close or pause (`goodbye` step 4) | **Mandatory, never skipped:** close the items of every merged pull request, rewrite the "In flight" table, add the harvest items; done when `npm run release:status` shows the BACKLOG.md line without a ⚠ or each ⚠ is explained |
 | User says "we should…", "idea:", "what about…" | Append `[ ]` immediately |
 | Out-of-scope idea found during build | Append to BACKLOG — **never** into MASTER-PLAN |
 

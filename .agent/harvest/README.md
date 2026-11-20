@@ -1,4 +1,4 @@
-# Session harvest — 2026-11-16
+# Session harvest (started 2026-11-16)
 
 One file per working session (`<session-name>.md`), written by that session from its own context,
 so nothing learned in a sub chat is lost when the chat is deleted. The overarching session
@@ -37,4 +37,7 @@ Session: <name> · period: <first day>–<last day> · commits: <hashes on main>
 ```
 
 Rules for the writing session: write only your own file in this folder, change nothing else,
-commit nothing, do not switch branches (the shared checkout is on `chore/goodbye-harvest`).
+commit nothing without the owner's GO, do not switch branches. A chat with its own worktree writes
+the note on its close branch (`chore/session-close-<name>`); a chat that is closed without one gets
+its note written by the coordinating session from its working notes — as happened for
+`quality-gates` and `branch-guardrails` on 2026-11-20, two days after they were merged.

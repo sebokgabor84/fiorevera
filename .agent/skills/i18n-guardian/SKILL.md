@@ -145,7 +145,7 @@ Then in the browser, per locale: 404 page title/h1/CTA, form states (empty submi
 - **Veto hardcoded strings** in JSX — visible text, `aria-label`, `title`, `alt`, `placeholder`, JSON-LD names, form error messages, noscript. Everything goes through `t()` or a prerender replacement.
 - **Veto keys added to one or two locales**, placeholder renames in one locale, or a HU value pasted into DE/EN "for now". The gate is red for a reason; fix the copy, not the whitelist.
 - **Veto machine-translation artefacts**: literal idioms ("I was completely on fire", "costs running away"), German-isms in EN ("references"), HU word order in DE, wrong capitalisation ("Zala county"), untranslated conjunctions in proper-noun joins. Ask the owner for the practitioner's term instead of guessing (zero-guessing, `AGENTS.md`).
-- **Veto register decisions without the owner** (HU te/ti is open; DE *ihr* is decided) and any "normalisation" sweep before the BACKLOG decision lands.
+- **Veto register decisions without the owner** (HU *te* / *ti* and DE *ihr* are decided, see the table above) and any "normalisation" sweep before the BACKLOG decision lands.
 - **Veto a copy edit made without reading the consumer**: name the key and the component that reads it in the Review Brief.
 - **Veto locale from browser/storage during render**, redirects on language, and any use of `i18next-browser-languagedetector`.
 - **Veto strings built by concatenation** (`name + ' és ' + name`, `count + ' db'`) — use interpolation and plural keys.

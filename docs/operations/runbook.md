@@ -193,7 +193,7 @@ curl -I https://www.fiorevera.hu/nincs-ilyen/     # 404
 7. **A check "fails" but is by design:** 308 instead of 301 on the two redirects; the HU shell in `curl` on `/de/<unknown>/`; `hrefLang` in camel case; the native date input showing `mm/dd/yyyy` in the visual baselines. [h:domain-move §2], [h:baseline-review §2]
 8. **Site paused or unreachable and nobody answers:** the upgrade path in §4 is the only fall-back; Webnode is not one. [plan §1.4], [dns]
 
-A scripted version of these checks (`npm run verify:live`) is proposed and in flight; until it exists, the block above is the procedure. [h:domain-move §4]
+`npm run verify:live` runs these checks as a script since pull request 9 (expectations in `docs/launch/live-expectations.json`); the block above is the manual fallback. [h:domain-move §4]
 
 ---
 

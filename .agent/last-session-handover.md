@@ -1,81 +1,68 @@
 # 🌸 Fiore Vera — Session Handover Report
-> **Last Updated:** 2026-11-19 · the site is **live** on https://www.fiorevera.hu · `main` = `af6e497` · no open pull request · close of the Site polish sub chat on `chore/session-close-site-polish`
+> **Last Updated:** 2026-11-20 · the site is **live** on https://www.fiorevera.hu · `main` = `4d2106f` (pull request 20) · no open pull request · `origin` holds only `main` · open pull requests: 21 (this close, `chore/session-close-2026-11-20`) and 22 (the Vera concierge concept)
 >
-> **Update 2026-11-19 (read first — written by the Site polish sub chat at its close, from `git` and the GitHub API):** pull requests 7 to 18 are all merged; nothing is open. On `main` since the note below was written: the harvest (8), branch guardrails (10), web vitals (7: subset fonts, inlined stylesheet), **site polish (11)**, the rebase hard rule (14), the **carousel fix (15)**, the web-vitals live log (16), the cleanup fix (17), the font-coverage gate (12), the glyph-script fix (13) and the close of the SEO and web-vitals chat (18, its harvest note only). What site polish changed that this note still describes as open is corrected in place below (marked 2026-11-19). **New way of working, owner's rule of 2026-11-18: every visual change is reviewed on the generated page — `npm run visual:page`, `docs/qa/visual-review-process.md`.** **Gates on `main`, measured at this close on 2026-11-19 at `3755868` (pull request 18 after it changed one harvest note, nothing that builds):** lint 0/0 (ESLint + scripts type-check) · unit 147 passed (19 files) · e2e 413 passed / 7 skipped (4 browsers, axe on every route) · build 21 pages + 404 · visual 110 of 110 · GDPR audit green (register 2026-11-18). Branches on origin at this close (`git ls-remote`): `main` and the merged `chore/harvest-seo-webvitals-close` (pull request 18) — `npm run release:cleanup` (owner's yes); the five merged branches listed earlier in the day are gone. The shared checkout sat on `main` at `436f4de`, 11 commits behind `origin/main`.
->
-> **Earlier update 2026-11-18 (superseded where the block above says so):** pull request 9 (`claude/quality-gates-e8a654`) is merged: axe gate, server identity, GDPR audit and register seal in the unit run, scripts type-check, `verify:live`, sitemap `lastmod`, contact-sheet diffs. Gates on `main` now: unit 116 (15 files), e2e 397 passed / 7 skipped. Open pull requests: 8 (this harvest), 7 (`perf/web-vitals`: fonts 243 → 93 KB, inlined stylesheet; its script needs the dev dependency `subset-font`, not yet in `package.json`). `claude/branch-guardrails-805745` is pushed (`8e245a8`), stacked on the harvest branch. `claude/site-polish-5354c6` waited for the owner's second look at 13 screens (2026-11-19: reviewed in three rounds and merged as pull request 11). `claude/vera-concierge-7826b5` waits for the owner's design interview. Known live defect until pull request 7 merges: the "→" after the home service-card links is drawn in a system font (outside the declared `unicode-range`). Three Vercel projects build this repo (`fioreveraviragesdekor001` = production; `fioreveraviragesdekor` and `fiorevera` look like leftovers, owner to check). The five finished sub chats are deleted; their notes are in `.agent/harvest/`.
+> Rewritten in full at the close of the branch-cleanup session, from `git`, the GitHub API and `BACKLOG.md`. The earlier note had grown three stacked "update" blocks; if this one is older than the last commit, trust `npm run release:status` and `BACKLOG.md` over it.
 
 ---
 
-## 📊 Where this session stopped
+## 📊 Where things stand
 
 **Live and git**
 
-- **Production:** https://www.fiorevera.hu since 2026-11-16. Vercel project `fioreveraviragesdekor001`, team `fiorevera`, Hobby plan (owner's written risk acceptance, Pro is the fall-back). **Every push to `main` deploys production.** Install command on Vercel: `npm ci --ignore-scripts`.
-- **DNS** is still at Webnode / Register.it (A + www CNAME point at Vercel, edited in Webnode's DNS centre); the Rackhost transfer is pending (Track B). Domain paid to 2027-11-09. Keep the Webnode login alive until the transfer completes.
-- **`main` is the only long-lived branch**, tip `676f62b`; pull requests 5 and 6 are merged. Never commit on `main` — every change goes on a branch and through a pull request (no `gh` CLI: push, compare link, drafted body).
-- **Gates, measured 2026-11-16:** lint 0/0 · unit 77 passed (11 files) · e2e 280 passed / 4 skipped (4 browsers) · build 21 pages + 404 · visual 109 checks, 27 baselines.
+- **Production:** https://www.fiorevera.hu since 2026-11-16. Vercel project `fioreveraviragesdekor001`, team `fiorevera`, Hobby plan (owner's written risk acceptance, Pro is the fall-back). **Every push to `main` deploys production.** Two more Vercel projects (`fiorevera`, `fioreveraviragesdekor`) build every push and serve nothing — owner to remove.
+- **DNS** is still at Webnode / Register.it; the Rackhost transfer is pending (Track B, kept chat "Domain move"; it reported on 2026-11-20 that nothing is new, the next step is the owner's). Domain paid to 2027-11-09. Keep the Webnode login alive until the transfer completes.
+- **`main` is the only branch on origin.** Pull requests 7 to 20 are merged (9 quality gates, 10 and 17 branch guardrails, 7 / 16 / 18 / 20 web vitals, 11 / 15 / 19 site polish, 14 rebase rule, 12 font-coverage gate, 13 glyph script). `main` itself is still unprotected on GitHub (owner's switch).
+- **Gates on this close branch, 2026-11-20:** lint 0 errors / 0 warnings (ESLint + scripts type-check) · unit 147 passed (19 files, GDPR audit and font coverage inside) · build 21 pages + 404 · visual 110 of 110 · release self-test 75 of 75. **e2e not run at this close** — nothing the dev server renders changed (docs, one hook, one script); last full run 413 passed / 7 skipped on 2026-11-19 at `3755868`.
+- **Not re-run since pull request 11:** `npm run verify:live` against production (pull requests 12 to 20 changed docs, tests and tooling; the carousel fix of 15 was checked live by its own chat).
 
-**Where things stand per area** (details and evidence: `.agent/harvest/<name>.md`, § 1)
+**Where each area stands** — the raw record is `.agent/harvest/<name>.md` (13 notes with `vera-concierge` from pull request 22), the rules are in `.agent/memory.md`, the open work in `BACKLOG.md`.
 
-- **Site build and QA** (`main-build`): first build pass, owner feedback round, QA session with 0 blockers, 13 majors all fixed (`697cc81`), about 55 minors open (`docs/qa/2026-11-09-qa-session.md`). Visual regression gate with git hooks and the approval script in place; language toast is one layout at every width (`410c6d0`).
-- **Contact form** (`contact-form`): Web3Forms (free plan, 250 submissions/month) delivers from the live site (confirmed 2026-11-16). Field validation as a pure function, prefilled `mailto:` fallback, local fake provider (`npm run dev:form`, `npm run form:fake`), fail-closed e2e fixture (`tests/e2e/fixtures.ts`) — `742fa67`, `189cc00`, `f4feae3`, `a22e629`.
-- **Firefox e2e** (`firefox-e2e`): launch failure on macOS 27 fixed in `playwright.config.ts` (`CFFIXED_USER_HOME` on the `firefox` project only) — `d6846bb`; Playwright stays at 1.63.0.
-- **Visual baselines** (`baseline-review`): all 27 baselines are the owner-approved reference look (`docs/qa/visual-baselines-log.md`, `docs/qa/visual-baseline-review-2026-11-10.md`); contact sheet via `node scripts/visual-contact-sheet.mjs` → `tests/visual/review.html`, served by the `visual-review` launch entry — `8fdea0c`, `da226a1`.
-- **Favicon** (`favicon`): F3 `crest-fv-sage` shipped, whole icon set generated from `public/favicon.svg` by `npm run favicon`; `favicon-builder` skill — `10c51f3`. 2026-11-19: `/favicon.ico`, a maskable Android icon and a drift-guard test exist (pull request 11); the glyph script reads `scripts/fonts-src/` (pull request 13).
-- **GDPR** (`gdpr`): `gdpr-guardian` skill, `npm run audit:gdpr`, `docs/gdpr/data-register.json`, greetings-list concept (concept only, nothing in the locale files) — `aefc023`. **2026-11-19: the gaps named here on 2026-11-16 are closed** — the privacy page names Web3Forms and Vercel in HU/DE/EN (`PRIVACY_UPDATED` 16 Nov 2026), the register has a `hosting` entry and is sealed (version 2026-11-18), the audit runs inside `npm test`, the Art. 30 record is `docs/gdpr/processing-record.md` (read by the owner; four points in it still open: mailbox retention rule, Gmail without a DPA, Vercel Hobby without a processor contract, two-step verification).
-- **Domain and launch** (`domain-move`): Track A done — launch plan, DNS snapshot with rollback recipe (`docs/launch/`), Vercel Web Analytics wired and host-gated (`698b150`), 14/14 legacy URLs answer 200/308, HTTPS on apex + www, Search Console Domain property verified, UptimeRobot monitor on the www home page. Track B (Rackhost) open.
-- **SEO and web vitals** (`seo-webvitals`): PageSpeed mobile on the live home page 90 / 100 / 100 / 100, LCP 3.6 s (measured before the image fix was deployed); image tiers fix `2f97d84` (240 px logo tier, quality ceilings 82 / 76 / 70) is on `main`. Re-measurement and `docs/qa/web-vitals-log.md` do not exist yet.
-- **Docs drift found by the harvest** (being corrected in this consolidation — verify after it lands): `CLAUDE.md` project state, test counts and skip-link note; `README.md` Status; `AGENTS.md` open question 4 and Gate G; counts in `qa-specialist`; stale facts in `gdpr-guardian`; `.agent/pr/feature-site-build.md` belongs to a merged pull request.
+| Area | Note | State |
+|---|---|---|
+| Site build and QA | `main-build`, `site-polish` | all pages live in HU / DE / EN; 61 QA minors triaged, the owner's taste decisions D1–D10 built; visual changes are approved only on the generated review page (`npm run visual:page`) |
+| Contact form | `contact-form` | Web3Forms, delivers from the live site, Hungarian mail labels, Reply goes to the visitor |
+| Quality gates | `quality-gates`, `firefox-e2e`, `baseline-review` | axe on every route, server identity, GDPR audit and font coverage inside the unit run, `verify:live`; CI workflow prepared, not active |
+| Release guardrails | `branch-guardrails`, `branch-cleanup` | hooks refuse work on `main`, the rebase rule is code, `npm run release:status` shows branches, pull requests and backlog drift |
+| Performance | `seo-webvitals` | live Lighthouse mobile 98, LCP 2.42 s (2026-11-18); code splitting declined by the owner; field data from 2026-12-14 |
+| GDPR | `gdpr` | privacy page matches the code, register sealed, Art. 30 record read by the owner; four of its points still open |
+| Brand | `favicon` | F3 crest shipped with `.ico` and maskable icon; lockscreen linen-classic is final |
+| Launch and domain | `domain-move` | Track A done; Track B (Rackhost) open |
 
 ## 🔀 In flight
 
-| Sub chat | Branch (local ref on 2026-11-16) | Checkout | Scope |
+| Chat | Branch | Worktree | State |
 |---|---|---|---|
-| this session | `chore/goodbye-harvest` | main checkout | the eight harvest notes + their consolidation into memory, skills, BACKLOG and docs — docs only |
-| Branch guardrails | `branch-guardrails` (`claude/branch-guardrails-805745`) | `.claude/worktrees/branch-guardrails-805745` | Claude hooks, git hooks refusing commits on `main`, `release-manager` skill |
-| Quality gates hardening | `quality-gates` (`claude/quality-gates-e8a654`) | `.claude/worktrees/quality-gates-e8a654` | hardening of the gates |
-| Site polish — **finished 2026-11-19** | merged: `claude/site-polish-5354c6` (pull request 11), `fix/carousel-key-race` (15); close on `chore/session-close-site-polish` | `.claude/worktrees/site-polish-5354c6` | notes in `.agent/harvest/site-polish.md`; the worktree goes when the chat is archived |
-| Vera concierge | `vera-concierge` (`claude/vera-concierge-7826b5`) | `.claude/worktrees/vera-concierge-7826b5` | concept and foundation for the agent that lets Vera, who is not technical, maintain the site as her CMS manager |
-| SEO Webvitals (kept) | `perf/web-vitals` | `.claude/worktrees/seo-webvitals` | remaining performance work |
-| Domain move (kept) | — | — | Rackhost transfer track (owner steps + docs) |
+| Vera concierge (kept) | `claude/vera-concierge-7826b5`, pull request 22 | — | `docs/vera-agent/PRD.md` and `.agent/harvest/vera-concierge.md` committed (`d8f41c4`); concept only, waits for the owner's approval of the PRD |
+| Domain move (kept) | — | shared checkout | nothing new since its note; Track B is an owner item in `BACKLOG.md` |
+| this close | `chore/session-close-2026-11-20`, pull request 21 | `.claude/worktrees/session-close` | docs, the backlog drift check, three harvest notes — waits for GO 2 |
 
-- All five worktree branches pointed at `676f62b` (no commits of their own) when this note was written.
-- **Intended merge order:** `chore/goodbye-harvest` → `branch-guardrails` → `quality-gates` → `site-polish` → `vera-concierge`, each rebased on `main` **before** its pull request is opened (after that, too: rebase onto `main` and `--force-with-lease`; owner's hard rule of 2026-11-18).
-- **Finished and removed sub chats** — their knowledge lives in `.agent/harvest/`: contact form, Firefox e2e, baseline review, favicon, GDPR.
+- No leftover worktree folders: `seo-webvitals`, `branch-guardrails-805745` and `site-polish-5354c6` were removed on 2026-11-20 on the owner's word, after checking that each was clean and its commit on `main`.
+- Finished and removed chats, their knowledge is in `.agent/harvest/`: contact form, Firefox e2e, baseline review, favicon, GDPR, quality gates, branch guardrails, SEO and web vitals, site polish. The two small "delete …" fork chats of 2026-11-20 (leftover worktree folders, the merged local branch) left their edits in this close; they need no note of their own.
 
 ## 🎯 Next unblocked actions
 
-1. Owner GO → commit the consolidation on `chore/goodbye-harvest`, push, open the pull request (compare link + drafted body), merge. Docs only, but the merge still triggers a production deploy.
-2. Pull requests in the merge order above; before each: rebase on `main`, full DoD (`npm run lint` → `npm test -- --run` → `npm run test:e2e` → `npm run build` → `npm run test:visual` → `npm run audit:gdpr`), Review Brief, GO.
-3. Re-run PageSpeed mobile on https://www.fiorevera.hu now that `2f97d84` is on `main`, and start `docs/qa/web-vitals-log.md` with both runs (SEO Webvitals chat). Then font subsetting — the 800 ms render delay is the remaining LCP lever (`BACKLOG.md` `[PERF]`).
-4. ~~Gate hardening~~ done with pull request 9 (2026-11-18). Left from that chat: the font-coverage test (`tests/unit/fonts.test.ts`), held back until `perf/web-vitals` is on `main`, and switching on the prepared CI workflow (`docs/ci/README.md`, owner decision).
-5. Search Console: hreflang report and index coverage on day 7 (2026-11-23) and day 30 (2026-12-16) — MASTER-PLAN 4.4.
-6. ~~Privacy page lines, `hosting` register entry, `PRIVACY_UPDATED` bump~~ (done, pull request 11). Still open: Rackhost zone pre-fill and post-transfer sweep (plan §0a B7–B9), DE/EN inner-page baselines after copy sign-off.
+1. Owner GO 2: merge pull request 21 (this close), then 22 (the concierge concept; it touches no file of 21). After the merges: delete both branches and the close worktree. The Vera concierge and Domain move chats stay (owner, 2026-11-20); the concierge worktree stays with its chat.
+2. Owner, ten minutes on GitHub and Vercel: ruleset on `main` + *Automatically delete head branches*; remove the two leftover Vercel projects; remove the install-command override; Deployment Protection off so Vera can open previews (`BACKLOG.md` "Owner decisions").
+3. Vera: the 15 landscape cover picks, copy sign-off per locale, phone check of the live site (MASTER-PLAN 1.3, 2.3 / 2.4, 3.4, 4.2).
+4. Search Console on day 7 (2026-11-23) and day 30 (2026-12-16): hreflang report, index coverage, sitemap *Success* (MASTER-PLAN 4.4).
+5. Small code items with a visible effect, none needs a decision: `main` inert behind the open mobile menu, the dead redirect rules in `vercel.json`, hero `sizes` on desktop, `npm run verify:live` once (`BACKLOG.md`).
+6. Vera concierge: approve or change the PRD and answer R1–R9 (`BACKLOG.md` "Owner decisions"); nothing is built before that.
 
-## 🙋 Open owner decisions (details in `BACKLOG.md` and § 6 of each harvest note)
+## 🙋 Open owner decisions
 
-- **Vera:** the 15 cover picks, copy sign-off per locale (R-1), phone check of the three locales — `BACKLOG.md` `[CONTENT]`, MASTER-PLAN 1.3 / 3.4 / 4.2.
-- ~~**Privacy copy GO**~~ — given through the visual review of 2026-11-16/18 and shipped (without the two claims of §7.4 that the sources contradict: a DPA on Hobby, San Francisco).
-- **Processors:** the Web3Forms DPA is accepted (owner, 2026-11-18). Open: keep consumer Gmail or move the mailbox to Workspace / a HU provider; Vercel Hobby has no written processor contract — `docs/gdpr/processing-record.md`, `BACKLOG.md` `[GDPR]`.
-- **Track B at Rackhost:** read registrant + registrar on domain.hu, order with 1 year, registrant = Vera as a private person (D3), mail check before the transfer — `BACKLOG.md` `[LAUNCH]`.
-- **Dashboards only the owner can see:** Vercel Analytics shows *Enabled*, Search Console Sitemaps shows *Success*, Vercel deployment-failed notifications on, Gmail shows the sender "Fiore Vera weboldal" with Reply-To = the customer.
-- ~~**Voice and copy**~~ — decided 2026-11-18 (HU *te* for the reader's action / *ti* for the couple, no hyphenation, the emoji stays, Vera picks landscape covers): `docs/qa/2026-11-16-minor-triage.md`, `i18n-guardian` §7.
-- **Gate changes that need a yes:** pre-push hook skips deletion-only pushes; carousel snapshot targets the carousel itself (re-records two baselines); ~~"301" wording~~ (decided 2026-11-18: 308 stays, wording corrected).
-- **Greetings list:** provider and transfer path, frequency ceiling, anniversary opt-out — `BACKLOG.md` `[FEATURE]`, `docs/gdpr/newsletter-consent-concept.md` §5.
-- **Taste calls parked in the notes:** full image tier at q76, ~~hero CTA at 375 px, rental price-cell order~~ (decided and built 2026-11-18), the crest across lockscreen / wallpaper / signature, the clef F for print.
+All of them, with options and a recommendation each: `BACKLOG.md` → "Owner decisions". The ones that block other work: the GitHub ruleset, the leftover Vercel projects, Deployment Protection for previews, the cover picks and copy sign-off, the Rackhost order, the Gmail mailbox without a processor agreement.
 
-## 💡 Learnings this session
+## 💡 Learnings that change how the next session works
 
-Full list with evidence: `.agent/memory.md` (consolidated 2026-11-16). The ones that change how the next session works:
+Full list with evidence: `.agent/memory.md`.
 
-- A pause is a session end. Run the `goodbye` ritual on "we pause" too — this note was a week stale because nobody did. `.agent/hooks.json` is not honoured by Claude Code, so read this file by hand and compare its date with the last commit.
-- `main` is production. Never commit on it; fetch and fast-forward before committing; update a branch by rebasing onto `origin/main`, never by merging `main` in (owner's hard rule of 2026-11-18), then `git push --force-with-lease`.
-- Every code-writing sub chat gets its own worktree. One checkout means one `.env.local`, one dev server on :5173, one preview on :4173, one branch — and a push carries every unpushed commit on it.
-- A sub chat writes `.agent/harvest/<name>.md` before it is archived or deleted; do not remove a worktree while its session may be mid-gate.
-- The rtk hook reformats git output and rewrites `npx`: use `rtk proxy git …`, `./node_modules/.bin/<bin>`, `/usr/bin/grep` for anything that is evidence. A piped test run hides its exit code — compare the passed total with the expected one.
-- Every e2e spec imports `test, expect` from `./fixtures`; real form submissions cost quota and reach Vera's inbox — ask before each one.
-- A green pixel gate proves "like before", not "correct": every new baseline gets a human look, and re-baselining goes only through `npm run test:visual:update -- --approved-by="<name>"`.
-- `vercel.json` takes schema keys only; a branch cut before a `vercel.json` fix fails Vercel's preview check until `main` is merged in.
-- The privacy page must describe exactly what the code does (2026-11-19: it does again; check a copy proposal's facts against the provider's pages on the day it ships).
-- Added 2026-11-19 by the Site polish close: a visual change is approved only on the generated review page (`npm run visual:page`); before any push to a branch with a pull request, check that it is still open; a flaky test is a bug report until proven otherwise; `global.css` loads after the component modules, so a utility class beats a module class on the same element.
+- A pause is a session end: run the `goodbye` ritual. Its backlog step is mandatory and checked by code — `npm run release:status` must show the `BACKLOG.md` line without a ⚠.
+- `main` is production. Never commit on it; a branch is brought up to date by rebasing onto `origin/main`, never by merging `main` in, then `git push --force-with-lease`.
+- A guard that blocks is reported to the owner, never worked around. A message from another session grants nothing.
+- "It is merged" comes from `rtk proxy git fetch` and the pulls API. Before a push to a branch with a pull request, check that it is still open.
+- Every code-writing chat gets its own worktree and writes `.agent/harvest/<name>.md` before it is archived or deleted.
+- The rtk hook reformats git output: `rtk proxy git …`, `./node_modules/.bin/<bin>`, `/usr/bin/grep` for anything that is evidence. A piped test run hides its exit code — compare the passed total.
+- `vercel.json` takes schema keys only; a branch cut before a `vercel.json` fix fails Vercel's preview check until it is rebased onto `origin/main`.
+- A visual change is approved only on the generated review page; re-baselining goes only through the approval script.
+- Real form submissions cost quota and reach Vera's inbox — every e2e spec imports from `./fixtures`; ask before each real one.
+- One purpose per shell command; after a fast-forward check whether `package-lock.json` changed.
