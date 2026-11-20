@@ -41,8 +41,8 @@ Work that sits on a branch or in a kept chat right now, rewritten at every close
 
 | Branch / chat | Takes |
 |---|---|
-| Vera concierge concept (pull request 22, open) | `docs/vera-agent/PRD.md` and the chat's note `.agent/harvest/vera-concierge.md`, committed on 2026-11-20 (`d8f41c4`). Concept only, nothing is built; the merge puts the text into git and does not approve it. The chat is closed |
-| Rackhost transfer (no branch, no chat) | launch plan §0a Track B. The "Domain move" chat was closed on 2026-11-20 with nothing new since its note of 2026-11-16; the next step is the owner's: read registrant and registrar on domain.hu |
+| Vera concierge concept (pull request 22, open) | `docs/vera-agent/PRD.md` and the chat's note `.agent/harvest/vera-concierge.md`, committed on 2026-11-20 (`d8f41c4`). Concept only, nothing is built; the merge puts the text into git and does not approve it. The chat is kept and waits for the owner's design interview |
+| kept chat "Domain move" (no branch) | Rackhost transfer, launch plan §0a Track B. The chat reported on 2026-11-20 that nothing is new since its note of 2026-11-16; the next step is the owner's: read registrant and registrar on domain.hu |
 
 ---
 
