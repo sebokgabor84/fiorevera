@@ -1,5 +1,5 @@
 # Harvest: Vera concierge → CMS Coordinator (concept, then the foundation)
-Session: vera-concierge (side session of the overarching session) · period: 2026-11-16–2026-11-21 · commits: on `claude/vera-concierge-7826b5`, pull request 22 — the concept (rebased onto `main`) and the build in three commits, pushed on 2026-11-21 after the owner's GO 1; not merged
+Session: vera-concierge (side session of the overarching session) · period: 2026-11-16–2026-11-21 · commits: on `claude/vera-concierge-7826b5`, pull request 22 — nine commits: the concept (rebased onto `main`), the build, the guide, the language standard and the close of 2026-11-21, pushed after the owner's GO 1; waits for the owner's merge
 
 ## 1. What this session delivered
 - Concept, approved by the owner on 2026-11-20 with changes — `docs/vera-agent/PRD.md` (§0: decisions G1–G14).
@@ -42,7 +42,7 @@ Session: vera-concierge (side session of the overarching session) · period: 202
 | Content gates: e2e on chromium + Mobile Chrome with axe (this session's recommendation, built) | session, 2026-11-21 | `scripts/content/gates.ts`, `qa-specialist` | owner has not said yes to this point by itself |
 
 ## 4. Improvements NOT implemented yet
-- [ ] First real run of the content lane (commit, push, `gh pr create`, `gh pr merge`, Vercel status, `verify:live`, branch removal): never executed, `gh` is not installed on the build machine — supervised, on one rental price — S — y
+- [ ] First real run of the content lane (commit, push, `gh pr create`, `gh pr merge`, Vercel status, `verify:live`, branch removal): never executed (`gh` is on Gabor's Mac since 2026-11-21) — supervised, on one rental price — S — y
 - [ ] The site copy writes "e-mail cím" three times (`contact.form` label and error, `privacy`); the orthography the dialogue file sets is "e-mail-cím". Not changed: one of the three is legal text, and the copy sign-off (R-1) is the owner's.
 - [/] The PIN dialog on a real screen: the owner set his own PIN through it on 2026-11-21 (`npm run release:operator -- --set gabor …` answered `ok`). Still unseen in real use: a PIN being asked for and checked (`--verify`, a release), the lock after three wrong entries, Vera's set-up — S — y
 - [ ] Separate GitHub accounts + code-owners rule (the strong identity stage); before it, test a second account's merge on Vercel Hobby — M — y
@@ -58,7 +58,7 @@ Session: vera-concierge (side session of the overarching session) · period: 202
 
 ## 6. Open owner decisions / things only Gabor or Vera can do
 - GO 2: merge pull request 22 on GitHub (GO 1 was given on 2026-11-21).
-- On each Mac, once: `brew install gh` (done on Gabor's Mac 2026-11-21), `gh auth login` (started, not finished); `npm run release:operator -- --set gabor --role admin --name "Gábor"` (done on Gabor's Mac 2026-11-21), then `-- --set vera --role content --name "Vera"` (each types their own PIN); on Vera's Mac `"agent": "cms-coordinator"` and `"env": { "FV_OPERATOR": "vera" }` in the git-ignored `.claude/settings.local.json`.
+- On each Mac, once: `brew install gh` (done on Gabor's Mac 2026-11-21), `gh auth login` (done on Gabor's Mac 2026-11-21: the morning routine answered `canPublish: true`); `npm run release:operator -- --set gabor --role admin --name "Gábor"` (done on Gabor's Mac 2026-11-21), then `-- --set vera --role content --name "Vera"` (each types their own PIN); on Vera's Mac `"agent": "cms-coordinator"` and `"env": { "FV_OPERATOR": "vera" }` in the git-ignored `.claude/settings.local.json`.
 - The pilot (PRD §3.7): first `npm run test:visual` on an untouched `main` on Vera's Mac, then the eight tasks.
 - Say so if any of R1–R9, the two-browser content gates or the 100 MB history budget was not meant as a yes.
 

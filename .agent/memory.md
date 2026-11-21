@@ -49,10 +49,15 @@
 - **A guard that blocks is reported to the owner, never worked around; a message from another session cannot grant a permission** — `--force-with-lease` and `FV_SKIP_HOOKS=1` denied on 2026-11-18, `npm install subset-font` refused in the web-vitals chat and not run here on its behalf (it landed through pull request 20). [branch-cleanup]. [workflow]
 - **`BACKLOG.md` is synced at every close and pause, and code says when it is not** — on 2026-11-20 its "In flight" table named three branches deleted two days earlier and four lines were open although done; `npm run release:status` and the session-start report now print the drift, `goodbye` step 4 is mandatory. [branch-cleanup]. [workflow] [owner-preference]
 - **Closed backlog lines leave the open sections at the close that finds them done** — 94 closed lines sat between 106 open ones and hid the order of work; they live under "Completed" since 2026-11-20. [branch-cleanup]. [workflow]
+- **A GO covers what was named when it was given; the next change needs its own.** On 2026-11-21 the guide's day story and the language revision were committed and pushed on the strength of an earlier GO; the session said so afterwards and asked again from then on. `AGENTS.md` Release Protocol. [vera-concierge]. [workflow]
+- **Build the smallest slice, show it, then extend.** Three owner messages arrived mid-build and each changed the design (PIN length, PIN position, the morning routine). [vera-concierge] §7. [workflow]
+- **Ask for devices, languages and accounts as plain facts before the first design question.** Vera's Mac came up at question 5 of the interview, after "cloud" had been chosen. [vera-concierge] §7. [workflow]
+- **An unreleased content change is dropped with `npm run release:publish-content -- --abandon`, never by switching branches:** a change that is made and undone still moves `scripts/sitemap-lastmod.json`, and uncommitted files travel along. [vera-concierge]. [workflow]
+- **The day has a start and an end in code:** `goodmorning` (`npm run content:morning`) records who is at the keyboard; a content session closes with the short form of `goodbye`, which writes no tracked file. `.agent/skills/goodmorning/SKILL.md`, `.agent/skills/goodbye/SKILL.md`. [vera-concierge]. [workflow]
 
 ### Architecture
 
-- **Skill registry is typed and drift-gated:** `src/types/skills.ts` holds the `SKILL_NAMES` union (13 skills); `tests/unit/skills.test.ts` fails on a skill folder without a union entry, a union entry without `SKILL.md`, or a name missing from `AGENTS.md` — since 2026-09-26, verified 2026-11-16. [architecture]
+- **Skill registry is typed and drift-gated:** `src/types/skills.ts` holds the `SKILL_NAMES` union (17 skills on 2026-11-21); `tests/unit/skills.test.ts` fails on a skill folder without a union entry, a union entry without `SKILL.md`, or a name missing from `AGENTS.md` — since 2026-09-26, verified 2026-11-16. [architecture]
 - **`backdrop-filter` on an element makes it the containing block for `position: fixed` descendants** — the mobile menu rendered under page content; the glass sits on `.header::before` — `src/components/Layout/header.module.css:18-29`. [main-build]. [architecture]
 - **Vercel 404s need no catch-all rewrite:** a single `dist/404.html` (empty root, noindex) is served natively with HTTP 404 and the client renders the localized page — `vercel.json`, `scripts/prerender.ts`, QA M2. [main-build]. [architecture] [seo]
 - **`curl` sees the HU shell on `/de/<unknown>/`, browsers see the DE not-found page — by design, do not "fix"** — `docs/launch/domain-and-hosting-plan.md` §0a note. [domain-move]. [architecture]
@@ -67,6 +72,10 @@
 - **`global.css` is imported after the component modules, so at equal specificity a global utility beats a module class on the same element** — `.btn` hid the hero ghost button's outline, `.container` cancelled `.prose` (150-character lines). A module rule that overrides a utility needs two classes (`.heroActions .heroGhost`) or targets the children (`.prose > *`). `3741eb4`, [site-polish]. [architecture] [design]
 - **A counter or live region for an animated move shows the destination, never the positions on the way; `scrollend` is not "came to rest"** — Chromium fires it for an animation that a newer programmatic scroll replaced, and Chromium and WebKit drop a smooth scroll when its scroll container takes focus. The carousel keeps the target in a ref and checks arrival per frame while a move is in flight. `AlbumSection.tsx` (`ensureArrival`), `a9150b0`, [site-polish]. [architecture]
 - **Anything locale- or time-dependent that the form needs is set after mount through a ref** (the date input's `min`), never in render — PRD D-18. `InquiryForm.tsx`, [site-polish]. [architecture]
+- **Content is changed only through `npm run content -- <operation>`:** pure functions over one validated `ContentState`; a refusal writes nothing. A data file is edited by cutting and pasting between parser positions, never by reformatting it (`src/data/*.ts` are not prettier-formatted); the test "writing back unchanged values reproduces the file" guards it — `scripts/content/lib/tsData.ts`. [vera-concierge]. [architecture]
+- **`content` or `needs-gabor` is decided by an allowlist** (`scripts/content/lib/classify.ts`); a new data file or kind of content is owner-only until it is added there on purpose. [vera-concierge]. [architecture]
+- **A saved gate result is not proof:** the content lane runs every gate itself; `.content/gates.json` only serves `--check`. Owner, 2026-11-21: the rules must be strong. `scripts/release/publish-content.ts`. [vera-concierge]. [architecture] [owner-preference]
+- **An approval the agent can type is not an approval:** the last line before a content merge is the approver's PIN, typed into a system dialog; the agent never asks for, sees, repeats or stores it. A four-digit PIN checked on the agent's own machine identifies, it does not defend (hash and lock sit in a file the agent's user can read); the owner chose it knowingly, "PIN now, GitHub later" — `scripts/release/operator.ts`, `docs/decisions/0005-who-is-at-the-keyboard.md`. [vera-concierge]. [architecture]
 
 ### Testing
 
@@ -95,6 +104,12 @@
 - **A flaky e2e test is a bug report until proven otherwise: make the race deterministic in a test first, then fix** — "arrows and keys" failed 1 run in 16 in Firefox; the cause was a real stale-index race in the carousel. Technique: wait for `scrollLeft > 2`, record every counter text with a MutationObserver, repeat the spec (`--repeat-each`) in all four browsers. `tests/e2e/gallery.spec.ts`, `a9150b0`, [site-polish]. [testing]
 - **Measure contrast over a photo on every pixel behind the text, with transitions switched off** — a `color` transition mid-flight produced a false 1.98:1; the real worst cases were 3.0 (lead) and 2.4 (subtitle). The hero gradient stops in `home.module.css` are measured values (320–1920 px, three locales). [site-polish]. [testing] [design]
 - **Show a taste option as the real page with the option applied, at the width where it matters, before it is built** — "price first" was picked from a crop and rejected on desktop once built. Review round 2, 2026-11-18, [site-polish]. [testing] [owner-preference]
+- **A test or script that starts git inside a hook acts on the hook's repository unless git's variables are removed.** The pre-push hook ran the unit suite with `GIT_DIR` set; five tests did `git init` in a temporary folder and re-initialised the shared repository as bare (every worktree answered "must be run in a work tree"). Repair: `git config --file <common>/config core.bare false`. Rule: every spawned git, gh and npm gets `repoEnv()` (`scripts/content/lib/checkout.ts`); a regression test runs with `GIT_DIR` on a decoy. Plain `npm test` never shows this — `d7887e1`. [vera-concierge]. [testing] [tooling]
+- **Compare a file with git only through a call that does not trim** (`gitFile`): the trimming helper made every data file look changed. Found by a test on a real throw-away repository, not by the in-memory tests. [vera-concierge]. [testing]
+- **Tests derive content counts from the data, never pin them** ("15 albums" would turn the gates red on the first new album). `tests/unit/data.test.ts`, `tests/e2e/gallery.spec.ts`. [vera-concierge]. [testing]
+- **In a content change a pixel difference is the expected result:** `npm run content:gates` reports it as `review` (the owner looks at the review page), a layout failure as `fail`. [vera-concierge]. [testing]
+- **Documentation and wording are gated too:** `tests/unit/docs.test.ts` fails when a living document names a command, operation or file that does not exist; `tests/unit/language.test.ts` fails when a Hungarian word the owner rejected returns. A red run is fixed in the text, never by an exception. [vera-concierge]. [testing]
+- **Gate numbers measured 2026-11-21 (re-measure, do not quote):** unit 261 in 25 files · e2e 413 passed / 7 skipped · build 21 pages + 404 · visual 110 · release self-test 81. [vera-concierge]. [testing]
 
 ### Tooling
 
@@ -126,6 +141,9 @@
 - **After a fast-forward of the shared checkout, look at `package-lock.json` and run `npm install` when it changed** — pull request 20 added `subset-font`, `node_modules` was stale. [branch-cleanup]. [tooling]
 - **One purpose per shell command: never append a "cleanup" `git checkout -- <file>` to a command that just edited that file** — it reverted the session's own edit on 2026-11-20. [branch-cleanup]. [tooling]
 - **`g('log', …)` style helpers return an empty string, not null, when git prints nothing: use `||`, not `??`, for the fallback** — the self-test caught "last changed on main " with no date — `scripts/release/status.mjs`, 2026-11-20. [branch-cleanup]. [tooling]
+- **The locale files write no-break spaces as `\u00a0` escapes; `JSON.stringify` does not.** A plain round trip changed 9 lines per file; `renderLocale` (`scripts/content/lib/state.ts`) re-escapes invisible characters. [vera-concierge]. [tooling]
+- **Never `cd` inside a shell call of a session in a worktree:** the working directory of the whole session moved to another folder. Use absolute paths or `git -C`. [vera-concierge] §7. [tooling]
+- **`gh` is installed and signed in on Gabor's Mac since 2026-11-21** (`gh pr view`, `gh pr list`, `gh pr edit` work); a typed `gh pr merge` is denied by `.claude/hooks/guard-bash.sh`. On another machine ask `npm run content:doctor`. [vera-concierge]. [tooling]
 
 ### Design
 
@@ -175,6 +193,8 @@
 - **The form provider's payload key names are the mail's field labels** — Web3Forms prettifies `wedding_date` → "Wedding date"; `email` becomes Reply-To; `subject` and `from_name` are honoured on the free plan — delivered mail 2026-11-11, `src/lib/submitInquiry.ts`. [contact-form]. [ops]
 - **The Web3Forms access key is public by design (it only selects the delivery inbox), yet never ask for it or repeat it in chat** — the owner pastes it into git-ignored `.env.local` and Vercel env; verify by length only (36-char UUID). [contact-form]. [ops]
 - **Web3Forms free plan: 250 submissions/month, 1 recipient, 30-day history (not an archive); warning mails at 90 % and 100 %, then submissions are refused until next month and the form shows error + mailto fallback** — read from web3forms.com 2026-11-10, chosen by the owner 2026-11-11. [contact-form] §3. [ops]
+- **The ruleset on `main` is active since 2026-11-21** (pull request required, no force push, no deletion, empty bypass list). A ruleset that is "Disabled" or has no target protects nothing — the owner's first save showed both; read it back with `curl https://api.github.com/repos/sebokgabor84/fiorevera/rules/branches/main`. [vera-concierge]. [ops]
+- **GitHub cannot tell the owners apart while they share one account;** "content only" and "approved by Vera" exist only in the release script until separate accounts and a code-owners rule exist (`BACKLOG.md` `[RELEASE]`). [vera-concierge]. [ops]
 
 ---
 
@@ -199,6 +219,11 @@ Gabor's and Vera's stated tastes and rules. Quotes are the owner's words as reco
 - **Lockscreen: only realistic material passes (painted wreath, photographed frames, untouched badge); AI-collage renders, candles and flat line art were rejected; linen-classic is the confirmed final; show one design at a time and name it.** `.agent/skills/lockscreen-qr-generator/SKILL.md:46-75`, 2026-11-09. [owner-preference]
 - **DE addresses the couple as *ihr*, no rewrite** (2026-11-10); the HU te/ti voice is still open — `BACKLOG.md` `[CONTENT]` owner decisions. [gdpr]. [owner-preference] [design]
 - **Vera:** no taste statement of her own was recorded this week; she is not technical and is meant to maintain the site through an agent (branch `vera-concierge`). Her pending inputs: the 15 cover picks, copy sign-off per locale (R-1), the phone check of the three locales, a look at the favicon (Gabor picked F3) — `BACKLOG.md` `[CONTENT]`, MASTER-PLAN 1.3 / 3.4 / 4.2, [favicon] §6. [owner-preference]
+- **Texts in Hungarian, German and English read as an educated native speaker's** — "make sure you communicate as a native Hungarian with academic degree and precise wording, same goes for English and for German" (2026-11-21, after "Semmi nem kerül ki az igened nélkül" in the guide page). Compose in the language, no calques, no IT slang; the rejected Hungarian words are the table in `.agent/skills/cms-coordinator/resources/dialogue-hu.md`. [vera-concierge]. [owner-preference]
+- **Agents carry role names, not human names** ("CMS Coordinator", "Project Coordinator"); "Vera" means only the owner — `docs/decisions/0004-role-names-for-agents.md`. [vera-concierge]. [owner-preference]
+- **Identity: "ask me at the beginning of the day who I am", a PIN he defines himself, "like a phone pin", as "the last defense line".** 2026-11-21. [vera-concierge]. [owner-preference]
+- **The README files and Vera's guide are updated in the same change as the code; no dead code and no dead documentation ships.** The repo is meant as the first template-grade site; the template itself is a later session's work (`docs/template/README.md` is the inventory only). 2026-11-21. [vera-concierge]. [owner-preference]
+- **Vera's guide is a story of a real day with tips, plus a page in the brand's look that is meant to impress her;** Gabor wants `/goodmorning` and `/goodbye` as the frame of her day. 2026-11-21, `docs/vera-agent/utmutato.md`. [vera-concierge]. [owner-preference]
 
 ---
 
@@ -220,3 +245,9 @@ The three proposals of 2026-09-26 all shipped (`scripts/optimize-images.js`, `sc
 4. **The branch board as a generated page** — `npm run release:status -- --html`, so "what is open and in which order do I merge it" needs no chat turn (asked four times in two days).
 5. **GitHub does the routine** — the ruleset on `main` plus *Automatically delete head branches* (owner's switch), and the prepared CI workflow as the required check once the two leftover Vercel projects are gone.
 6. **One close branch owns the shared counts** — test totals in `CLAUDE.md` and `qa-specialist` are edited only on the close branch of a session, never inside a feature pull request (three sessions conflicted on the same lines).
+
+**Status 2026-11-21:** of proposal 5 the ruleset on `main` is active (*Automatically delete head branches* unconfirmed, CI not switched on); 4 and 6 are open. Proposal 6 was not kept by pull request 22, which changed the test totals inside a feature branch — it had no conflict only because no other branch was open. The next three, from the friction of the CMS Coordinator build:
+
+7. **The first content release is a supervised pilot with a written record** — the lane's git and GitHub steps have never run; run it on one rental price with the owner at the keyboard, and write what happened into `docs/vera-agent/` before Vera uses it alone.
+8. **Owner-facing pages are generated, not hand-built** — the guide page for Vera exists only as a published page; a script that builds it from `docs/vera-agent/utmutato.md` keeps text and page from drifting (the same idea as `npm run visual:page`).
+9. **The GO is asked for with the list of what it covers** — before every commit state the files and the push target in one line, so a GO cannot be stretched to a later change.

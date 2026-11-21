@@ -53,7 +53,8 @@ Run these steps in order, then report the results as a table (see below).
    - rtk proxy git branch --merged origin/main    → merged-but-undeleted local branches
    - rtk proxy git branch -r --merged origin/main → merged-but-undeleted remote branches
    - rtk proxy git worktree list                  → leftover worktrees
-   - curl -s "https://api.github.com/repos/sebokgabor84/fiorevera/pulls?state=open"   → open pull requests (no gh CLI; keep the quotes in zsh)
+   - rtk proxy gh pr list --state open              → open pull requests (`gh` is on Gabor's Mac since 2026-11-21;
+     without it: curl -s "https://api.github.com/repos/sebokgabor84/fiorevera/pulls?state=open", keep the quotes in zsh)
    - If dirty: ask the user whether to commit on the branch or leave as-is. Never stash: the stash is
      shared by every worktree and session
    - List merged branches, leftover worktrees and open pull requests in the report; delete nothing
