@@ -35,15 +35,18 @@ export function baselineSet(root = process.cwd()) {
   return { files: files.length, bytes: files.reduce((sum, file) => sum + statSync(file).size, 0) };
 }
 
+/** The repository at `cwd`, whatever repository a surrounding git hook points at (see scripts/content/lib/checkout.ts). */
+const repoEnv = () => Object.fromEntries(Object.entries(process.env).filter(([name]) => !/^GIT_(DIR|WORK_TREE|INDEX_FILE|COMMON_DIR|OBJECT_DIRECTORY|ALTERNATE_OBJECT_DIRECTORIES|PREFIX|IMPLICIT_WORK_TREE|GRAFT_FILE|SHALLOW_FILE|NO_REPLACE_OBJECTS|REPLACE_REF_BASE|CONFIG|CONFIG_PARAMETERS|CONFIG_COUNT)$/.test(name)));
+
 /** Every version of every baseline in the history of HEAD: count and bytes (null outside a git checkout). */
 export function baselineHistory(root = process.cwd()) {
   try {
-    const objects = execFileSync('git', ['rev-list', '--objects', 'HEAD', '--', BASELINE_DIR], { cwd: root, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, stdio: ['ignore', 'pipe', 'ignore'] })
+    const objects = execFileSync('git', ['rev-list', '--objects', 'HEAD', '--', BASELINE_DIR], { cwd: root, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, stdio: ['ignore', 'pipe', 'ignore'], env: repoEnv() })
       .split('\n')
       .filter((line) => line.endsWith('.png'))
       .map((line) => line.split(' ')[0]);
     if (objects.length === 0) return { versions: 0, bytes: 0 };
-    const sizes = execFileSync('git', ['cat-file', '--batch-check=%(objectsize)'], { cwd: root, encoding: 'utf8', input: `${objects.join('\n')}\n`, maxBuffer: 64 * 1024 * 1024 });
+    const sizes = execFileSync('git', ['cat-file', '--batch-check=%(objectsize)'], { cwd: root, encoding: 'utf8', input: `${objects.join('\n')}\n`, maxBuffer: 64 * 1024 * 1024, env: repoEnv() });
     return { versions: objects.length, bytes: sizes.split('\n').filter(Boolean).reduce((sum, size) => sum + Number(size), 0) };
   } catch {
     return null;

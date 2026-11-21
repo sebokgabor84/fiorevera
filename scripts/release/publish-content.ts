@@ -35,7 +35,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { classifyCheckout, type Classification } from '../content/lib/classify';
 import { CHANGELOG, parseChanges, recordChange, type ChangeEntry } from '../content/lib/changelog';
-import { git, gitFile, mergeBase, tryGit, workFingerprint } from '../content/lib/checkout';
+import { git, gitFile, mergeBase, repoEnv, tryGit, workFingerprint } from '../content/lib/checkout';
 import { RECEIPT, runGates, type GateReceipt } from '../content/gates';
 import { judgeAnswers, parseAnswers, type AnswerVerdict, type ReviewData } from '../visual-review-page';
 import { OperatorError, verifyOperator } from './operator';
@@ -115,7 +115,7 @@ const arg = (argv: readonly string[], name: string): string => {
 };
 
 const run = (root: string, command: string, args: string[], input?: string): { status: number; output: string } => {
-  const result = spawnSync(command, args, { cwd: root, encoding: 'utf8', input, maxBuffer: 256 * 1024 * 1024 });
+  const result = spawnSync(command, args, { cwd: root, encoding: 'utf8', input, maxBuffer: 256 * 1024 * 1024, env: repoEnv() });
   return { status: result.status ?? 1, output: `${result.stdout ?? ''}${result.stderr ?? ''}`.trim() };
 };
 

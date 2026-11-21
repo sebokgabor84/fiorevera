@@ -16,7 +16,7 @@ import { MAX_BYTES, parseImageMeta, renderImageMeta } from '../../scripts/images
 import { run } from '../../scripts/content/cli';
 import * as ops from '../../scripts/content/ops';
 import { classifyChange, classifyCheckout, type ChangedFile } from '../../scripts/content/lib/classify';
-import { mergeBase, workFingerprint } from '../../scripts/content/lib/checkout';
+import { git, mergeBase, repoEnv, workFingerprint } from '../../scripts/content/lib/checkout';
 import { abandon } from '../../scripts/release/publish-content';
 import { intakePhotos, lastPhotoNumber, listSourcePhotos } from '../../scripts/content/lib/photos';
 import { ContentError, FILES, getText, loadState, renderLocale, validateState, type ContentState } from '../../scripts/content/lib/state';
@@ -497,7 +497,7 @@ describe('change classifier: pure content, or does it need the technical owner?'
 });
 
 describe('classifier and fingerprint on a real git checkout', () => {
-  const sh = (root: string, ...args: string[]): string => execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, FV_SKIP_HOOKS: '1', GIT_CONFIG_GLOBAL: '/dev/null', GIT_CONFIG_SYSTEM: '/dev/null' } });
+  const sh = (root: string, ...args: string[]): string => execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], env: repoEnv({ FV_SKIP_HOOKS: '1', GIT_CONFIG_GLOBAL: '/dev/null', GIT_CONFIG_SYSTEM: '/dev/null' }) });
   /** A throw-away repository holding a copy of the content files, with `origin/main` at its first commit. */
   const repo = (): string => {
     const root = fixture();
@@ -550,8 +550,33 @@ describe('classifier and fingerprint on a real git checkout', () => {
   });
 });
 
+describe('git calls act on their own folder, never on the repository a git hook points at', () => {
+  it('ignores an inherited GIT_DIR (the pre-push hook sets one; a test once re-initialised the real repository through it)', () => {
+    const decoy = mkdtempSync(path.join(os.tmpdir(), 'fv-decoy-'));
+    const work = mkdtempSync(path.join(os.tmpdir(), 'fv-work-'));
+    temps.push(decoy, work);
+    const before = { GIT_DIR: process.env.GIT_DIR, GIT_WORK_TREE: process.env.GIT_WORK_TREE, GIT_INDEX_FILE: process.env.GIT_INDEX_FILE };
+    process.env.GIT_DIR = decoy;
+    process.env.GIT_WORK_TREE = decoy;
+    process.env.GIT_INDEX_FILE = path.join(decoy, 'index');
+    try {
+      expect(repoEnv().GIT_DIR).toBeUndefined();
+      expect(repoEnv({ FV_SKIP_HOOKS: '1' })).toMatchObject({ FV_SKIP_HOOKS: '1' });
+      git(work, ['init', '-q', '-b', 'main']);
+      expect(existsSync(path.join(work, '.git', 'HEAD'))).toBe(true);
+      expect(readdirSync(decoy)).toEqual([]); // nothing was created where the hook's variables pointed
+      expect(git(work, ['rev-parse', '--show-toplevel'])).toContain(path.basename(work));
+    } finally {
+      for (const [name, value] of Object.entries(before)) {
+        if (value === undefined) delete process.env[name];
+        else process.env[name] = value;
+      }
+    }
+  });
+});
+
 describe('dropping an unreleased content change ("mégsem kérem")', () => {
-  const sh = (root: string, ...args: string[]): string => execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, FV_SKIP_HOOKS: '1', GIT_CONFIG_GLOBAL: '/dev/null', GIT_CONFIG_SYSTEM: '/dev/null' } });
+  const sh = (root: string, ...args: string[]): string => execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], env: repoEnv({ FV_SKIP_HOOKS: '1', GIT_CONFIG_GLOBAL: '/dev/null', GIT_CONFIG_SYSTEM: '/dev/null' }) });
   const repo = (): string => {
     const root = fixture();
     cpSync(path.join(REPO, '.gitignore'), path.join(root, '.gitignore'));

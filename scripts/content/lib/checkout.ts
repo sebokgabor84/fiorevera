@@ -7,12 +7,46 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
-export const git = (root: string, args: string[]): string => execFileSync('git', args, { cwd: root, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, stdio: ['ignore', 'pipe', 'pipe'] }).replace(/\s+$/, '');
+/**
+ * The variables with which git points a child process at ONE repository (`git rev-parse
+ * --local-env-vars`). Inside a git hook they are set to the repository that runs the hook, and any
+ * git command a script starts would follow them instead of its own working directory: on
+ * 2026-11-21 a test that ran `git init` in a temporary folder during the pre-push hook
+ * re-initialised the real repository as bare. Every git call of these scripts names its
+ * repository by `cwd`, so these variables are always removed.
+ */
+const REPOSITORY_ENV = [
+  'GIT_ALTERNATE_OBJECT_DIRECTORIES',
+  'GIT_CONFIG',
+  'GIT_CONFIG_PARAMETERS',
+  'GIT_CONFIG_COUNT',
+  'GIT_OBJECT_DIRECTORY',
+  'GIT_DIR',
+  'GIT_WORK_TREE',
+  'GIT_IMPLICIT_WORK_TREE',
+  'GIT_GRAFT_FILE',
+  'GIT_INDEX_FILE',
+  'GIT_NO_REPLACE_OBJECTS',
+  'GIT_REPLACE_REF_BASE',
+  'GIT_PREFIX',
+  'GIT_SHALLOW_FILE',
+  'GIT_COMMON_DIR',
+];
+
+/** The environment for a child process that must act on the repository at its `cwd` and on no other. */
+export const repoEnv = (extra: NodeJS.ProcessEnv = {}): NodeJS.ProcessEnv => {
+  const env: NodeJS.ProcessEnv = { ...process.env, ...extra };
+  for (const name of REPOSITORY_ENV) delete env[name];
+  return env;
+};
+
+export const git = (root: string, args: string[]): string =>
+  execFileSync('git', args, { cwd: root, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, stdio: ['ignore', 'pipe', 'pipe'], env: repoEnv() }).replace(/\s+$/, '');
 
 /** A file exactly as git stores it (no trimming): for comparing content with the working tree. */
 export const gitFile = (root: string, ref: string, file: string): string | null => {
   try {
-    return execFileSync('git', ['show', `${ref}:${file}`], { cwd: root, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, stdio: ['ignore', 'pipe', 'pipe'] });
+    return execFileSync('git', ['show', `${ref}:${file}`], { cwd: root, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, stdio: ['ignore', 'pipe', 'pipe'], env: repoEnv() });
   } catch {
     return null; // the file did not exist at that commit
   }

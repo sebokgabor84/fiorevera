@@ -180,10 +180,11 @@ describe('the good-morning routine (scripts/content/morning.ts)', () => {
     const { cpSync, mkdirSync, writeFileSync } = await import('node:fs');
     const { morning, handoverAge } = await import('../../scripts/content/morning');
     const { recordChange } = await import('../../scripts/content/lib/changelog');
+    const { repoEnv } = await import('../../scripts/content/lib/checkout');
     const { FILES } = await import('../../scripts/content/lib/state');
     const REPO = path.resolve(__dirname, '../..');
     const root = mkdtempSync(path.join(os.tmpdir(), 'fv-morning-'));
-    const sh = (...args: string[]): string => execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, FV_SKIP_HOOKS: '1', GIT_CONFIG_GLOBAL: '/dev/null', GIT_CONFIG_SYSTEM: '/dev/null' } });
+    const sh = (...args: string[]): string => execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], env: repoEnv({ FV_SKIP_HOOKS: '1', GIT_CONFIG_GLOBAL: '/dev/null', GIT_CONFIG_SYSTEM: '/dev/null' }) });
     const commit = (message: string): string => sh('-c', 'user.name=t', '-c', 'user.email=t@example.com', 'commit', '-q', '--allow-empty', '-am', message);
     for (const rel of [FILES.albums, FILES.rental, FILES.testimonials, FILES.contact, FILES.areas, FILES.images, FILES.locale('hu'), FILES.locale('de'), FILES.locale('en'), '.gitignore']) {
       mkdirSync(path.dirname(path.join(root, rel)), { recursive: true });

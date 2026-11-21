@@ -25,7 +25,7 @@ import { fileURLToPath } from 'node:url';
 import { OperatorError, startDay, type DaySession } from '../release/operator';
 import { doctor } from './doctor';
 import { readChanges, type ChangeEntry } from './lib/changelog';
-import { tryGit } from './lib/checkout';
+import { repoEnv, tryGit } from './lib/checkout';
 
 export interface Morning {
   ok: true;
@@ -44,7 +44,7 @@ export interface Morning {
 }
 
 const run = (root: string, command: string, args: string[]): { status: number; output: string } => {
-  const result = spawnSync(command, args, { cwd: root, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+  const result = spawnSync(command, args, { cwd: root, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, env: repoEnv() });
   return { status: result.status ?? 1, output: `${result.stdout ?? ''}${result.stderr ?? ''}`.trim() };
 };
 

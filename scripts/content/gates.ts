@@ -21,7 +21,7 @@ import { spawnSync } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { mergeBase, workFingerprint } from './lib/checkout';
+import { mergeBase, repoEnv, workFingerprint } from './lib/checkout';
 
 export type StepStatus = 'pass' | 'fail' | 'review' | 'not-run';
 export interface StepResult {
@@ -77,7 +77,7 @@ export function runGates(root: string, only?: readonly string[]): GateReceipt {
       continue;
     }
     const started = Date.now();
-    const result = spawnSync(step.command[0], step.command.slice(1), { cwd: root, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, env: { ...process.env, CI: '', FORCE_COLOR: '0' } });
+    const result = spawnSync(step.command[0], step.command.slice(1), { cwd: root, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, env: repoEnv({ CI: '', FORCE_COLOR: '0' }) });
     const output = `${result.stdout ?? ''}${result.stderr ?? ''}`;
     writeFileSync(path.join(root, log), output);
     const seconds = Math.round((Date.now() - started) / 1000);
