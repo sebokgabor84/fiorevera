@@ -39,7 +39,7 @@ Session hooks: `session-start.sh` prints branch, dirty state, open pull requests
 4. **Review Brief.** Say what the push will carry: `rtk proxy git log --oneline origin/main..HEAD` and `rtk proxy git status --porcelain`.
 5. **GO 1 → commit and push the branch.** Immediately before staging: `rtk proxy git branch --show-current` — a branch check from an earlier turn does not count (the owner or another session may have switched it). Stage by explicit path, never `git add -A`. If `origin/main` moved: `git fetch && git rebase origin/main` (§5, hard rule), re-run the gates. `git push -u origin <branch>` (after a rebase of an already pushed branch: `git push --force-with-lease origin <branch>`), then confirm with `rtk proxy git rev-parse @{u}`.
 6. **Pull request brief.** There is no `gh`: give the owner `https://github.com/sebokgabor84/fiorevera/compare/main...<branch>?expand=1`, a drafted title and body, a reviewer checklist and the preview link (§4).
-7. **GO 2 = the owner presses "Merge pull request" on GitHub.** The agent never merges and cannot. A "GO" in chat after step 5 is answered with the pull request link, not with a merge. GO 1 never implies GO 2.
+7. **GO 2 = the owner presses "Merge pull request" on GitHub.** The agent never merges and cannot (one exception: the content lane, §9). A "GO" in chat after step 5 is answered with the pull request link, not with a merge. GO 1 never implies GO 2.
 
 ## 4. Previews
 
@@ -83,5 +83,24 @@ Vercel builds every pushed branch (on by default) and comments the preview URLs 
 | `pre-push: REFUSED — … carries a merge commit of its own` | `git fetch && git rebase origin/main` (the rebase drops the merge; resolve conflicts commit by commit, never `--skip` one silently), re-run the gates, then `git push --force-with-lease origin <branch>` if it was already pushed |
 | A gate in `pre-push` is red | Fix the code, not the gate (`qa-specialist`). `FV_SKIP_HOOKS=1` is the owner's emergency switch only, recorded in the pull request |
 | `release:status` says hooks are not installed or have no main guard | `npm run prepare`; bring the shared checkout up to date with `main` |
+
+## 9. The content lane — the one exception to "the agent never merges"
+
+Owner decision 2026-11-18 (`docs/decisions/0002-content-lane.md`): pure catalogue content goes live on the business owner's yes, without waiting for the technical owner. The door is ONE script; an agent never merges by typing `gh` (the Bash guard denies `gh pr merge` and `gh api …/merge`).
+
+| Command | Does |
+|---|---|
+| `npm run release:publish-content -- --what "…" --answers <file> [--as <person>]` | Establishes everything below itself, in this order: branch and change class, **its own run of every gate**, the review answers, and last **the approver's PIN in a system dialog**. Then it re-records the baselines under that person's name, writes the change log entry, commits exactly the files of the change, pushes (the pre-push gates run again), opens and merges the pull request, waits for the production deployment, runs `npm run verify:live`, returns to an up-to-date `main` and removes the merged branch |
+| `… --approved-in-chat "<their sentence>"` in place of `--answers` | Only accepted when no screen changed (no review page exists) |
+| `… --check` | The refusal rules only; nothing is committed, pushed or merged |
+| `… --handoff --what "…"` | Needs the technical owner: change log entry "Gáborra vár", commit and push if the hooks allow it, never a merge; the answer says truthfully where the work is (`saved`) |
+| `… --abandon` | Drops an UNRELEASED content change: content files back to their state on `main`, new photos deleted, back to `main`; refuses when anything but content changed or part of it is already committed |
+| `… --rollback [--as <person>]` | Reverts the last content release through the same gates and the same lane, confirmed with the PIN; refuses when other changes went live after it |
+
+It refuses (stable `code` in the JSON answer) unless, for the exact state of the checkout: the branch is `content/…` and up to date with `origin/main` (`branch`, `main-moved`); `scripts/content/lib/classify.ts` says `content` (`needs-gabor`: legal texts, e-mail, address, hero photo, anything under `src/` that is not a data entry, tests, dependencies …); every gate is green in the script's own run (`gates-red`; a saved `.content/gates.json` is not accepted as proof, it only serves `--check`); the look is approved (`answers-missing`, `review-issues`, `review-incomplete`, `not-go`, `approval-missing`); and the approver's PIN was accepted (`approval-cancelled`, `pin-wrong`, `locked`, `no-operators`). The rules are a pure function with unit tests (`tests/unit/contentLane.test.ts`). The git and GitHub steps need `gh`, signed in, on the machine (`npm run content:doctor` → `canPublish`); they are not exercised by the unit suite. Who uses it and how: `cms-coordinator`.
+
+**Who is approving** (`scripts/release/operator.ts`, `docs/decisions/0005-who-is-at-the-keyboard.md`): the account and the GitHub user are shared, so each owner has a PIN they chose themselves, asked for in a macOS dialog that never passes through the chat. `npm run release:operator` shows who is set up; `-- --set <id> --role content|admin --name "…"` creates or changes a person (needs an admin's PIN); `-- --verify --as <id>` checks one. Whose PIN the release asks for: `--as`, else whoever started the day (`goodmorning`), else `FV_OPERATOR`, else the machine's default. Three wrong entries lock that person for five minutes. The PIN is the last line, not a wall: the walls are the ruleset on `main` and, later, separate GitHub accounts.
+
+A refusal is never worked around: not with a typed merge, not by renaming a branch to `content/`, not by editing `.content/gates.json`, not by touching `~/.config/fiorevera/`. An agent never asks for, repeats or stores a PIN.
 
 **Owner-only switches** (an agent cannot set them): GitHub → Settings → Rules → Rulesets → new branch ruleset targeting `main`, enforcement Active, empty bypass list, rules *Restrict deletions*, *Block force pushes*, *Require a pull request before merging* (0 approvals); Settings → General → *Automatically delete head branches*. Vercel → project → Settings → Deployment Protection decides whether previews need a login (§4).

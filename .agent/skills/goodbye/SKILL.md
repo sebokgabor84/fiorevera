@@ -4,7 +4,7 @@ description: >-
   Session-close ritual and self-learning engine for the Fiore Vera project. Use
   when the user says /goodbye, "goodbye", "closing the session", "wrap up",
   "we pause", "let's pause", "stop here for today", or before ending or pausing
-  any working session in this repo. Runs Vera's session-close checklist, checks
+  any working session in this repo. Runs the Project Coordinator's session-close checklist, checks
   the handover for staleness, harvests the side sessions, extracts session
   learnings, syncs memory & BACKLOG.md, audits git state (branches, worktrees,
   pull requests), and reports the handover so the next session can pick up

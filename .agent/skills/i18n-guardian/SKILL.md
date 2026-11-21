@@ -108,6 +108,7 @@ D-12 says informal first-person (HU *te*, DE *du*, EN *you*). What the owner dec
 | Services eyebrow, hero buttons on phones | **Decided 2026-11-18:** the eyebrow is the pillar's position ("1 / 3", rendered in code, no copy key); both hero buttons are full width and stacked on phones, labels unchanged |
 | Field labels in the delivered inquiry mail | **Decided and built:** Hungarian (`INQUIRY_MAIL_LABELS` in `src/lib/submitInquiry.ts`), confirmed by a delivered mail on 2026-11-18. Subject and sender name ("Fiore Vera weboldal") stay HU-only by design |
 | Copy sign-off per locale (R-1), Vera's phone check of the three locales | **Open** (MASTER-PLAN 2.3/2.4, 4.2) |
+| Who approves German and English | **Decided 2026-11-18:** Vera, herself; she is fluent in Hungarian, German and English. In a content change (`cms-coordinator`) she writes the Hungarian, the agent drafts DE and EN under this skill's rules, she corrects and approves all three on the review step. Her corrections are applied verbatim |
 
 Testimonials are verbatim (typo fixes only).
 

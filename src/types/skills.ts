@@ -5,11 +5,13 @@
 
 export const SKILL_NAMES = [
   'accessibility-expert',
+  'cms-coordinator',
   'design-system-expert',
   'desktop-background-generator',
   'favicon-builder',
   'gdpr-guardian',
   'goodbye',
+  'goodmorning',
   'grill-me',
   'i18n-guardian',
   'lockscreen-qr-generator',
@@ -17,6 +19,7 @@ export const SKILL_NAMES = [
   'release-manager',
   'seo-expert',
   'skill-creator',
+  'tech-lead',
   'to-prd',
 ] as const;
 

@@ -1,6 +1,7 @@
 # CMS Coordinator — Product Requirements Document
 
-> **Status: concept for the technical owner's approval. Nothing is built.**
+> **Status: approved by the technical owner on 2026-11-20 with the changes in §0 (G8–G11). Stage 0 (the foundation) was built on 2026-11-21; the pilot with Vera has not started.**
+> What exists is described where it lives: the skill `.agent/skills/cms-coordinator/` (its `resources/catalogue.md` is the authoritative list of operations), `scripts/content/`, `scripts/release/publish-content.ts`, `docs/decisions/`. Where this document and the code differ, the code wins.
 > Written 2026-11-18 from the `grill-me` interview with Gabor (2026-11-16 and 2026-11-18), following `to-prd`.
 > Publish target: local Markdown (`AGENTS.md`, open question 6). Deviation from the `to-prd` template: the
 > operations catalogue names files, because the brief asks for "files touched" per operation.
@@ -16,8 +17,16 @@
 | G5 | Photos | No separate decision needed on a Mac (drag into the chat, or send from the phone into the running session). Cloud photo intake is a stage-2 pilot check. | follows from G1 |
 | G6 | German and English | **Vera approves all three languages herself**; she is fluent in Hungarian, German and English. | Gabor |
 | G7 | Names | Meaningful role names, no human names: the new agent is the **CMS Coordinator** (`cms-coordinator`). | Gabor |
+| G8 | Channel, confirmed | **Option A: the desktop app on Vera's Mac first. No cloud for now.** | Gabor, 2026-11-20 |
+| G9 | Technical consultant | A narrow **`tech-lead` skill** is part of this build: it assesses technical questions with at most two options and a recommendation, keeps the decision log `docs/decisions/`, and backs the CMS Coordinator for requests outside its catalogue. | Gabor, 2026-11-20 |
+| G10 | Baseline size | The growth of the pixel baselines in git is accepted for now. A reminder in code says after every re-record how large the set and its history are and whether that is still healthy; the clean-up mechanism itself goes to the backlog. | Gabor, 2026-11-20 |
+| G11 | The requests R1–R9 (§7) | "Adapt and begin with the build": taken as yes to all nine. R7 (the ruleset on `main`) is the owner's own switch and still open. | Gabor, 2026-11-20 |
 
-Reading of G1 that this document builds on, to be confirmed with the approval: stage 1 runs in the Claude desktop app on a Mac (Vera's or Gabor's), where the local visual flow works against the Mac baselines as built; cloud sessions are stage 2, after the pilot has measured what the documentation leaves open (§3.1).
+| G12 | Strength of the release rules | The agent's permission to put content live stands **if the rules really take effect**. The GitHub ruleset on `main` is active since 2026-11-21 (pull request required, no force push, no deletion). The release script was hardened: it runs every gate itself and no longer accepts a saved result as proof. | Gabor, 2026-11-21 |
+| G13 | Who is the human | The Claude account and the GitHub user are shared, so identity is settled twice: a question at the **start of the day** (`goodmorning` routine; an admin proves it with the PIN on any machine) and the approver's **PIN as the last line** before anything goes live. A self-chosen four-digit PIN, typed into a system dialog, never into the chat. Separate GitHub accounts with a code-owners rule are the later, stronger stage. `docs/decisions/0005-who-is-at-the-keyboard.md` | Gabor, 2026-11-21 |
+| G14 | Start of the day | A `/goodmorning` command, shaped after the start-of-session routines of the widely used agent repositories (`.agent/skills/goodmorning/resources/sources.md`). | Gabor, 2026-11-21 |
+
+Owner's answers to the critique (§9), 2026-11-20: point 1 agreed, the safe path is wanted; point 2 accepted, a rollback is easy and the risk is small for now; point 3 no concern; point 4 → G10; point 5 "we have to see and improve later if needed"; point 6 fine; point 8 → G8. Point 7 was unclear as written and is reworded below.
 
 ## 1. Problem statement
 
@@ -70,7 +79,7 @@ Three properties carry the design:
 
 **Honest critique.** B is the nicer promise (nothing to install, works from the phone) and the weaker ground: three of its steps are undocumented and one (pixels) is known not to work as is. Building B first would mean her first sessions test the platform, not her content. A is less elegant and has one unknown I can name and measure in ten minutes: whether the visual suite is green on her Mac on an untouched `main`. C fails the directive "on her own".
 
-**Recommendation: A, with the agent built channel-neutral.** A script (`content:doctor`) reports at session start what the machine can do (platform, baselines usable, photo intake, publishing of the review page, hooks installed, `gh` present) and the agent adapts its offers to it. Stage 2 adds the cloud once the pilot has answered the open points.
+**Decided 2026-11-20 (G8): A. The cloud is parked.** My recommendation had been: A, with the agent built channel-neutral. A script (`content:doctor`) reports at session start what the machine can do (platform, baselines usable, photo intake, publishing of the review page, hooks installed, `gh` present) and the agent adapts its offers to it. Stage 2 adds the cloud once the pilot has answered the open points.
 
 **Cost.** One Claude Pro subscription for the family account (20 USD/month). GitHub stays free, Vercel stays on Hobby (owner's standing decision, not re-opened here).
 
@@ -97,12 +106,14 @@ Example of the intended voice:
 
 ### 3.3 The catalogue of content operations
 
+**As built (2026-11-21):** every operation is a subcommand of one command, `npm run content -- <operation>`, not an npm script of its own; the table's "Script" column names the operation as proposed. The exact names and arguments are in `.agent/skills/cms-coordinator/resources/catalogue.md` and in `npm run content -- help`. Differences from the proposal: photos are `photos-add`, `photos-remove`, `photos-move`; SEO texts go through `text-set`; "what changed lately" is the change log file; `slot-photo` (hero and About) was not built because those photos are owner-only in v1.
+
 Common to every operation, so it is not repeated in the table:
 
 - **Gates** (class `content`): `npm run lint` → `npm test -- --run` → `npm run build` → `npm run test:visual`, then the e2e specs of the touched area on chromium and Mobile Chrome plus `a11y.spec.ts`. The full four-browser run stays the rule for code changes. *(My recommendation; see §7, R6.)*
 - **Sitemap dates**: any change to copy or `src/data/**` requires `npm run sitemap`; `public/sitemap.xml` and `scripts/sitemap-lastmod.json` travel with the change (`tests/unit/sitemap.test.ts`).
 - **What she approves**: the review page lists exactly the screens that differ, decided by the suite at run time. The "baselines that typically move" column is an expectation, not a promise.
-- **Count pins**: several tests pin today's content counts (§7, R1). Until they are derived from the data, adding or removing an album, rental item or testimonial turns the unit gate red by design.
+- **Count pins**: several tests pinned the content counts of launch day (§7, R1). Since 2026-11-21 they are derived from the data.
 
 | Operation | Script (proposed) | Files touched | Validation | Tests that guard it | Baselines that typically move | What she sees to approve |
 |---|---|---|---|---|---|---|
@@ -133,11 +144,12 @@ Built on `release-manager` as merged on 2026-11-18 (guards on `main`, `content/`
 |---|---|---|
 | 1. Start | `release:status` must be clean; `git fetch`; `git switch -c content/<date>-<what> origin/main`. One open change at a time; an unfinished one is offered first ("Tegnap félbemaradt az árváltoztatás. Folytassuk?") | existing guards (no edit on `main`) |
 | 2. Change | Only through `scripts/content/*`. Each script validates before it writes and leaves the tree untouched when validation fails | the scripts' own unit tests |
-| 3. Gates | The chain from §3.3. A machine-readable result per gate (name, pass or fail, first failing assertion) is written for the exact commit | new `content:gates` wrapper over the existing commands |
+| 3. Gates | The chain from §3.3 through `npm run content:gates`: one machine-readable result per gate (name, pass, fail or review, the last lines of a failure) for exactly this state. The agent uses it to know whether there is something to show; the release script does not accept it as proof and runs every gate again itself (hardened 2026-11-21, G12) | `scripts/content/gates.ts` |
 | 4. Review | `npm run visual:page` with a Hungarian review spec; published as a private Artifact where the session can, otherwise served locally. She marks every screen OK or Issue and presses "Copy answers" | `docs/qa/visual-review-process.md` (G4) |
+| 4b. Who approves (added 2026-11-21, G13) | The release script asks for the approver's PIN in a system dialog, after its own run of every gate and immediately before the merge. Whose PIN: whoever said "it is me" in the morning routine | `scripts/release/operator.ts`; three wrong entries lock the person for five minutes |
 | 5. Approval | The pasted answers are read by `visual:page -- --answers`, never by eye. "May re-record" only if every screen is OK, the look is approved and the answers belong to exactly these pictures. "May go live" only if, in addition, the go-live answer is yes | existing script; build fingerprint in the answers |
 | 6. Classify | `content:classify` reads the diff against `origin/main` and prints `content` or `needs-gabor` with reasons (path allowlist plus key-level rules inside the locale files) | new script, unit-tested with fixtures of both classes |
-| 7. Release | Class `content`: baselines re-recorded through `test:visual:update --approved-by="<name on the answers>"`, commit, push (the pre-push hook runs the gates again), pull request, merge, all inside **one script** (`release:publish-content`) that re-checks steps 3, 5 and 6 for the current commit and refuses otherwise. Class `needs-gabor`: commit and push only; hand-over (§3.6) | new script; GitHub ruleset on `main` (pull request required, no direct push); Bash guard rule that denies a typed `gh pr merge` |
+| 7. Release | Class `content`: **one script** (`npm run release:publish-content`) establishes steps 6, 3 and 5 itself for the current state, asks for the approver's PIN as the last line (step 4b), then re-records the baselines under that person's name, commits, pushes (the pre-push hook runs four gates once more), opens and merges the pull request. Class `needs-gabor`: commit and push only; hand-over (§3.6) | new script; GitHub ruleset on `main` (pull request required, no direct push); Bash guard rule that denies a typed `gh pr merge` |
 | 8. Live check | Wait for the Vercel production deployment, then `npm run verify:live`. Only then: "Élesben van." with the page link | existing `verify:live` |
 | 9. Record | One line in `docs/vera-agent/changelog.md`: date, what changed in her words, who approved, commit | the release script |
 
@@ -147,7 +159,7 @@ Built on `release-manager` as merged on 2026-11-18 (guards on `main`, `content/`
 
 **The second gate (Gabor).** Everything the classifier does not recognise as catalogue content: components, styles, layout, `scripts/`, tests, dependencies, `vercel.json`, routes and slugs, legal texts (`privacy.*`, consent texts, `PRIVACY_UPDATED`), the data register, postal address and owner name, the hero photo (v1), a changed e-mail address, anything touching the form. Default is `needs-gabor`: a new file or key the classifier has never seen is not content until the allowlist says so.
 
-**What the shared account means.** "Approved by Vera" is the name on the pasted answers, not an authenticated identity (G2). Inside a family that is acceptable; it is stated here so nobody reads the change log as proof.
+**What the shared account means.** The account does not say who is working (G2). Since 2026-11-21 "approved by Vera" in the change log means: her PIN was typed into the system dialog on that machine (G13). That tells the two owners apart; it is not a wall against an agent that avoids the release script, which is why separate GitHub accounts are the next stage.
 
 ### 3.5 Design and technical advice
 
@@ -161,6 +173,7 @@ When she asks for an opinion ("jó ez a borítókép?", "nem túl hosszú ez a s
 | Anything a visitor must be able to read or operate | `accessibility-expert` | Contrast, alt text templates, heading order (via the axe run) | Only when something fails, as a plain consequence: "Ezt a szöveget ezen a háttéren sokan nem tudják elolvasni." |
 | Names and faces of customers, e-mail addresses, forms | `gdpr-guardian` | Consent of the couple before an album or a testimonial; nothing that stores visitor data is content | A yes/no question before the change; legal points are passed to Gabor with the skill's [INFO] / [CONFIRM] tags |
 | "Is it safe to put live?" | `qa-specialist`, `release-manager` | The gate results | One line: all checks passed, or which one did not and what happens next |
+| "Can the site do this?", a new kind of content, how something is built (G9) | `tech-lead` | The standing constraints (static site, no backend, three languages, gates), cost and risk of at most two options | What exists, what it would take, and that the decision is Gabor's; the same assessment goes into the message she forwards to him |
 
 Rules for the translation from specialist to owner: at most two options; always a recommendation, with the reason in one sentence about the visitor, not about the code; pictures of the real page with the option applied, never a description; a specialist's veto (contrast, consent, file size) is not offered as an option at all; her pick is final for taste, and a pick against the recommendation is recorded once without comment.
 
@@ -181,7 +194,6 @@ Rules for the translation from specialist to owner: at most two options; always 
 | SEO title or description too long | "A cím 4 karakterrel hosszabb, mint ami a Google találatban elfér. Rövidebb javaslat: …" | She picks or rewrites |
 | Layout check: text overflows or a word breaks badly at a phone width | "Telefonon ez a sor kilóg a képernyőről. Két megoldás: rövidebb szöveg (javaslom), vagy megkérjük Gábort, hogy igazítson az elrendezésen." | Shorter text now, or `needs-gabor` |
 | Accessibility check red | "Ezt így sok látogató nem tudná elolvasni vagy kezelni, ezért nem tehetem ki." plus the concrete fix when it is content | Fix, or `needs-gabor` when it is design |
-| A count test is red after adding an album (until R1 is done) | "Az oldal ellenőrzése még a régi albumszámot várja. Ezt Gábornak kell egyszer átállítania; az albumod el van mentve." | `needs-gabor` |
 | Build or an unexpected test fails | "Valami olyasmi akadt el, ami nem a te változtatásodon múlik. Az éles oldal változatlan, a munkád el van mentve. Ezt küldd el Gábornak: …" | `needs-gabor` with the gate's raw result attached for him |
 | The live check after release fails | "Az élesítés nem ment végig rendesen, ezért visszaállítom az előző állapotot." | Automatic rollback through the same lane, then `needs-gabor` |
 
@@ -212,7 +224,7 @@ Her first session, in rising order of risk, each a real piece of open work where
 | 7 | Ask for something outside the catalogue ("legyen nagyobb a logó") | The escalation message she forwards |
 | 8 | A request that must fail (a far too long page title) | A failed check explained without leaving her stuck |
 
-**Stage 2: the cloud as a second channel**, after these checks in one throw-away session by Gabor: does an attached phone photo become a file; can the session show her the review page; do the hooks and the content lane work there; how long a cold start takes. Text and price changes come first; photo work moves only if intake is proven.
+**Stage 2: the cloud as a second channel — parked by the owner on 2026-11-20 (G8).** If it is taken up later, it starts with these checks in one throw-away session by Gabor: does an attached phone photo become a file; can the session show her the review page; do the hooks and the content lane work there; how long a cold start takes. Text and price changes come first; photo work moves only if intake is proven.
 
 **How success is measured.**
 
@@ -297,7 +309,7 @@ Her first session, in rising order of risk, each a real piece of open work where
 - **Human numbering starts at 1** in every dialogue and on every contact sheet; scripts convert to the 0-based `coverIndex`.
 - **New albums go to the top of the gallery by default** and the agent asks; the home-page selection changes only on request.
 - **Slugs are derived once and never change** (accents folded, kebab-case): they are URL anchors and image folders.
-- **Session identity.** At the first change of a session the agent asks whose name goes on the approval ("Vera" or "Gábor"); the name on the pasted answers is what gets recorded.
+- **Who is at the keyboard** (changed 2026-11-21, G13). The `goodmorning` routine asks once a day; the release script asks that person for their PIN and records their name. `docs/decisions/0005-who-is-at-the-keyboard.md`.
 - **How it becomes a dedicated agent** (documentation checked 2026-11-18, `sub-agents`, `skills`, `hooks`):
   - The rules live in `.agent/skills/cms-coordinator/` as the registry requires. Claude Code only discovers project skills under `.claude/skills/`, so a thin `.claude/skills/cms-coordinator/SKILL.md` points to it and makes it invocable by name.
   - A project agent definition `.claude/agents/cms-coordinator.md` carries the persona and preloads that skill ("Use the `skills` field to inject skill content into a subagent's context at startup").
@@ -318,18 +330,20 @@ Her first session, in rising order of risk, each a real piece of open work where
 
 ## 7. Requests outside this branch's scope limits
 
-The brief limits this branch to `docs/vera-agent/`, the skill folder, `scripts/content/`, its unit tests, `package.json` scripts and the registry files. The concept needs the following beyond that. Each needs an explicit yes or no; none is started without it.
+**Owner's answer 2026-11-20 (G11): all nine taken as yes and built on 2026-11-21, except R7, which only the owner can switch.** How each was done: `BACKLOG.md`.
+
+The brief limited this branch to `docs/vera-agent/`, the skill folder, `scripts/content/`, its unit tests, `package.json` scripts and the registry files. The concept needed the following beyond that.
 
 | # | Request | Why it is needed | Smallest form |
 |---|---|---|---|
 | R1 | Replace the pinned content counts in `tests/unit/data.test.ts`, `tests/unit/render.test.tsx`, `tests/e2e/gallery.spec.ts`, `tests/e2e/rental.spec.ts` (15 albums, 169 photos, 7 rental items, 4 testimonials, 16 ImageGallery nodes, mirror deposit 20 000) by values derived from the data | The first added album or item turns the gate red although nothing is wrong | Assertions like "one section per album" and "ImageGallery count = albums + 1" |
 | R2 | Let `scripts/optimize-images.js` and the intake share one encoder module, and make the global script refuse to run when `assets-src/` lacks a slot that the manifest contains | Today the global script rebuilds the manifest from whatever folders exist and deletes the rest; on Vera's Mac that would empty the gallery | Extract the encode functions; add the refusal |
 | R3 | A way to read iPhone photos (HEIC). The installed sharp build reads `.avif` only for that family (measured 2026-11-16) | Her phone photos would otherwise fail at intake | On a Mac: convert with the system's `sips` (no dependency). A new dev dependency only if the cloud stage needs it |
-| R4 | Hungarian mode and an approver line on the review page (`scripts/visual-review-page.ts`, site-polish branch, not merged yet) | The page ends in `BASELINES YES/NO`, `COMMIT GO/WAIT`; she needs plain Hungarian | A language flag; answer format unchanged |
+| R4 | Hungarian mode and an approver line on the review page (`scripts/visual-review-page.ts`) | The page ends in `BASELINES YES/NO`, `COMMIT GO/WAIT`; she needs plain Hungarian | A language flag; answer format unchanged |
 | R5 | The content lane in `release-manager`: `scripts/release/publish-content`, a Bash guard rule against a typed `gh pr merge`, a selftest case, a section in the skill; `gh` installed and signed in on the Macs that use it | G3: the agent merges pure content; today the skill says it never merges and there is no `gh` | One script, one guard rule, one skill section |
 | R6 | Agree the gate set for class `content`: unit, build, visual, plus e2e on chromium and Mobile Chrome for the touched area and the axe spec; the four-browser run stays for code | Four browsers take minutes per release and content cannot break browser-specific behaviour that the two projects do not show | A documented rule in `qa-specialist` |
 | R7 | Owner switches: the GitHub ruleset on `main` (already listed in `release-manager` §8) | The content lane relies on it as the wall behind the scripts | Gabor, in GitHub settings |
-| R8 | Rename the persona in `AGENTS.md` and the two lines in other skills that say "Vera's registry" | G7 | Part of the registry step, plus two one-line edits outside it |
+| R8 | Rename the persona in `AGENTS.md` and the two skill lines that mean the persona (`skill-creator`: "Vera's registry"; `goodbye`: "Vera's session-close checklist") | G7 | Part of the registry step, plus two one-line edits outside it |
 | R9 | Two files under `.claude/`: the agent definition `.claude/agents/cms-coordinator.md` and the pointer skill `.claude/skills/cms-coordinator/SKILL.md` | G1 asks for a dedicated agent; the brief's scope names only `.agent/skills/` | Two small files; no change to `.claude/settings.json` or the hooks |
 
 ## 8. Out of scope
@@ -350,8 +364,9 @@ The brief limits this branch to `docs/vera-agent/`, the skill folder, `scripts/c
 4. **Pixel baselines in git grow with every content release.** Each changed screen is a new PNG of a few hundred kilobytes in history. With weekly releases that is tens of megabytes a year. Watch the repo size; Git LFS is already on the backlog.
 5. **Two Macs may not render identical pixels.** Unmeasured. It is the first pilot check, and the fallback is designed.
 6. **The first real album will hit R1.** If R1 is declined or delayed, the catalogue's most wanted operation ends in an escalation every time. R1 and R2 are prerequisites, not extras.
-7. **The model can still phrase things badly.** Dialogue rules are prose. The pilot list contains two tasks whose only purpose is to see how it behaves when the answer is no.
-8. **I recommended against cloud-first and the owner's answer keeps the session approach open.** I built the plan so that neither reading blocks the other; if the intent was cloud from day one, stage 2 moves to the front and stage 1's first deliverable becomes the "Before = `main` on the same machine" adaptation.
+7. **How the agent talks cannot be tested by code.** The rules for talking to Vera (plain Hungarian, one question at a time, never leave her without a next step) are written instructions. Everything else in this concept is checked by a script or a test; this part is checked only by watching it. The agent may still word something clumsily or ask two questions at once. That is why pilot tasks 7 and 8 exist: their only purpose is to see how it behaves when it has to say no, and every misstep becomes a model sentence in the skill's dialogue file.
+8. **Channel.** Settled on 2026-11-20 (G8): the Mac first, no cloud for now.
+9. **The content lane has never run end to end** (added 2026-11-21). Its refusal rules are unit-tested; its git and GitHub steps need `gh`, which is not installed on the machine it was built on. The first real run must be supervised, on the smallest change (pilot task 2).
 
 ## 10. Open points and things not verified
 
@@ -365,4 +380,5 @@ The brief limits this branch to `docs/vera-agent/`, the skill folder, `scripts/c
 | A photo sent from the phone through Remote Control is a file on the Mac | documentation is not consistent; pilot check; fallback AirDrop and drag |
 | Vercel Hobby and commit authorship | holds with G2 (Gabor's identity); would need re-checking if Vera ever gets her own GitHub account |
 | Hungarian te/ti, emoji in the rental steps, portrait crops, hero photo | owner decisions still open in `BACKLOG.md`; the pilot is the natural place for Vera to make them |
-| `CLAUDE.md` project-state section | still describes the pre-launch state; outside this branch except for the skill list |
+| The content lane's git and GitHub steps | unit tests cover the refusal rules only; first real run is pilot task 2, supervised |
+| `gh` on the machines that publish | not installed on Gabor's Mac on 2026-11-21 (`npm run content:doctor` → `canPublish: false`); one-time set-up |

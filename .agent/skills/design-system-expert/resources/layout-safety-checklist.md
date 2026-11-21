@@ -1,6 +1,6 @@
 # Layout safety checklist
 
-Run before and after any change to `src/styles/global.css` (Safety Layer, `.container`, utilities), `header.module.css`, any `position: fixed/sticky` element, or a grid breakpoint. The unit and e2e suites do **not** assert widths, line length or stacking (QA 2026-11-09 Honest Critique) — this is a manual gate (README step 9 / `AGENTS.md` POST-5).
+Run before and after any change to `src/styles/global.css` (Safety Layer, `.container`, utilities), `header.module.css`, any `position: fixed/sticky` element, or a grid breakpoint. The unit and e2e suites do **not** assert widths, line length or stacking (QA 2026-11-09 Honest Critique) — this is a manual gate (`AGENTS.md` POST-5).
 
 Dev look: `npm run dev` (CSR, :5173). Production look: `npm run build && npm run preview` (prerendered, :4173) — check the prerendered build for header/hero issues, it is what Vercel serves.
 

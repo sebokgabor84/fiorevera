@@ -56,6 +56,13 @@ mkdir -p .github/workflows && git mv docs/ci/github-actions-ci.yml .github/workf
 
 Commit, push the branch, open a pull request: the run appears under the pull request's "Checks". Pushing a file under `.github/workflows/` over HTTPS needs a token with the `workflow` scope; with SSH or the GitHub desktop login it just works.
 
-To make the green mark mandatory: GitHub → repository **Settings → Branches → Add branch ruleset** for `main` → require the status check `lint · unit · build · e2e (chromium) · axe · layout`. Without that rule a red pull request can still be merged.
+To make the green mark mandatory: since 2026-11-21 a ruleset protects `main` (GitHub → repository **Settings → Rules → Rulesets → "main branch protection"**: pull request required, no force push, no deletion). Add **Require status checks to pass** there and pick `lint · unit · build · e2e (chromium) · axe · layout`. Without that rule a red pull request can still be merged.
+
+## CI and the content lane (added 2026-11-21)
+
+`npm run release:publish-content` (the CMS Coordinator's release path, `release-manager` §9) opens a pull request and merges it right away, after its own run of every gate on the owner's Mac and the approver's PIN. Two consequences if CI is switched on:
+
+- **With a required status check** the immediate merge is refused by GitHub until the check is green. `scripts/release/publish-content.ts` must then wait for the check (or use GitHub's auto-merge) — change the script in the same pull request that makes the check mandatory.
+- **CI would be the first server-side proof for content releases.** Today "content only" and "gates green" are established by the script on the same machine as the agent; a required check on a neutral machine closes that gap for the gates. It does not identify the human: that is the PIN today and separate GitHub accounts later (`docs/decisions/0005-who-is-at-the-keyboard.md`).
 
 Switching it off again: delete `.github/workflows/ci.yml` (or disable the workflow under the repository's **Actions** tab).

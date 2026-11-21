@@ -1,85 +1,67 @@
-# Harvest: Vera concierge → CMS Coordinator (concept only)
-Session: vera-concierge (side session of the overarching session) · period: 2026-11-16–2026-11-20 · commits: none (branch `claude/vera-concierge-7826b5` = `origin/main` 4d2106f plus one untracked file)
+# Harvest: Vera concierge → CMS Coordinator (concept, then the foundation)
+Session: vera-concierge (side session of the overarching session) · period: 2026-11-16–2026-11-21 · commits: on `claude/vera-concierge-7826b5`, pull request 22 — the concept (rebased onto `main`) and the build in three commits, pushed on 2026-11-21 after the owner's GO 1; not merged
 
 ## 1. What this session delivered
-- Concept for an agent that lets Vera (and sometimes Gabor) maintain site content without git: `docs/vera-agent/PRD.md` (untracked, ~8 800 words). **Status: written, NOT approved by Gabor. Nothing was built**: no skill, no `scripts/content/`, no guide, no registry change.
-- `grill-me` interview with Gabor, seven decisions G1–G7 (PRD §0) — table in section 3 below.
-- Operations catalogue: 16 content operations, each with proposed script, files touched, validation, guarding tests, baselines that move, what the owner sees (PRD §3.3).
-- Safety model on top of the merged `release-manager`, with one exception ("content lane") (PRD §3.4); refusal / escalation rules and a failed-gate → Hungarian sentence table (PRD §3.6); pilot task list of 8 tasks and success measures (PRD §3.7); 43 user stories (PRD §4).
-- Nine scope requests R1–R9 that need Gabor's yes or no before a build (PRD §7).
-- Interface request to the release manager: side-session note `vera-concierge-needs-from-release-manager.md` (outside the repo; its still-valid part is R5 below).
-- Product facts checked in the official docs on 2026-11-16 and 2026-11-18 (three documentation agents): PRD §3.1 table, §5 "How it becomes a dedicated agent", §10.
+- Concept, approved by the owner on 2026-11-20 with changes — `docs/vera-agent/PRD.md` (§0: decisions G1–G14).
+- Skills `cms-coordinator` (+ `resources/catalogue.md`, `resources/dialogue-hu.md`), `tech-lead`, `goodmorning` (+ `resources/sources.md`); agent definition `.claude/agents/cms-coordinator.md`; pointer skills `.claude/skills/{cms-coordinator,goodmorning}/` (slash commands). Registry: 17 skills.
+- Content operations: `npm run content -- <operation>` (23 operations) — `scripts/content/cli.ts`, pure functions in `ops.ts`, one validated `ContentState` in `lib/state.ts`, byte-preserving data-file editor `lib/tsData.ts`, single-slot photo intake `lib/photos.ts` (HEIC through `sips`), classifier `lib/classify.ts`, `gates.ts`, `doctor.ts`, `morning.ts`, change log `lib/changelog.ts`.
+- Shared image encoder `scripts/images/tiers.js`; `scripts/optimize-images.js` refuses (exit 2) when a rebuild would delete or reorder photos the manifest holds.
+- Content lane `scripts/release/publish-content.ts` (publish, `--check`, `--handoff`, `--rollback`, `--abandon`); approver identity `scripts/release/operator.ts` (self-chosen PIN in a macOS dialog, roles, three-tries lock, start-of-day session); Bash guard rule 8 against a typed `gh pr merge`.
+- Review page: `lang: "hu"`, `goLive: true` (`scripts/visual-review-page.ts`); baseline size reminder `scripts/visual-baseline-size.mjs` (`npm run visual:size`, printed by `test:visual:update`).
+- Decision log `docs/decisions/0001`–`0005`; owner's guide `docs/vera-agent/utmutato.md`; session-start hook prints who is at the keyboard today.
+- Documentation made template-grade (owner's request 2026-11-21): root `README.md` rewritten as a project README, the historical plan moved unchanged to `docs/history/project-plan-2026.md`, the framework / site inventory for the template session in `docs/template/README.md`, and `tests/unit/docs.test.ts` as the gate against dead documentation.
+- Tests: unit 147 → 256 in 24 files (`content.test.ts` 60, `contentLane.test.ts` 24, `operator.test.ts` 13, `docs.test.ts` 4, `visualBaselineSize.test.ts` 4, `visualReview.test.ts` +4); content counts in `data.test.ts`, `render.test.tsx`, `gallery.spec.ts`, `rental.spec.ts` derived from the data.
+- Gates on 2026-11-21: lint + script type check clean, unit 256, e2e 413 passed / 7 skipped, build 21 pages, visual 110, release selftest 81.
 
 ## 2. Learnings (rules a future agent must follow)
-- **Adding or removing an album, rental item or testimonial turns the gates red by design: tests pin today's counts.** — `tests/unit/data.test.ts:29,30,43,48,55,71` (15 albums, 169 photos, 7 items, mirror deposit 20 000, 4 testimonials), `tests/unit/render.test.tsx:42,48,49`, `tests/e2e/gallery.spec.ts:16`, `tests/e2e/rental.spec.ts` (7 items). Checked on 4d2106f, 2026-11-20. [testing] [architecture]
-- **Never run `npm run optimize:assets` on a checkout without the complete `assets-src/`.** — `scripts/optimize-images.js` only checks that the root folder exists (`:179`), builds `imageMeta.ts` from the album folders it finds and deletes outputs without a source; a clone holding one new album would drop the other 15 from the manifest. `assets-src/` is git-ignored and complete only on Gabor's Mac. Read from the code, not executed. [architecture] [tooling]
-- **The committed WebP files are the source of truth for existing photos; originals are a local archive.** — follows from the point above and from the repo being public (`release-manager` note, 2026-11-16): originals must not be committed. [architecture] [legal]
-- **The installed sharp build cannot read iPhone HEIC.** — `sharp.format.heif.input.fileSuffix` = `[".avif"]` (measured 2026-11-16, main checkout), although `IMAGE_RE` in `optimize-images.js` lists `heic`. On macOS `/usr/bin/sips` can convert first. [tooling]
-- **Pixel baselines are macOS pixels; a Linux cloud session cannot compare against them.** — `docs/qa/visual-regression-plan.md` ("platform-specific: generated on macOS"). Parity between two Macs is not measured. [testing]
-- **A content change is supposed to change pixels, so the pixel gate is an approval step for content, not a regression check.** — home, gallery, rental and contact baselines contain albums, prices and copy. The owner's answer: use the code-based review page (`npm run visual:page`, `docs/qa/visual-review-process.md`), run locally, baselines stay in the repo (Gabor, 2026-11-18). [testing] [owner-preference]
-- **Find the key a visible sentence comes from by rendering, not by guessing.** — an earlier edit went to `gallery.intro` instead of `gallery.hero.intro` (`.agent/harvest/main-build.md`); the concept therefore has a `text-find` helper. [workflow]
-- **Claude Code discovers project skills only under `.claude/skills/`, not `.agent/skills/`.** — skills doc, 2026-11-18: "`.claude/skills/<skill-name>/SKILL.md` | Sessions in this repository". This repo's 14 skills are reached through `AGENTS.md` routing only. [tooling]
-- **`"agent": "<name>"` in `.claude/settings.json` makes every session of the project run as that agent.** — sub-agents doc, 2026-11-18. In the committed file it would hijack technical sessions; per machine it belongs in the git-ignored `.claude/settings.local.json`. Whether the desktop app honours it is not documented. [tooling]
-- **Vercel Hobby deploys only commits whose author has access to the Vercel project.** — vercel.com KB "why aren't commits triggering deployments": "only the account owner can trigger deployments". Holds as long as commits carry Gabor's git identity (G2). [ops]
-- **Gabor often answers a multiple-choice question with free text that changes the premise; read it as new facts, then re-ask only what is still open.** — "Vera has also a mac", "she speaks fluently german and english", "a meaningful name like CMS-coordinator", 2026-11-18. [owner-preference] [workflow]
-- **Gabor wants role names for agents, not human names.** — G7, 2026-11-18. [owner-preference]
-- **The persona name "Vera" in `AGENTS.md` collides with the real Vera.** — 19 occurrences in `AGENTS.md` on 4d2106f mean the coordinator persona, while `BACKLOG.md` and the plans mean the person ("Vera picks the 15 album covers"). [workflow]
+- **Edit a data file by cutting and pasting between parser positions, never by reformatting it.** — `src/data/*.ts` are not prettier-formatted (150-character lines); a formatter would rewrite every line. `lib/tsData.ts` keeps untouched entries byte for byte; the test "writing back unchanged values reproduces the file" guards it. [architecture]
+- **The locale files write no-break spaces as ` ` escapes; `JSON.stringify` does not.** — a plain round trip changed 9 lines per file; `renderLocale` re-escapes invisible characters. [tooling]
+- **Compare a file with git only through a call that does not trim.** — the shared `git()` helper strips trailing whitespace; `git show` content without its last newline made every data file look "changed outside its entries". Found by a test on a throw-away repository, not by the in-memory tests (`gitFile`). [testing]
+- **A change that is made and undone still moves the sitemap dates.** — `scripts/sitemap-lastmod.json` got today's date after a price went up and back; an unreleased change is therefore dropped with `--abandon`, never by switching branches (uncommitted files travel along). [workflow]
+- **The picture check differing is the expected result of a content change** — `content:gates` reports it as `review`, a layout failure as `fail`. [testing]
+- **A saved gate result is not proof.** — the first lane trusted `.content/gates.json`; the owner asked for strong rules, so the lane now runs every gate itself and the file only serves `--check`. [architecture] [owner-preference]
+- **An approval the agent can type is not an approval.** — review answers are pasted text and `--approved-by` was a flag; the owner added a PIN typed into a system dialog as the last line. The agent never asks for, sees or stores it. [owner-preference] [architecture]
+- **A four-digit PIN checked on the agent's own machine identifies, it does not defend.** — hash and lock live in a file the agent's user can read; said to the owner, who chose it knowingly ("PIN now, GitHub later"). [architecture]
+- **GitHub cannot tell the owners apart while they share one account**; "content only" and "approved by Vera" exist only in the script until separate accounts and a code-owners rule exist. [ops]
+- **A ruleset that is "Disabled" or has no target protects nothing.** — the owner's first save showed both; check with `curl https://api.github.com/repos/<slug>/rules/branches/main` (2026-11-21: three rules). [ops]
+- **Owner preferences confirmed:** role names for agents; the smaller option first; a phone-style PIN he defines himself; "ask me at the beginning of the day who I am"; the README files and Vera's guide are updated in the same change as the code. [owner-preference]
+- **Start-of-session routines in the widely used agent repositories** share: a tiny hook, one explicit command, read the handover completely and verify it, one next step, a bounded report, ask before acting; none asks who the human is — `.agent/skills/goodmorning/resources/sources.md`. [workflow]
 
 ## 3. Facts and decisions (must exist in the repo as code or docs)
 | Fact / decision | Decided by, when | Lives in the repo at | Missing? |
 |---|---|---|---|
-| G1 One dedicated agent with its own skills, in a Claude Code session, for Vera first and Gabor sometimes; visual regression runs locally, baselines in the repo, no CI in the deploy path | Gabor, 2026-11-18 | `docs/vera-agent/PRD.md` §0 | no (once the PRD is committed) |
-| G1 reading: stage 1 = desktop app on a Mac, cloud = stage 2 | **my interpretation, not confirmed** | PRD §0, §9 point 8 | YES → needs Gabor's confirmation (section 6) |
-| Vera has a MacBook Air M4 13" (2025) | Gabor, 2026-11-18 | PRD §0 | no |
-| G2 One shared family Claude account, connected to Gabor's GitHub | Gabor, 2026-11-18 | PRD §0 | no |
-| G3 The agent merges pure content after the owner's yes; everything else waits for Gabor | Gabor, 2026-11-18 | PRD §0, §3.4 | YES → `release-manager` SKILL.md still says "the agent never merges and cannot" (R5) |
-| G4 Visual approval = the site-polish review page, adapted, not replaced | Gabor, 2026-11-18 | PRD §0, §3.4 | no |
-| G6 Vera approves Hungarian, German and English herself (fluent in all three) | Gabor, 2026-11-18 | PRD §0 | YES → `i18n-guardian` SKILL.md and `BACKLOG.md` R-1 do not say who reviews DE/EN |
-| G7 Agent name `cms-coordinator`; persona "Vera" → "the Project Coordinator" | name: Gabor, 2026-11-18; persona rename: my proposal | PRD §0, §5 | YES → `AGENTS.md` (R8, not done) |
-| Visual gate for content: Gabor answered "no preference" to my first question, then gave G4 | Gabor, 2026-11-18 | PRD §0 | no |
-| Content gate set (two browsers + axe, not four) | **my recommendation, not decided** | PRD §3.3, R6 | YES → decision, then `qa-specialist` |
-| Claude Pro 20 USD/month covers desktop Code tab, Artifacts, Remote Control | docs, 2026-11-18 | PRD §3.1 | no |
-| `gh` is not installed on Gabor's Mac | measured 2026-11-16 and 2026-11-20 | `release-manager` SKILL.md §3 step 6 | no |
+| G1–G7 (agent, shared account, content lane, review page, DE/EN by Vera, role names) | Gabor, 2026-11-18 | `docs/vera-agent/PRD.md` §0, `docs/decisions/0001`–`0004` | no |
+| G8 Mac first, no cloud for now; G9 `tech-lead` in scope; G10 baseline growth accepted, reminder in code; G11 R1–R9 yes | Gabor, 2026-11-20 | PRD §0, `BACKLOG.md` | no |
+| G12 rules must be strong: ruleset active, lane runs its own gates | Gabor, 2026-11-21 | PRD §0, `release-manager` §9 | no |
+| G13 identity: question at the start of the day, PIN as the last line; four-digit, self-chosen; GitHub accounts later | Gabor, 2026-11-21 | `docs/decisions/0005`, `scripts/release/operator.ts` | no |
+| G14 `/goodmorning` shaped after public best practice | Gabor, 2026-11-21 | `.agent/skills/goodmorning/` | no |
+| Ruleset "main branch protection": active, target `main`, pull request required, no force push, no deletion, empty bypass list | Gabor, 2026-11-21 (GitHub settings) | `docs/decisions/0005`, `docs/ci/README.md` | no |
+| Budgets: baseline set 15 MB, history 100 MB (the second number is this session's choice) | session, 2026-11-21 | `scripts/visual-baseline-size.mjs`, `docs/decisions/0003` | no |
+| Content gates: e2e on chromium + Mobile Chrome with axe (this session's recommendation, built) | session, 2026-11-21 | `scripts/content/gates.ts`, `qa-specialist` | owner has not said yes to this point by itself |
 
 ## 4. Improvements NOT implemented yet
-- [ ] R1 Derive the pinned content counts from the data — first new album fails otherwise — files in section 2 — adding a fixture album keeps unit and e2e green — S — y
-- [ ] R2 Shared encoder module for `optimize-images.js` and a slot-scoped intake; global script refuses when `assets-src/` lacks a slot the manifest has — prevents emptying the gallery — `scripts/optimize-images.js`, `scripts/content/` — run on a clone with one album folder exits non-zero, manifest unchanged — M — y
-- [ ] R3 HEIC intake through `sips` on macOS — iPhone photos — `scripts/content/` — a `.heic` fixture yields three WebP tiers ≤ 200 KB — S — y
-- [ ] R4 Hungarian mode and an approver line on the review page — `scripts/visual-review-page.ts` — page renders HU labels, `--answers` reads both languages — S — y
-- [ ] R5 Content lane: `release:publish-content`, guard rule against a typed `gh pr merge`, selftest case, skill section; `gh` installed — `scripts/release/`, `.claude/hooks/guard-bash.sh`, `release-manager` SKILL.md — selftest shows a `needs-gabor` diff refused — M — y
-- [ ] R6 Gate set for class `content` documented in `qa-specialist` — S — y
-- [ ] R7 GitHub ruleset on `main` (owner switch) — y
-- [ ] R8 Persona rename in `AGENTS.md`; the two skill lines that mean the persona: `skill-creator/SKILL.md:81` ("Update Vera's registry") and `goodbye/SKILL.md:7` ("Runs Vera's session-close checklist") — S — y
-- [ ] R9 `.claude/agents/cms-coordinator.md` and a pointer skill `.claude/skills/cms-coordinator/SKILL.md` — S — y
-- [ ] The whole foundation: `cms-coordinator` skill, `scripts/content/*` with unit tests (`classify`, `doctor`, `gates`, data editors, locale editor, `text-find`, image intake, 16 operations), `docs/vera-agent/utmutato.md` (Hungarian one-page guide), `docs/vera-agent/changelog.md`, registry (`AGENTS.md`, `CLAUDE.md`, `src/types/skills.ts`) — PRD §3.7 stage 0 — L — y (PRD approval)
-- [ ] "Before = `main` built on the same machine" for the review page (baseline folder from an environment variable in `playwright.visual.config.ts`) — needed for cloud sessions and if two Macs render differently — M — y
-- [ ] Announcement strip / opening information: no data model and no component exist — a feature for Gabor (PRD §8) — M — y
-- [ ] The PRD itself has three lines that went stale between 2026-11-18 and 2026-11-20 and should be corrected when it is next edited: §10 last row (`CLAUDE.md` project state is up to date on 4d2106f: "as of 2026-11-16"); §7 R4 and §5 call the review page "site-polish branch, not merged yet" (`scripts/visual-review-page.ts` is on `main`); §7 R1 lists `tests/e2e/rental.spec.ts` correctly but R8 says "two lines in other skills that say Vera's registry" (it is one such line plus `goodbye/SKILL.md:7`) — S — n
-- [ ] `.agent/hooks.json` is an Antigravity file Claude Code does not read; `.claude/hooks/session-start.sh` now does that job — decide whether to keep it — S — y
+- [ ] First real run of the content lane (commit, push, `gh pr create`, `gh pr merge`, Vercel status, `verify:live`, branch removal): never executed, `gh` is not installed on the build machine — supervised, on one rental price — S — y
+- [/] The PIN dialog on a real screen: the owner set his own PIN through it on 2026-11-21 (`npm run release:operator -- --set gabor …` answered `ok`). Still unseen in real use: a PIN being asked for and checked (`--verify`, a release), the lock after three wrong entries, Vera's set-up — S — y
+- [ ] Separate GitHub accounts + code-owners rule (the strong identity stage); before it, test a second account's merge on Vercel Hobby — M — y
+- [ ] "Before = `main` built on the same machine" for the review page, if two Macs render differently or the cloud is taken up — M — y
+- [ ] Baseline maintenance (prune history or Git LFS) when `npm run visual:size` says "getting full" — M — y
+- [ ] Review page: plain screen names in Hungarian instead of `rental-1280` — S — n
+- [ ] With CI as a required check the lane must wait for it before merging — `docs/ci/README.md` — S — y
+- [ ] Announcement strip, opening hours, hero/About photo operation: not content yet — M — y
+- [ ] `.agent/hooks.json` (Antigravity) is unused by Claude Code — S — y
 
 ## 5. Skill updates needed
-- `.agent/skills/release-manager/SKILL.md`: add the content-lane exception if R5 is accepted; today §3 step 7 and the description contradict G3.
-- `.agent/skills/i18n-guardian/SKILL.md`: say that Vera approves DE and EN herself (G6); §7 still lists the HU te/ti register as open.
-- `.agent/skills/design-system-expert/SKILL.md` §4: "drop the original into `assets-src/<slot>/`, run `npm run optimize:assets`" is unsafe on a machine without the full originals; point to the slot-scoped intake once it exists.
-- `.agent/skills/qa-specialist/SKILL.md`: gate set for class `content` (R6); note that content counts are pinned until R1.
-- `.agent/skills/skill-creator/SKILL.md:81` and `.agent/skills/goodbye/SKILL.md:7`: "Vera's registry" / "Vera's session-close checklist" mean the persona (R8).
-- New: `.agent/skills/cms-coordinator/SKILL.md` does not exist yet.
+- None open from this session: `release-manager` (§9), `qa-specialist`, `i18n-guardian`, `design-system-expert`, `skill-creator`, `goodbye` were updated in the same change. After the pilot: every dialogue misstep becomes a model sentence in `cms-coordinator/resources/dialogue-hu.md`.
 
 ## 6. Open owner decisions / things only Gabor or Vera can do
-- **Approve or change the PRD** — asked 2026-11-18, no answer yet. Nothing may be built before it.
-- **Confirm the channel reading** (G1): "we still stay with claude session approach" was typed after "Vera has also a mac". I read it as Mac first, cloud second. If cloud from day one was meant, the first deliverable becomes the "Before = `main`" adaptation. Recommendation: Mac first.
-- **Photo fallback for cloud sessions** — my interview question 5 was never answered (a message about the visual gate arrived instead). Only matters for stage 2. Options: shared cloud folder (recommended), photo jobs on the Mac, photos through Gabor.
-- **R1–R9**, each yes or no. R1, R2 and R5 are prerequisites for the first real album.
-- **Gate set for content** (R6): two browsers plus axe (recommended) or all four.
-- **Escalation channel**: the PRD proposes a message Vera forwards to Gabor, because with the shared account GitHub does not notify him. Not asked in the interview.
-- **Gabor, by hand**: family Claude account; on Vera's Mac the app, Git, Node 22, clone, `npm ci`, `gh` signed in; the `main` ruleset on GitHub; then `npm run test:visual` on an untouched `main` on her Mac (first pilot measurement).
-- **Vera**: the 15 covers, copy sign-off page by page, hero photo, HU te/ti, emoji in the rental steps, portrait crops. The pilot (PRD §3.7) is built around these.
+- GO 2: merge pull request 22 on GitHub (GO 1 was given on 2026-11-21).
+- On each Mac, once: `brew install gh` (done on Gabor's Mac 2026-11-21), `gh auth login` (started, not finished); `npm run release:operator -- --set gabor --role admin --name "Gábor"` (done on Gabor's Mac 2026-11-21), then `-- --set vera --role content --name "Vera"` (each types their own PIN); on Vera's Mac `"agent": "cms-coordinator"` and `"env": { "FV_OPERATOR": "vera" }` in the git-ignored `.claude/settings.local.json`.
+- The pilot (PRD §3.7): first `npm run test:visual` on an untouched `main` on Vera's Mac, then the eight tasks.
+- Say so if any of R1–R9, the two-browser content gates or the 100 MB history budget was not meant as a yes.
 
 ## 7. Friction (what cost time and how to avoid it next time)
-- The decisive fact arrived at question 5 of the interview (Vera owns a Mac), after "cloud" had been chosen and three follow-up questions built on it. → Ask for the person's devices, languages and accounts as plain facts before the first design question.
-- The owner clicked an answer by mistake and an interrupted dialog lost the question. → Restate the question in the chat text as well, not only in the dialog.
-- The owner's reply to one dialog ("the visual regression will run locally…") answered the previous question. → When a free-text reply does not fit the open question, say which question it was taken as.
-- The brief limited the branch to six paths; the concept needs nine changes outside them. → Read the tests and scripts the feature depends on before agreeing scope limits; list the out-of-scope needs in the plan, never work around them.
-- `main` moved three times during the concept (quality gates, release manager, site polish), and the release-manager interface I drafted on day one was stale two days later. → For a concept that builds on a sibling's unmerged work, read the sibling's note and worktree again right before writing, and date every "as of".
-- The rtk hook rewrote compound `cat` commands and the auto-mode classifier then refused them; a `cd` into another folder changed the session's working directory. → Use the Read tool or `rtk proxy cat` for multi-file reads; never `cd` out of the worktree in a shell call.
-- Three documentation agents were needed because the first answers left "not documented" gaps that mattered (default agent, Remote Control photos). Two sources still disagree on whether a phone photo is saved as a file. → Treat product behaviour that the docs do not state as a pilot measurement, and write it down as such.
+- Vera's Mac came up at question 5 of the interview, after "cloud" had been chosen → ask for devices, languages and accounts as plain facts before the first design question.
+- Three owner messages arrived mid-build and each changed the design (PIN length, PIN position, morning routine) → build the smallest slice, show it, then extend; do not finish a design the owner has not seen.
+- The auto-mode check failed several times on large writes and on commands the rtk hook rewrote → retry once as instructed; keep shell commands free of `ls`/`cat` that the hook rewrites, or use `rtk proxy`.
+- My own rehearsal left bumped sitemap dates and a failing unit test → rehearse on a throw-away copy, or restore generated files right after.
+- A `cd` inside a shell call moved the session's working directory → never `cd` out of the worktree.
