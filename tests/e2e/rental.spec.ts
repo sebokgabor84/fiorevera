@@ -1,16 +1,20 @@
 import { test, expect } from './fixtures';
 import { LOCALES, ROUTES } from '../../src/data/routes';
+import { rentalItems } from '../../src/data/rentalItems';
+import { formatHuf } from '../../src/data/contact';
 
 test.describe('rental catalog (PRD D-8)', () => {
   for (const locale of LOCALES) {
-    test(`${locale}: all 7 items incl. the mirror with deposit; HUF prices`, async ({ page }) => {
+    test(`${locale}: every item with its price and deposit in HUF`, async ({ page }) => {
       await page.goto(ROUTES.rental[locale]);
-      const items = page.getByTestId('rental-item');
-      await expect(items).toHaveCount(7);
-      const mirror = page.locator('#wedding-mirror');
-      await expect(mirror).toContainText('38 000 Ft');
-      await expect(mirror).toContainText('20 000 Ft');
-      await expect(page.locator('#wooden-arch')).toContainText('19 990 Ft');
+      // Items, prices and deposits come from the data, never from a pinned number: they are
+      // content the owner changes (docs/vera-agent/PRD.md, R1).
+      await expect(page.getByTestId('rental-item')).toHaveCount(rentalItems.length);
+      for (const item of rentalItems) {
+        const card = page.locator(`#${item.id}`);
+        await expect(card).toContainText(formatHuf(item.priceHuf));
+        if (item.depositHuf) await expect(card).toContainText(formatHuf(item.depositHuf));
+      }
       const mailto = page.locator('main a[href^="mailto:"]').first();
       await expect(mailto).toHaveAttribute('href', /subject=/);
     });

@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest';
 import { render } from '../../src/entry-server';
 import { allRoutes, LOCALES, localePrefix, ROUTES } from '../../src/data/routes';
 import { loadLocales, flatten } from '../../scripts/validate-i18n';
+import { albums } from '../../src/data/albums';
+import { rentalItems } from '../../src/data/rentalItems';
 
 const locales = loadLocales();
 
@@ -37,15 +39,16 @@ describe('server render of every route (PRD D-18, MASTER-PLAN 1.2/1.9)', () => {
     expect(html).not.toMatch(/href="\/kapcsolat\/"/);
   });
 
-  it('renders all 7 rental items on the DE rental page (legacy bug: missing mirror)', () => {
+  it('renders every rental item with its German name on the DE rental page (legacy bug: missing mirror)', () => {
     const { html } = render('/de/verleih/');
-    expect(html.match(/data-testid="rental-item"/g)).toHaveLength(7);
-    expect(html).toContain('Hochzeitsspiegel');
+    expect(html.match(/data-testid="rental-item"/g)).toHaveLength(rentalItems.length);
+    const de = flatten(locales.de);
+    for (const item of rentalItems) expect(html, item.id).toContain(de.get(item.nameKey)?.replace(/&/g, '&amp;'));
   });
 
-  it('renders ImageGallery JSON-LD with 15 albums on the gallery page', () => {
+  it('renders one album section and one ImageGallery node per album on the gallery page', () => {
     const { html } = render('/munkaim/');
-    expect(html.match(/"@type":"ImageGallery"/g)?.length).toBe(16); // page + 15 albums
-    expect(html.match(/<section id="[a-z0-9-]+" class="_album/g)).toHaveLength(15);
+    expect(html.match(/"@type":"ImageGallery"/g)?.length).toBe(albums.length + 1); // the page + every album
+    expect(html.match(/<section id="[a-z0-9-]+" class="_album/g)).toHaveLength(albums.length);
   });
 });
