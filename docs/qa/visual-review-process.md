@@ -52,8 +52,8 @@ npm run test:visual:update -- --approved-by="<owner's name>" --note="<what chang
 | `approved` | Snapshot ids that still differ from the baseline but were marked OK in an earlier round **and have not changed since**: listed, not asked again |
 | `decisions` | Taste or copy choices: `{ id, title, text, options: [{ id, label, images: ["path.png"], recommended }] }`. Pictures are paths from the repo root; produce them by rendering the option, never by describing it |
 | `ownerSteps` | Things only the owner can do (a test mail, a dashboard click) |
-| `lang` | `"en"` (default) or `"hu"`: the page's own wording. In Hungarian the screens are marked *Rendben* / *Nem jó* and the two closing questions read "Jó így az új kinézet?" and "Elmenthetem a változtatást?". The pasted answer format is identical in both languages, so `--answers` reads either |
-| `goLive` | `true` for a content release of the CMS Coordinator: the second closing question means "put it live on the website" ("Mehet élesbe?") and its GO is what `npm run release:publish-content` requires. Default `false` (commit and push the branch) |
+| `lang` | `"en"` (default) or `"hu"`: the page's own wording. In Hungarian the screens are marked *Rendben* / *Javítandó* and the two closing questions read "Megfelel így az új megjelenés?" and "Elmenthetem a változtatást?". The pasted answer format is identical in both languages, so `--answers` reads either |
+| `goLive` | `true` for a content release of the CMS Coordinator: the second closing question means "publish to the website" ("Közzétehetem az oldalon?") and its GO is what `npm run release:publish-content` requires. Default `false` (commit and push the branch) |
 
 The page always ends with the same two questions, `BASELINES` (YES / NO) and `COMMIT` (GO / WAIT). They are part of
 the answer format; do not rename them.

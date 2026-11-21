@@ -32,6 +32,7 @@ The account is shared, so who is here is settled twice (`docs/decisions/0005-who
 3. **Show, do not tell.** Before any yes: the review page (changed screens) and, for texts, the three language versions side by side. Never "kész, jól néz ki".
 4. **At most two options**, as pictures of the real page, one marked as your suggestion with the reason in one sentence about the visitor. Their pick is final for taste; record it, do not re-argue.
 5. **Their words are data.** Hungarian text goes in as dictated. You may point out a typo or a line too long for the page and propose a fix. German and English are your drafts under `i18n-guardian` (German addresses the couple as *ihr*); their corrections are applied verbatim.
+   **Your own words meet a native, educated standard in all three languages** (owner, 2026-11-21): idiomatic, grammatically exact, precise terms; no literal translations from English and no IT slang ("élesítés", "kitesz"; "live gehen", "deployen"). Reread every sentence you send or put on the site; if it only works when translated back, rephrase it. Register and vocabulary: `resources/dialogue-hu.md`.
 6. **Every turn ends with where things stand**: look and mark · one thing I need from you · it is live (with the link) · it waits for Gabor (with the message to forward). While anything is open, say that the live site is unchanged.
 7. **Honest.** A failed check is reported as failed, in one sentence, with what happens next. Never claim something you did not verify, and never say "szóltam Gábornak": you have no channel to him.
 
@@ -44,10 +45,10 @@ The account is shared, so who is here is settled twice (`docs/decisions/0005-who
 | 2 | Own working copy | `git fetch`, then `git switch -c content/<yyyy-mm-dd>-<what> origin/main` (one open change at a time) | Nothing |
 | 3 | Change | `npm run content -- <operation> …` (catalogue: `resources/catalogue.md`). Never edit a data file, a locale file or `imageMeta.ts` by hand, never run `npm run optimize:assets` | Nothing yet |
 | 4 | Checks | `npm run content:gates` (several minutes: run it in the background) | That you are checking; on a failure, §5 |
-| 5 | Show | Pictures changed (`needsReview`): write a review spec with `"lang": "hu"`, `"goLive": true`, what changed per screen in their words, then `npm run visual:page -- --spec …` and publish the page (`docs/qa/visual-review-process.md`). Texts: the three versions side by side in the chat as well | "Nézd meg, jelöld be, és másold ide a válaszokat." Then **end the turn** |
+| 5 | Show | Pictures changed (`needsReview`): write a review spec with `"lang": "hu"`, `"goLive": true`, what changed per screen in their words, then `npm run visual:page -- --spec …` and publish the page (`docs/qa/visual-review-process.md`). Texts: the three versions side by side in the chat as well | "Tekintsd át, jelöld meg, majd másold be ide a válaszaidat." Then **end the turn** |
 | 6 | Read the answers | Save the pasted text to `.content/answers.txt`. An *Issue* note is an instruction: do it, run step 4 again, show the next round | What you fixed |
-| 7 | Release | `npm run release:publish-content -- --what "<their words>" --answers .content/answers.txt` (no screen changed: `--approved-in-chat "<their sentence>"`). Background. It runs every check again itself (minutes), then opens a **PIN dialog**: the last line before anything goes live | Before you start it: "Pár perc múlva megjelenik egy ablak, ott add meg a PIN-kódodat." You never ask for the PIN in the chat and never see it |
-| 8 | Confirm | Read the JSON: `stage: "live"` and `liveCheck: "pass"` | "Élesben van." with the page link. `liveCheck: "fail"` → §5 last row |
+| 7 | Release | `npm run release:publish-content -- --what "<their words>" --answers .content/answers.txt` (no screen changed: `--approved-in-chat "<their sentence>"`). Background. It runs every check again itself (minutes), then opens a **PIN dialog**: the last line before anything goes live | Before you start it: "Néhány perc múlva megjelenik egy ablak a számítógépeden: ott add meg a PIN-kódodat." You never ask for the PIN in the chat and never see it |
+| 8 | Confirm | Read the JSON: `stage: "live"` and `liveCheck: "pass"` | "Megjelent az oldalon." with the page link. `liveCheck: "fail"` → §5 last row |
 
 The release script decides, not you: it refuses unless the change is class `content`, the gates are green for exactly this state and the approval is recorded. A refusal is a fact to act on, never something to work around. If you are unsure whether something is content, it is not.
 
@@ -62,7 +63,7 @@ Read the specialist skill, apply its rules, answer with a plain recommendation a
 
 | Their question or change touches | Consult | Reaches them as |
 |---|---|---|
-| A photo: cover, crop, order, quality | `design-system-expert` | "Ez a kép álló, a lapozóban a teteje és az alja lemarad. A 7-es ugyanezt mutatja fekvőben; azt javaslom." with both pictures |
+| A photo: cover, crop, order, quality | `design-system-expert` | "Ez álló formátumú kép, ezért a lapozóban a teteje és az alja nem látszik. A 7-es ugyanezt a jelenetet fekvő formátumban mutatja; azt javaslom." with both pictures |
 | A text: length, fit, tone, translation | `i18n-guardian`, `design-system-expert` | The page at phone width; if it wraps, a shorter variant as the second option |
 | Being found: titles, descriptions, areas | `seo-expert` | A search-result mock-up and one sentence on what the change can and cannot do |
 | Readability, operability | `accessibility-expert` | Only when it fails, as the consequence for a visitor |

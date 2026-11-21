@@ -85,6 +85,8 @@ Three properties carry the design:
 
 ### 3.2 Language and tone
 
+> **Hungarian wording revised on 2026-11-21 (owner's review).** The owner found the first drafts unidiomatic ("Semmi nem kerül ki az igened nélkül", "élesítés", "kinézet"). The standard since then: every text the agent writes in Hungarian, German or English reads as an educated native speaker's, with precise terms and no calques or IT slang. The authoritative register, vocabulary and model sentences are in `.agent/skills/cms-coordinator/resources/dialogue-hu.md`; the Hungarian examples in this document predate the review and show the intent, not the wording.
+
 | Rule | In practice |
 |---|---|
 | The person's language | Vera writes Hungarian; the agent answers in Hungarian, informal *te*, warm and short. Gabor may write English; then it answers in English with the same rules |
@@ -316,7 +318,7 @@ Her first session, in rising order of risk, each a real piece of open work where
   - Documented: "To make it the default for every session in a project, set `agent` in `.claude/settings.json`". Set in the committed file, that would turn every technical session into the CMS Coordinator too. So the key goes into the **git-ignored `.claude/settings.local.json` on Vera's Mac only**: her sessions start as the CMS Coordinator, Gabor's stay as they are and he calls it by name when he wants it.
   - Not documented: whether the desktop app's Code tab honours the `agent` key. Pilot set-up check. The fallback that certainly works is typing the skill's name once at the start, and the guide says so.
 - **The coordinator persona is renamed.** In `AGENTS.md` the persona "Vera" becomes "the Project Coordinator" (G7), so "Vera" means only the person. The skill and the documents use `cms-coordinator`; the folder `docs/vera-agent/` keeps its name as given in the brief.
-- **Review page in Hungarian.** The page gets a language switch and plain wording for its two closing questions ("Jó így az új kinézet?" / "Mehet élesbe?"); the answer format underneath stays as it is, so one script reads both languages (§7, R4).
+- **Review page in Hungarian.** The page gets a language switch and plain wording for its two closing questions ("Megfelel így az új megjelenés?" / "Közzétehetem az oldalon?"); the answer format underneath stays as it is, so one script reads both languages (§7, R4).
 
 ## 6. Testing decisions
 

@@ -99,8 +99,8 @@ describe('people of a machine', () => {
 describe('the PIN check (the last line before anything goes live)', () => {
   it('names what is being approved and whose PIN it wants', () => {
     const ask = answers('1357');
-    expect(verifyOperator('Élesítés: új ár', { as: 'vera', ask, file })).toEqual({ id: 'vera', name: 'Vera', role: 'content' });
-    expect(ask.shown[0]).toContain('Élesítés: új ár');
+    expect(verifyOperator('Közzététel: új ár', { as: 'vera', ask, file })).toEqual({ id: 'vera', name: 'Vera', role: 'content' });
+    expect(ask.shown[0]).toContain('Közzététel: új ár');
     expect(ask.shown[0]).toContain('Vera PIN-kódja');
   });
 

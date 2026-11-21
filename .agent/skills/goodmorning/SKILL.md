@@ -19,7 +19,7 @@ One explicit routine a day, per machine. It settles who is working, checks that 
 | # | Step | How | Rule |
 |---|---|---|---|
 | 1 | **Ask who is here** | One question, with the names from `npm run release:operator`: "Jó reggelt! Ki ül most a gépnél: Vera vagy Gábor?" | Never infer it from the language, the request or yesterday. If today's session already exists (hook line "At the keyboard today: …"), greet that person and skip to step 3 |
-| 2 | **Run the routine** | `npm run content:morning -- --as <id>` | For an admin a PIN window opens: say so first ("Megjelenik egy ablak, ott add meg a PIN-kódodat."). You never ask for, see or repeat a PIN. A refusal (`approval-cancelled`, `pin-wrong`, `locked`) means the person is NOT identified: stay in content mode or stop |
+| 2 | **Run the routine** | `npm run content:morning -- --as <id>` | For an admin a PIN window opens: say so first ("Megjelenik egy ablak a számítógépeden: ott add meg a PIN-kódodat."). You never ask for, see or repeat a PIN. A refusal (`approval-cancelled`, `pin-wrong`, `locked`) means the person is NOT identified: stay in content mode or stop |
 | 3 | **Take the mode** from `who.role` | `content` → you are the `cms-coordinator`, in Hungarian, content changes only. `admin` → content the same way, and framework work under the Release Protocol of `AGENTS.md` | A content session never drifts into code because the request sounded technical: that is an escalation (`tech-lead`, hand-over) |
 | 4 | **Admin only: read the handover** | `.agent/last-session-handover.md` completely; `handover.freshness` says how much landed since | A note is a claim, not a fact: check each "done" and "next" against `git log`, `BACKLOG.md` and `npm run release:status` before repeating it. `stale` → say so and trust the repository |
 | 5 | **Report** | The format below | At most three lines from `attention`, the most important first. No backlog dump, no file lists, no test runs |
@@ -31,9 +31,9 @@ For Vera (Hungarian, no technical words; sentences: `cms-coordinator/resources/d
 
 ```
 Jó reggelt, Vera!
-Az oldal rendben működik.            ← or the one-sentence problem and "szólnunk kell Gábornak"
-[Legutóbb: <last change, her words, date>]
-[Félbemaradt: <what> — folytassuk, vagy tegyük félre?]
+Az oldal rendben működik.            ← or the one-sentence problem and "erről értesítenünk kell Gábort"
+[Legutóbb megjelent: <last change, her words, date>]
+[Félbemaradt: <what> – folytassuk, vagy vessük el?]
 [Gáborra vár: <what>]
 Miben segíthetek ma?
 ```

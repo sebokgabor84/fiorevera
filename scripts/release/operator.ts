@@ -133,7 +133,7 @@ export function startDay(id: string | undefined, options: { ask?: Ask; file?: st
   const chosen = chooseOperator(data, id, options.env, null);
   const operator = data.operators[chosen];
   const verified = operator.role === 'admin';
-  if (verified) verifyOperator('Jó reggelt! Azonosítás a mai munkához (admin).', { as: chosen, need: 'admin', ask: options.ask, file: options.file, now: options.now });
+  if (verified) verifyOperator('Jó reggelt! Azonosítás a mai munkához (adminisztrátori jogosultság).', { as: chosen, need: 'admin', ask: options.ask, file: options.file, now: options.now });
   const session: DaySession = { day: localDay(options.now?.() ?? new Date()), operator: chosen, name: operator.name, role: operator.role, verified };
   const file = options.sessionFile ?? sessionPath();
   mkdirSync(path.dirname(file), { recursive: true, mode: 0o700 });
@@ -202,7 +202,7 @@ export function verifyOperator(purpose: string, options: { as?: string; need?: R
   };
   let failed = operator.lockedUntil ? 0 : (operator.failed ?? 0);
   while (failed < MAX_TRIES) {
-    const pin = ask({ title: 'Fiore Vera', message: `${purpose}\n\n${operator.name} PIN-kódja${failed > 0 ? ' (nem egyezett, próbáld újra)' : ''}:` });
+    const pin = ask({ title: 'Fiore Vera', message: `${purpose}\n\n${operator.name} PIN-kódja${failed > 0 ? ' (nem egyezett; kérlek, próbáld újra)' : ''}:` });
     if (pin === null) throw new OperatorError('approval-cancelled', 'the PIN dialog was cancelled or nobody answered: nothing was approved');
     if (checkPin(operator, pin)) {
       if (operator.failed || operator.lockedUntil) remember(0);
@@ -234,7 +234,7 @@ export function setOperator(id: string, role: Role, name: string, options: { ask
   const first = ask({ title: 'Fiore Vera', message: `${name} új PIN-kódja (legalább ${MIN_PIN_LENGTH} számjegy):` });
   if (first === null) throw new OperatorError('approval-cancelled', 'cancelled: nothing was changed');
   if (first.length < MIN_PIN_LENGTH) throw new OperatorError('pin-short', `the PIN needs at least ${MIN_PIN_LENGTH} digits: nothing was changed`);
-  const second = ask({ title: 'Fiore Vera', message: `${name} új PIN-kódja még egyszer:` });
+  const second = ask({ title: 'Fiore Vera', message: `${name} új PIN-kódja, megerősítésként még egyszer:` });
   if (second !== first) throw new OperatorError('pin-mismatch', 'the two entries were not the same: nothing was changed');
   const salt = randomBytes(16).toString('hex');
   // Re-read: the admin check above may have written its own attempt counter.

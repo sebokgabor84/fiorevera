@@ -115,27 +115,27 @@ export function closingFor(lang: ReviewLang = 'en', goLive = false): ReviewDecis
     return [
       {
         id: 'BASELINES',
-        title: 'Jó így az új kinézet?',
-        text: 'Ha igen, a fenti képernyők új kinézete lesz mostantól az összehasonlítási alap, a te neveddel feljegyezve.',
+        title: 'Megfelel így az új megjelenés?',
+        text: 'Ha igen, a fenti képernyők új megjelenése lesz ezentúl az összehasonlítás alapja, a te neveddel rögzítve.',
         options: [
-          { id: 'YES', label: 'Igen, jó így' },
+          { id: 'YES', label: 'Igen, megfelel' },
           { id: 'NO', label: 'Még nem' },
         ],
       },
       goLive
         ? {
             id: 'COMMIT',
-            title: 'Mehet élesbe?',
-            text: 'Ha igen, az ellenőrzések után a változtatás kikerül a fiorevera.hu oldalra. Egy mondattal bármikor visszavonható.',
+            title: 'Közzétehetem az oldalon?',
+            text: 'Ha igen, az ellenőrzések után a változtatás megjelenik a fiorevera.hu oldalon. Egyetlen mondattal bármikor visszavonható.',
             options: [
-              { id: 'GO', label: 'Igen, mehet élesbe' },
+              { id: 'GO', label: 'Igen, közzétehető' },
               { id: 'WAIT', label: 'Várjunk még' },
             ],
           }
         : {
             id: 'COMMIT',
             title: 'Elmenthetem a változtatást?',
-            text: 'Elmentem a külön munkapéldányra. Az éles oldalra ettől még semmi nem kerül ki.',
+            text: 'Elmentem egy külön munkapéldányra. A nyilvános oldalon ettől még semmi sem jelenik meg.',
             options: [
               { id: 'GO', label: 'Igen, mentsd el' },
               { id: 'WAIT', label: 'Várjunk még' },
@@ -148,10 +148,10 @@ export function closingFor(lang: ReviewLang = 'en', goLive = false): ReviewDecis
     CLOSING[0],
     {
       id: 'COMMIT',
-      title: 'Put it live on the website',
-      text: 'After the checks the change goes live on fiorevera.hu. It can be undone with one sentence.',
+      title: 'Publish to the website',
+      text: 'Once the checks have passed, the change is published on fiorevera.hu. It can be undone with a single sentence.',
       options: [
-        { id: 'GO', label: 'GO: put it live' },
+        { id: 'GO', label: 'GO: publish' },
         { id: 'WAIT', label: 'Wait' },
       ],
     },
@@ -176,7 +176,7 @@ export const UI = {
     allAnswered: 'All answered',
     copied: 'Copied. Paste it into the chat.',
     copyByHand: 'Select all in the box and copy it by hand.',
-    round: 'round',
+    round: 'round {n}',
     build: 'build',
     part: 'Part {n}',
     /** Show the answer ids (YES, GO …) and the question id next to the two closing questions. */
@@ -198,32 +198,32 @@ export const UI = {
     after: 'Utána',
     difference: 'Különbség',
     ok: 'Rendben',
-    issue: 'Nem jó',
+    issue: 'Javítandó',
     note: 'Megjegyzés (nem kötelező)',
     noteLabel: 'megjegyzés',
     whichPicture: 'melyik kép',
     screenshot: 'képernyőkép, görgethető',
     option: 'lehetőség',
-    suggested: 'Ezt javaslom',
+    suggested: 'Javaslatom',
     open: (n: number, of: number) => `Még ${n} válasz hiányzik (összesen ${of})`,
-    allAnswered: 'Minden megvan',
-    copied: 'Kimásolva. Illeszd be a beszélgetésbe.',
+    allAnswered: 'Minden kérdésre válaszoltál',
+    copied: 'A vágólapra másoltam. Illeszd be a beszélgetésbe.',
     copyByHand: 'Jelöld ki a mező teljes tartalmát, és másold ki kézzel.',
-    round: 'kör',
+    round: '{n}. kör',
     build: 'változat',
     part: '{n}. rész',
     closingIds: false,
-    screensHeading: (n: number) => `${n} képernyő, amit érdemes megnézned`,
-    screensHelp: 'Az „Előtte” a mostani oldal, az „Utána” a változtatásod, a „Különbség” pirossal mutatja, mi változott. Minden képernyőnél jelöld be: Rendben vagy Nem jó.',
+    screensHeading: (n: number) => `${n} képernyő vár áttekintésre`,
+    screensHelp: 'Az „Előtte” a jelenlegi oldalt, az „Utána” a változtatásodat mutatja; a „Különbség” pirossal jelöli az eltéréseket. Minden képernyőnél jelöld meg: Rendben vagy Javítandó.',
     approvedEarlier: 'Megváltozott, de egy korábbi körben már jóváhagytad',
     decisionsHeading: 'Döntések és jóváhagyás',
     goAheadHeading: 'Jóváhagyás',
-    ownerHeading: 'Ezeket csak te tudod megtenni',
+    ownerHeading: 'Ezeket csak te tudod elvégezni',
     copy: 'Válaszok másolása',
     answersLabel: 'A válaszaid',
     answersText: 'A válaszok szövegként',
     intro:
-      'Ezek a képernyők másképp néznek ki, mint eddig. Nézd meg mindegyiket, válaszolj a végén a kérdésekre, nyomd meg a „Válaszok másolása” gombot, és illeszd be a szöveget a beszélgetésbe. Addig semmi nem változik az éles oldalon.',
+      'Ezek a képernyők a változtatás nyomán másként jelennek meg, mint eddig. Tekintsd át mindegyiket, válaszolj a végén a kérdésekre, nyomd meg a „Válaszok másolása” gombot, majd illeszd be a szöveget a beszélgetésbe. Addig a nyilvános oldalon semmi sem változik.',
   },
 } as const;
 
@@ -445,7 +445,7 @@ export function renderPage(data: ReviewData): string {
 <style>${STYLE}</style>
 <div class="wrap">
   <header class="stack">
-    <span class="eyebrow">Fiore Vera · ${esc(data.branch)} · ${ui.round} ${data.round} · ${ui.build} ${esc(data.build)}</span>
+    <span class="eyebrow">Fiore Vera · ${esc(data.branch)} · ${ui.round.replace('{n}', String(data.round))} · ${ui.build} ${esc(data.build)}</span>
     <h1>${esc(data.title)}</h1>
     <p>${esc(data.intro)}</p>
   </header>

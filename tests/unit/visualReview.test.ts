@@ -101,10 +101,10 @@ describe('visual review page in Hungarian (CMS Coordinator, docs/vera-agent/PRD.
       expect(hu.map((q) => q.id)).toEqual(CLOSING.map((q) => q.id));
       expect(hu.map((q) => q.options.map((o) => o.id))).toEqual(CLOSING.map((q) => q.options.map((o) => o.id)));
     }
-    expect(closingFor('hu', true)[1].title).toBe('Mehet élesbe?');
-    expect(closingFor('hu', false)[1].title).not.toBe('Mehet élesbe?');
+    expect(closingFor('hu', true)[1].title).toBe('Közzétehetem az oldalon?');
+    expect(closingFor('hu', false)[1].title).not.toBe('Közzétehetem az oldalon?');
     expect(closingFor('en', false)).toBe(CLOSING);
-    expect(closingFor('en', true)[1].title).toMatch(/live/);
+    expect(closingFor('en', true)[1].title).toBe('Publish to the website');
   });
 
   it('has every piece of wording in both languages', () => {
@@ -117,7 +117,7 @@ describe('visual review page in Hungarian (CMS Coordinator, docs/vera-agent/PRD.
 
   it('renders the Hungarian page without English wording, and the English page as before', () => {
     const hu = renderPage({ ...review, lang: 'hu', goLive: true });
-    for (const text of ['Rendben', 'Nem jó', 'Előtte', 'Válaszok másolása', 'Mehet élesbe?', 'Jó így az új kinézet?']) expect(hu, text).toContain(text);
+    for (const text of ['Rendben', 'Javítandó', 'Előtte', 'Válaszok másolása', 'Közzétehetem az oldalon?', 'Megfelel így az új megjelenés?', '3. kör']) expect(hu, text).toContain(text);
     for (const text of ['Copy answers', 'Go-ahead', 'still open', 'Re-record the visual baselines']) expect(hu, text).not.toContain(text);
     expect(hu).toContain('1. rész');
     expect(hu).toContain('"closingIds":false');
@@ -128,9 +128,9 @@ describe('visual review page in Hungarian (CMS Coordinator, docs/vera-agent/PRD.
 
   it('answers pasted from the Hungarian page are judged by the same rules', () => {
     // The page stores and pastes OK / Issue and the question ids whatever the wording on screen is.
-    const text = pasted('  home-375: OK\n  rental-1280: OK', '  D1 (Hero buttons): B\n  BASELINES (Jó így az új kinézet?): YES\n  COMMIT (Mehet élesbe?): GO');
+    const text = pasted('  home-375: OK\n  rental-1280: OK', '  D1 (Hero buttons): B\n  BASELINES (Megfelel így az új megjelenés?): YES\n  COMMIT (Közzétehetem az oldalon?): GO');
     expect(judgeAnswers(parseAnswers(text), review)).toMatchObject({ mayRecord: true, mayCommit: true });
-    const wait = pasted('  home-375: OK\n  rental-1280: OK', '  BASELINES (Jó így az új kinézet?): YES\n  COMMIT (Mehet élesbe?): WAIT');
+    const wait = pasted('  home-375: OK\n  rental-1280: OK', '  BASELINES (Megfelel így az új megjelenés?): YES\n  COMMIT (Közzétehetem az oldalon?): WAIT');
     expect(judgeAnswers(parseAnswers(wait), review)).toMatchObject({ mayRecord: true, mayCommit: false });
   });
 });

@@ -96,7 +96,7 @@ describe('rollback: which release does "undo the last change" mean', () => {
 
 describe('change log and gate excerpts', () => {
   it('a change log row survives being written and read back, pipes and line breaks included', () => {
-    const entry = { date: '2027-01-10', what: 'Új album: Zsófi és Bence | Kehida Kapuja\nmásodik sor', approvedBy: 'Vera', state: 'élesben' as const, branch: 'content/2027-01-10-zsofi-bence' };
+    const entry = { date: '2027-01-10', what: 'Új album: Zsófi és Bence | Kehida Kapuja\nmásodik sor', approvedBy: 'Vera', state: 'megjelent' as const, branch: 'content/2027-01-10-zsofi-bence' };
     expect(parseChanges(row(entry))).toEqual([{ ...entry, what: 'Új album: Zsófi és Bence / Kehida Kapuja második sor' }]);
   });
 

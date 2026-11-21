@@ -219,7 +219,7 @@ export function publish(root: string, argv: readonly string[]): Record<string, u
   if (refused) throw new LaneRefusal(refused.code, refused.message);
 
   // 5: the last line. Everything automatic is green; now a person says yes with their PIN.
-  const person = verifyOperator(`Élesítés a fiorevera.hu oldalra:\n„${facts.what}”\n\nMinden ellenőrzés rendben lezajlott. A PIN-kód megadásával a változtatás kikerül az éles oldalra.`, { as: arg(argv, 'as') || undefined });
+  const person = verifyOperator(`Közzététel a fiorevera.hu oldalon:\n„${facts.what}”\n\nMinden ellenőrzés sikeresen lezárult. A PIN-kód megadásával a változtatás megjelenik a nyilvános oldalon.`, { as: arg(argv, 'as') || undefined });
   facts.approvedBy = person.name;
   const last = refusal(facts); // the complete rule set once more, now with the approver: nothing below runs on a partial yes
   if (last) throw new LaneRefusal(last.code, last.message);
@@ -233,7 +233,7 @@ export function publish(root: string, argv: readonly string[]): Record<string, u
   }
   if (workFingerprint(root, facts.base) !== facts.fingerprint) throw new LaneRefusal('changed-underfoot', 'the content changed while the release was running — start again with the gates');
 
-  const entry: ChangeEntry = { date: today(), what: facts.what, approvedBy: facts.approvedBy, state: 'élesben', branch: facts.branch };
+  const entry: ChangeEntry = { date: today(), what: facts.what, approvedBy: facts.approvedBy, state: 'megjelent', branch: facts.branch };
   recordChange(root, entry);
   const again = classifyCheckout(root);
   if (again.class !== 'content') throw new LaneRefusal('needs-gabor', `after the re-record the change is no longer pure content:\n- ${again.reasons.join('\n- ')}`);
@@ -343,7 +343,7 @@ export function rollback(root: string, argv: readonly string[]): Record<string, 
   const receipt = runGates(root);
   if (!receipt.ok || receipt.needsReview) throw new LaneRefusal('gates-red', `the gates are not green on the restored state (${receipt.steps.find((s) => s.status !== 'pass')?.name}) — this needs the technical owner; the work is on ${branch}`);
   // The last line: the restored state is green; a person confirms the rollback with their PIN.
-  const person = verifyOperator(`Visszavonás a fiorevera.hu oldalon:\n„${what}”\n\nAz előző állapot ellenőrzése rendben lezajlott. A PIN-kód megadásával a visszavonás kikerül az éles oldalra.`, { as: arg(argv, 'as') || undefined });
+  const person = verifyOperator(`Visszavonás a fiorevera.hu oldalon:\n„${what}”\n\nAz előző állapot ellenőrzése sikeresen lezárult. A PIN-kód megadásával a nyilvános oldal visszaáll erre az állapotra.`, { as: arg(argv, 'as') || undefined });
   recordChange(root, { date: today(), what, approvedBy: person.name, state: 'visszavonva', branch: target.branch });
   commit(root, [CHANGELOG], `content: undo "${what}"`, [`Approved-by: ${person.name} (PIN; asked for the rollback)`, 'Change-class: content', `Reverts: ${target.sha}`, 'Released-by: scripts/release/publish-content.ts']);
   const sha = mergeThroughPullRequest(root, branch, `content: undo "${what}"`, `Rollback of ${target.sha} (${target.branch}) through the content lane, confirmed by ${person.name} with their PIN. The restored state was approved before; gates green.`);

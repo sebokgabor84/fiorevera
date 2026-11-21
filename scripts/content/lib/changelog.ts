@@ -8,8 +8,8 @@ import path from 'node:path';
 
 export const CHANGELOG = 'docs/vera-agent/changelog.md';
 
-/** élesben = live · visszavonva = rolled back · Gáborra vár = waiting for the technical owner */
-export type ChangeState = 'élesben' | 'visszavonva' | 'Gáborra vár';
+/** megjelent = published · visszavonva = rolled back · Gáborra vár = waiting for the technical owner */
+export type ChangeState = 'megjelent' | 'visszavonva' | 'Gáborra vár';
 
 export interface ChangeEntry {
   /** YYYY-MM-DD */
@@ -24,8 +24,8 @@ export interface ChangeEntry {
 
 const HEADER = `# Változásnapló — a weboldal tartalma
 
-Minden tartalmi változtatás, ami a CMS koordinátoron keresztül készült: mi változott, mikor, ki hagyta jóvá, és hol tart.
-A fájlt a kiadó szkript írja (\`scripts/release/publish-content.ts\`), kézzel nem szerkesztjük. A legfrissebb van legfelül.
+Minden tartalmi változtatás, amely a CMS-koordinátor közreműködésével készült: mi változott, mikor, ki hagyta jóvá, és milyen állapotban van.
+A fájlt a közzétételi szkript írja (\`scripts/release/publish-content.ts\`); kézzel nem szerkesztjük. A legfrissebb bejegyzés áll legfelül.
 
 | Dátum | Mi változott | Jóváhagyta | Állapot | Munkapéldány |
 | --- | --- | --- | --- | --- |
@@ -44,7 +44,7 @@ export function readChanges(root: string): ChangeEntry[] {
 export function parseChanges(text: string): ChangeEntry[] {
   return text
     .split('\n')
-    .map((line) => /^\| (\d{4}-\d{2}-\d{2}) \| (.*) \| (.*) \| (élesben|visszavonva|Gáborra vár) \| `(.*)` \|$/.exec(line))
+    .map((line) => /^\| (\d{4}-\d{2}-\d{2}) \| (.*) \| (.*) \| (megjelent|visszavonva|Gáborra vár) \| `(.*)` \|$/.exec(line))
     .filter((m): m is RegExpExecArray => m !== null)
     .map((m) => ({ date: m[1], what: m[2], approvedBy: m[3], state: m[4] as ChangeState, branch: m[5] }));
 }
