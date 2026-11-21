@@ -32,6 +32,21 @@ case "$branch" in
   *) echo "Branch: $branch" ;;
 esac
 
+# Who is at the keyboard today? (scripts/release/operator.ts; a session is good for its day only)
+ops="${FV_OPERATORS_FILE:-$HOME/.config/fiorevera/operators.json}"
+sess="${FV_SESSION_FILE:-$(dirname "$ops")/session.json}"
+if [ -f "$ops" ] && command -v jq >/dev/null 2>&1; then
+  who="$(jq -r --arg d "$(date '+%F')" 'select(.day == $d) | "\(.name) (\(.role))"' "$sess" 2>/dev/null)"
+  if [ -n "$who" ]; then
+    echo "At the keyboard today: $who"
+  else
+    echo "At the keyboard today: NOT SAID YET. Start of day: before anything else ask who is here"
+    echo "  ($(jq -r '[.operators | to_entries[] | .value.name] | join(" or ")' "$ops" 2>/dev/null)?), then run the good-morning routine: npm run content:morning -- --as <id>   (skill: goodmorning)"
+  fi
+else
+  echo "At the keyboard today: nobody is set up on this machine (technical owner, once: npm run release:operator -- --set <id> --role admin --name \"<name>\")"
+fi
+
 dirty="$(git -C "$top" status --porcelain 2>/dev/null)"
 if [ -n "$dirty" ]; then
   echo "Working tree: $(printf '%s\n' "$dirty" | wc -l | tr -d ' ') changed or untracked file(s)"

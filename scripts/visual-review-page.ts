@@ -27,6 +27,8 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const RESULTS = path.join(ROOT, 'test-results');
 const DEFAULT_OUT = path.join(ROOT, '.visual-review');
 
+export type ReviewLang = 'en' | 'hu';
+
 export interface ReviewOption {
   id: string;
   label: string;
@@ -52,6 +54,13 @@ export interface ReviewSpec {
   decisions?: ReviewDecision[];
   /** Things only the owner can do (a test mail, a dashboard click) — shown as a list. */
   ownerSteps?: string[];
+  /** Language of the page's own wording (default 'en'). The pasted answer format is the same in both. */
+  lang?: ReviewLang;
+  /**
+   * Content release of the CMS Coordinator: the last question means "put it live on the website",
+   * not "commit and push the branch" (release-manager, content lane). Default false.
+   */
+  goLive?: boolean;
 }
 export interface Screen {
   id: string;
@@ -70,6 +79,8 @@ export interface ReviewData {
   approved: string[];
   decisions: (Omit<ReviewDecision, 'options'> & { options: (Omit<ReviewOption, 'images'> & { images: string[] })[] })[];
   ownerSteps: string[];
+  lang?: ReviewLang;
+  goLive?: boolean;
 }
 
 /** The two questions every review ends with. Their ids and answers are part of the answer grammar. */
@@ -93,6 +104,128 @@ export const CLOSING: ReviewDecision[] = [
     ],
   },
 ];
+
+/**
+ * The same two questions in the page's language. Ids and answer ids (BASELINES YES/NO, COMMIT
+ * GO/WAIT) never change: they are the answer grammar that `judgeAnswers` reads. With `goLive` the
+ * second question is the release itself (content lane of the CMS Coordinator).
+ */
+export function closingFor(lang: ReviewLang = 'en', goLive = false): ReviewDecision[] {
+  if (lang === 'hu') {
+    return [
+      {
+        id: 'BASELINES',
+        title: 'Megfelel így az új megjelenés?',
+        text: 'Ha igen, a fenti képernyők új megjelenése lesz ezentúl az összehasonlítás alapja, a te neveddel rögzítve.',
+        options: [
+          { id: 'YES', label: 'Igen, megfelel' },
+          { id: 'NO', label: 'Még nem' },
+        ],
+      },
+      goLive
+        ? {
+            id: 'COMMIT',
+            title: 'Közzétehetem az oldalon?',
+            text: 'Ha igen, az ellenőrzések után a változtatás megjelenik a fiorevera.hu oldalon. Egyetlen mondattal bármikor visszavonható.',
+            options: [
+              { id: 'GO', label: 'Igen, közzétehető' },
+              { id: 'WAIT', label: 'Várjunk még' },
+            ],
+          }
+        : {
+            id: 'COMMIT',
+            title: 'Elmenthetem a változtatást?',
+            text: 'Elmentem egy külön munkapéldányra. A nyilvános oldalon ettől még semmi sem jelenik meg.',
+            options: [
+              { id: 'GO', label: 'Igen, mentsd el' },
+              { id: 'WAIT', label: 'Várjunk még' },
+            ],
+          },
+    ];
+  }
+  if (!goLive) return CLOSING;
+  return [
+    CLOSING[0],
+    {
+      id: 'COMMIT',
+      title: 'Publish to the website',
+      text: 'Once the checks have passed, the change is published on fiorevera.hu. It can be undone with a single sentence.',
+      options: [
+        { id: 'GO', label: 'GO: publish' },
+        { id: 'WAIT', label: 'Wait' },
+      ],
+    },
+  ];
+}
+
+/** The page's own wording. Screen verdicts are stored and pasted as OK / Issue in every language. */
+export const UI = {
+  en: {
+    before: 'Before',
+    after: 'After',
+    difference: 'Difference',
+    ok: 'OK',
+    issue: 'Issue',
+    note: 'Note (optional)',
+    noteLabel: 'note',
+    whichPicture: 'which picture',
+    screenshot: 'screenshot, scrollable',
+    option: 'option',
+    suggested: 'Suggested',
+    open: (n: number, of: number) => `${n} of ${of} still open`,
+    allAnswered: 'All answered',
+    copied: 'Copied. Paste it into the chat.',
+    copyByHand: 'Select all in the box and copy it by hand.',
+    round: 'round {n}',
+    build: 'build',
+    part: 'Part {n}',
+    /** Show the answer ids (YES, GO …) and the question id next to the two closing questions. */
+    closingIds: true,
+    screensHeading: (n: number) => `${n} ${n === 1 ? 'screen' : 'screens'} to look at`,
+    screensHelp: 'Before is the committed baseline, After is this build, Difference marks the changed pixels in red. Mark every screen OK or Issue.',
+    approvedEarlier: 'Changed, and already approved in an earlier round',
+    decisionsHeading: 'Decisions and go-ahead',
+    goAheadHeading: 'Go-ahead',
+    ownerHeading: 'Only you can do these',
+    copy: 'Copy answers',
+    answersLabel: 'Your answers',
+    answersText: 'Answers as text',
+    intro:
+      'These screens look different from the approved baselines. Mark each one, answer the questions at the end, press Copy answers and paste the text into the chat. Nothing is re-recorded or committed before that.',
+  },
+  hu: {
+    before: 'Előtte',
+    after: 'Utána',
+    difference: 'Különbség',
+    ok: 'Rendben',
+    issue: 'Javítandó',
+    note: 'Megjegyzés (nem kötelező)',
+    noteLabel: 'megjegyzés',
+    whichPicture: 'melyik kép',
+    screenshot: 'képernyőkép, görgethető',
+    option: 'lehetőség',
+    suggested: 'Javaslatom',
+    open: (n: number, of: number) => `Még ${n} válasz hiányzik (összesen ${of})`,
+    allAnswered: 'Minden kérdésre válaszoltál',
+    copied: 'A vágólapra másoltam. Illeszd be a beszélgetésbe.',
+    copyByHand: 'Jelöld ki a mező teljes tartalmát, és másold ki kézzel.',
+    round: '{n}. kör',
+    build: 'változat',
+    part: '{n}. rész',
+    closingIds: false,
+    screensHeading: (n: number) => `${n} képernyő vár áttekintésre`,
+    screensHelp: 'Az „Előtte” a jelenlegi oldalt, az „Utána” a változtatásodat mutatja; a „Különbség” pirossal jelöli az eltéréseket. Minden képernyőnél jelöld meg: Rendben vagy Javítandó.',
+    approvedEarlier: 'Megváltozott, de egy korábbi körben már jóváhagytad',
+    decisionsHeading: 'Döntések és jóváhagyás',
+    goAheadHeading: 'Jóváhagyás',
+    ownerHeading: 'Ezeket csak te tudod elvégezni',
+    copy: 'Válaszok másolása',
+    answersLabel: 'A válaszaid',
+    answersText: 'A válaszok szövegként',
+    intro:
+      'Ezek a képernyők a változtatás nyomán másként jelennek meg, mint eddig. Tekintsd át mindegyiket, válaszolj a végén a kérdésekre, nyomd meg a „Válaszok másolása” gombot, majd illeszd be a szöveget a beszélgetésbe. Addig a nyilvános oldalon semmi sem változik.',
+  },
+} as const;
 
 const sha = (data: Buffer | string): string => createHash('sha256').update(data).digest('hex');
 
@@ -231,29 +364,30 @@ const STYLE = `
 const SCRIPT = `
   const DATA = JSON.parse(document.getElementById('review-data').textContent);
   const CLOSING = JSON.parse(document.getElementById('review-closing').textContent);
+  const UI = JSON.parse(document.getElementById('review-ui').textContent);
   const $ = (tag, attrs = {}, kids = []) => { const el = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) { if (k === 'text') el.textContent = v; else el.setAttribute(k, v); } for (const kid of [].concat(kids)) el.append(kid); return el; };
   const KEY = 'visual-review:' + DATA.build;
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { saved = {}; }
   const remember = () => { try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch { /* a convenience only */ } render(); };
-  const noteInput = (key, label) => { const n = $('input', { type: 'text', id: key + '-note', placeholder: 'Note (optional)', 'aria-label': label + ': note' }); n.value = saved[key + ':note'] || ''; n.addEventListener('input', () => { saved[key + ':note'] = n.value; remember(); }); return n; };
+  const noteInput = (key, label) => { const n = $('input', { type: 'text', id: key + '-note', placeholder: UI.note, 'aria-label': label + ': ' + UI.noteLabel }); n.value = saved[key + ':note'] || ''; n.addEventListener('input', () => { saved[key + ':note'] = n.value; remember(); }); return n; };
 
   const screens = document.getElementById('screens');
   for (const s of DATA.screens) {
-    const img = $('img', { src: 'img/' + s.id + '-actual.jpg', alt: s.id + ': after', loading: 'lazy' });
-    const seg = $('div', { class: 'seg', role: 'group', 'aria-label': s.id + ': which picture' });
-    for (const [kind, label] of [['expected', 'Before'], ['actual', 'After'], ['diff', 'Difference']]) {
+    const img = $('img', { src: 'img/' + s.id + '-actual.jpg', alt: s.id + ': ' + UI.after.toLowerCase(), loading: 'lazy' });
+    const seg = $('div', { class: 'seg', role: 'group', 'aria-label': s.id + ': ' + UI.whichPicture });
+    for (const [kind, label] of [['expected', UI.before], ['actual', UI.after], ['diff', UI.difference]]) {
       const b = $('button', { type: 'button', 'aria-pressed': String(kind === 'actual'), text: label });
       b.addEventListener('click', () => { img.src = 'img/' + s.id + '-' + kind + '.jpg'; img.alt = s.id + ': ' + label.toLowerCase(); seg.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(x === b))); });
       seg.append(b);
     }
     const key = 'S:' + s.id;
     const verdict = $('div', { class: 'verdict' });
-    for (const v of ['OK', 'Issue']) { const r = $('input', { type: 'radio', name: key, id: key + '-' + v, value: v }); r.checked = saved[key] === v; r.addEventListener('change', () => { saved[key] = v; remember(); }); verdict.append($('label', { for: key + '-' + v }, [r, v])); }
+    for (const v of ['OK', 'Issue']) { const r = $('input', { type: 'radio', name: key, id: key + '-' + v, value: v }); r.checked = saved[key] === v; r.addEventListener('change', () => { saved[key] = v; remember(); }); verdict.append($('label', { for: key + '-' + v }, [r, v === 'OK' ? UI.ok : UI.issue])); }
     verdict.append(noteInput(key, s.id));
     const kids = [$('header', {}, [$('h3', { text: s.id }), seg])];
     if (s.notes.length) kids.push($('ul', {}, s.notes.map((n) => $('li', { text: n }))));
-    kids.push($('div', { class: 'shot' + (s.width <= 420 ? ' narrow' : ''), tabindex: '0', 'aria-label': s.id + ': screenshot, scrollable' }, [img]), verdict);
+    kids.push($('div', { class: 'shot' + (s.width <= 420 ? ' narrow' : ''), tabindex: '0', 'aria-label': s.id + ': ' + UI.screenshot }, [img]), verdict);
     screens.append($('article', { class: 'item' }, kids));
   }
 
@@ -261,17 +395,18 @@ const SCRIPT = `
   const decisions = document.getElementById('questions');
   for (const d of QUESTIONS) {
     const key = 'Q:' + d.id;
+    const plain = !UI.closingIds && CLOSING.some((c) => c.id === d.id);
     const pair = $('div', { class: 'pair' });
     for (const o of d.options) {
       const r = $('input', { type: 'radio', name: key, id: key + '-' + o.id, value: o.id });
       r.checked = saved[key] === o.id;
       r.addEventListener('change', () => { saved[key] = o.id; remember(); });
-      const box = $('label', { class: 'opt', for: key + '-' + o.id }, [$('span', { class: 'label' }, [r, $('span', { text: o.id + '. ' + o.label })])]);
-      if (o.recommended) box.append($('span', {}, [$('span', { class: 'rec', text: 'Suggested' })]));
-      for (const src of o.images || []) box.append($('img', { src, alt: d.title + ', option ' + o.id, loading: 'lazy' }));
+      const box = $('label', { class: 'opt', for: key + '-' + o.id }, [$('span', { class: 'label' }, [r, $('span', { text: plain ? o.label : o.id + '. ' + o.label })])]);
+      if (o.recommended) box.append($('span', {}, [$('span', { class: 'rec', text: UI.suggested })]));
+      for (const src of o.images || []) box.append($('img', { src, alt: d.title + ', ' + UI.option + ' ' + o.id, loading: 'lazy' }));
       pair.append(box);
     }
-    const kids = [$('header', {}, [$('h3', { text: d.title }), $('span', { class: 'tag', text: d.id })])];
+    const kids = [$('header', {}, plain ? [$('h3', { text: d.title })] : [$('h3', { text: d.title }), $('span', { class: 'tag', text: d.id })])];
     if (d.text) kids.push($('p', { text: d.text }));
     kids.push(pair, noteInput(key, d.title));
     decisions.append($('article', { class: 'item' }, kids));
@@ -286,14 +421,14 @@ const SCRIPT = `
     lines.push('', 'Questions:');
     for (const d of QUESTIONS) { const v = saved['Q:' + d.id]; if (!v) open++; const n = saved['Q:' + d.id + ':note']; lines.push('  ' + d.id + ' (' + d.title + '): ' + (v || '— NOT ANSWERED') + (n ? ' — ' + n : '')); }
     out.value = lines.join('\\n');
-    status.textContent = open ? open + ' of ' + (DATA.screens.length + QUESTIONS.length) + ' still open' : 'All answered';
+    status.textContent = open ? UI.open.replace('{n}', open).replace('{of}', DATA.screens.length + QUESTIONS.length) : UI.allAnswered;
     status.className = 'count' + (open ? ' open' : '');
   }
   render();
   document.getElementById('copy').addEventListener('click', async () => {
     render();
-    try { await navigator.clipboard.writeText(out.value); status.textContent = 'Copied. Paste it into the chat.'; }
-    catch { out.focus(); out.select(); status.textContent = 'Select all in the box and copy it by hand.'; }
+    try { await navigator.clipboard.writeText(out.value); status.textContent = UI.copied; }
+    catch { out.focus(); out.select(); status.textContent = UI.copyByHand; }
   });
 `;
 
@@ -301,36 +436,40 @@ const SCRIPT = `
 export function renderPage(data: ReviewData): string {
   const json = (value: unknown): string => JSON.stringify(value).replace(/</g, '\\u003c');
   const list = (items: string[]): string => `<ul>${items.map((i) => `<li>${esc(i)}</li>`).join('')}</ul>`;
+  const ui = UI[data.lang ?? 'en'];
+  // Functions cannot travel to the page as JSON: the two counted strings go as templates.
+  const pageUi = { ...ui, open: ui.open(-1, -2).replace('-1', '{n}').replace('-2', '{of}'), screensHeading: undefined };
   return `<title>${esc(data.title)}</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap">
 <style>${STYLE}</style>
 <div class="wrap">
   <header class="stack">
-    <span class="eyebrow">Fiore Vera · ${esc(data.branch)} · round ${data.round} · build ${esc(data.build)}</span>
+    <span class="eyebrow">Fiore Vera · ${esc(data.branch)} · ${ui.round.replace('{n}', String(data.round))} · ${ui.build} ${esc(data.build)}</span>
     <h1>${esc(data.title)}</h1>
     <p>${esc(data.intro)}</p>
   </header>
   <section class="stack">
-    <span class="eyebrow">Part 1</span>
-    <h2>${data.screens.length} ${data.screens.length === 1 ? 'screen' : 'screens'} to look at</h2>
-    <p class="muted">Before is the committed baseline, After is this build, Difference marks the changed pixels in red. Mark every screen OK or Issue.</p>
+    <span class="eyebrow">${ui.part.replace('{n}', '1')}</span>
+    <h2>${esc(ui.screensHeading(data.screens.length))}</h2>
+    <p class="muted">${esc(ui.screensHelp)}</p>
     <div class="stack" id="screens"></div>
-    ${data.approved.length ? `<div class="item"><h3>Changed, and already approved in an earlier round</h3><p class="muted">${data.approved.map(esc).join(' · ')}</p></div>` : ''}
+    ${data.approved.length ? `<div class="item"><h3>${esc(ui.approvedEarlier)}</h3><p class="muted">${data.approved.map(esc).join(' · ')}</p></div>` : ''}
   </section>
   <section class="stack">
-    <span class="eyebrow">Part 2</span>
-    <h2>${data.decisions.length ? 'Decisions and go-ahead' : 'Go-ahead'}</h2>
+    <span class="eyebrow">${ui.part.replace('{n}', '2')}</span>
+    <h2>${esc(data.decisions.length ? ui.decisionsHeading : ui.goAheadHeading)}</h2>
     <div class="stack" id="questions"></div>
   </section>
-  ${data.ownerSteps.length ? `<section class="stack"><span class="eyebrow">Part 3</span><h2>Only you can do these</h2><div class="item">${list(data.ownerSteps)}</div></section>` : ''}
-  <section class="export" aria-label="Your answers">
-    <div class="verdict"><button class="btn" id="copy" type="button">Copy answers</button><span id="status" class="count" role="status"></span></div>
-    <textarea id="out" readonly aria-label="Answers as text"></textarea>
+  ${data.ownerSteps.length ? `<section class="stack"><span class="eyebrow">${ui.part.replace('{n}', '3')}</span><h2>${esc(ui.ownerHeading)}</h2><div class="item">${list(data.ownerSteps)}</div></section>` : ''}
+  <section class="export" aria-label="${esc(ui.answersLabel)}">
+    <div class="verdict"><button class="btn" id="copy" type="button">${esc(ui.copy)}</button><span id="status" class="count" role="status"></span></div>
+    <textarea id="out" readonly aria-label="${esc(ui.answersText)}"></textarea>
   </section>
 </div>
 <script type="application/json" id="review-data">${json(data)}</script>
-<script type="application/json" id="review-closing">${json(CLOSING)}</script>
+<script type="application/json" id="review-closing">${json(closingFor(data.lang, data.goLive))}</script>
+<script type="application/json" id="review-ui">${json(pageUi)}</script>
 <script>${SCRIPT}</script>
 `;
 }
@@ -399,20 +538,20 @@ async function generate(argv: readonly string[]): Promise<void> {
     round: spec.round ?? 1,
     branch: currentBranch(),
     build: buildFingerprint(actuals),
-    intro:
-      spec.intro ??
-      'These screens look different from the approved baselines. Mark each one, answer the questions at the end, press Copy answers and paste the text into the chat. Nothing is re-recorded or committed before that.',
+    intro: spec.intro ?? UI[spec.lang ?? 'en'].intro,
     screens,
     approved,
     decisions,
     ownerSteps: spec.ownerSteps ?? [],
+    ...(spec.lang ? { lang: spec.lang } : {}),
+    ...(spec.goLive ? { goLive: true } : {}),
   };
   const fragment = renderPage(data);
   fs.writeFileSync(path.join(out, 'index.html'), fragment);
   // The same page as a complete document, for a plain browser (the Artifact host adds this shell itself).
   fs.writeFileSync(
     path.join(out, 'local.html'),
-    `<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n</head>\n<body>\n${fragment}</body>\n</html>\n`
+    `<!doctype html>\n<html lang="${data.lang ?? 'en'}">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n</head>\n<body>\n${fragment}</body>\n</html>\n`
   );
   fs.writeFileSync(path.join(out, 'files.json'), JSON.stringify(files.map((p) => ({ path: p }))) + '\n');
   fs.writeFileSync(path.join(out, 'review.json'), JSON.stringify(data, null, 2) + '\n');

@@ -9,6 +9,8 @@
 #   6. `git merge <branch>` while on main (only origin/main may be merged, fast-forward), and
 #      merging main INTO a feature branch (hard rule: rebase onto origin/main instead)
 #   7. vercel --prod / promote / rollback / alias                     (changes production directly)
+#   8. gh pr merge / gh api …/merge                                   (merging a pull request = release;
+#                                                                      the content lane script is the one door)
 # These stay possible for the OWNER in his own terminal; an agent never runs them.
 # Rules: .agent/skills/release-manager/SKILL.md ("When a hook blocks").
 #
@@ -60,6 +62,20 @@ while IFS= read -r seg; do
         case "$rest" in
           *" --prod "* | *" --prod="* | *" --target production "* | *" --target=production "* | *" promote "* | *" rollback "* | *" alias "*)
             deny "this vercel command changes the production deployment directly, bypassing git, the pull request and both GO gates. A release happens by merging a pull request into main; a rollback is the owner's click in the Vercel dashboard (Instant Rollback)."
+            ;;
+        esac
+        ;;
+    esac
+  done
+
+  # --- GitHub CLI: merging a pull request IS the release --------------------------------------
+  for ((i = 0; i < n; i++)); do
+    case "${w[i]}" in
+      gh | */gh)
+        rest=" ${w[*]:i+1} "
+        case "$rest" in
+          *" pr merge "* | *" api "*"/merge "* | *" api "*"/merges "*)
+            deny "merging a pull request puts the change live on fiorevera.hu, and an agent never merges by typing gh. Code and anything outside the content catalogue: the owner merges on GitHub (GO 2). Pure catalogue content, after the owner's yes on the review page: npm run release:publish-content — the one script that checks the change class, the gates for exactly this state and the recorded approval before it merges."
             ;;
         esac
         ;;

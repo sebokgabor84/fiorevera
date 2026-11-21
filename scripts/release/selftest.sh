@@ -113,6 +113,12 @@ deny|git merge feature/x
 deny|cd /tmp && npx vercel --prod
 deny|vercel promote https://example.vercel.app
 deny|vercel rollback
+deny|gh pr merge 12 --merge
+deny|gh pr merge content/2027-01-10-new-album --merge --delete-branch
+deny|gh api -X PUT repos/o/r/pulls/12/merge
+allow|gh pr view 12 --json state
+allow|gh pr create --base main --head feature/x --title x --body y
+allow|npm run release:publish-content -- --what "ár" --approved-by Vera
 allow|git push -u origin feature/x
 allow|git push --force-with-lease origin feature/x
 allow|git push origin --delete feature/x

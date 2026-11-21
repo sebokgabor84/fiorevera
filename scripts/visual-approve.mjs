@@ -10,6 +10,7 @@
  */
 import { execSync, spawnSync } from 'node:child_process';
 import { appendFileSync, existsSync, writeFileSync } from 'node:fs';
+import { baselineHistory, baselineSet, sizeReport } from './visual-baseline-size.mjs';
 
 const args = Object.fromEntries(
   process.argv.slice(2).map((a) => {
@@ -36,6 +37,7 @@ if (!approver) {
 }
 
 const before = execSync('git status --porcelain -- tests/visual/__screenshots__', { encoding: 'utf8' });
+const sizeBefore = baselineSet();
 const run = spawnSync('./node_modules/.bin/playwright', ['test', '-c', 'playwright.visual.config.ts', '--update-snapshots', '--reporter=dot'], {
   stdio: 'inherit',
 });
@@ -64,3 +66,7 @@ appendFileSync(logPath, `| ${date} | ${approver} | ${note || '—'} | ${list} |\
 console.log(`\nvisual-approve: ${changed.length} baseline file(s) changed, approved by ${approver}; logged in ${logPath}.`);
 for (const f of changed) console.log('  ' + f);
 console.log('\nStage the baselines and the log together with the component change that caused them.');
+
+// Reminder after every re-record: the baselines live in git, and every new version stays in its history.
+console.log('');
+for (const line of sizeReport({ set: baselineSet(), history: baselineHistory(), before: sizeBefore })) console.log(`visual-approve: ${line}`);

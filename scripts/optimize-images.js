@@ -18,41 +18,44 @@
  * album. The dimension manifest src/data/generated/imageMeta.ts is rewritten
  * on every run. Idempotent: unchanged sources are skipped (mtime check).
  *
- * Usage: node scripts/optimize-images.js [--force] [--tier=full|medium|small]
+ * The limits, the file naming, the encoder and the manifest format live in scripts/images/tiers.js,
+ * shared with the single-slot operations in scripts/content/ (the CMS Coordinator). This script is
+ * the BULK tool: it rebuilds every slot from assets-src/, which is complete on one machine only.
+ * Before it writes anything it compares what it would produce with the committed manifest and
+ * REFUSES when a rebuild would delete or reorder photos the manifest holds (a checkout without the
+ * originals, or a slot changed by a content operation). Override, knowingly: --rebuild.
+ *
+ * Usage: node scripts/optimize-images.js [--force] [--tier=full|medium|small] [--rebuild]
  *   --force        re-encode every tier of every photo (ignores the mtime check)
+ *   --rebuild      skip the refusal above: the manifest is rebuilt from assets-src/ as it is
  *   --tier=small   re-encode only that tier of every photo (e.g. after changing its quality
  *                  ceiling) and leave the other tiers' files byte-identical — keeps the git diff
  *                  to the files that actually changed (web-vitals 2026-11-16)
  */
-import { readdir, stat, mkdir, unlink, writeFile } from 'node:fs/promises';
+import { readdir, readFile, stat, mkdir, unlink, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
+import {
+  BRAND_SMALL_EDGE,
+  FULL_EDGE,
+  IMAGE_RE,
+  MEDIUM_EDGE,
+  SMALL_EDGE,
+  TIER_QUALITY,
+  encodePhoto,
+  outputName,
+  parseImageMeta,
+  renderImageMeta,
+} from './images/tiers.js';
 
 const SRC_ROOT = path.resolve('assets-src');
 const OUT_ROOT = path.resolve('public/assets');
 const META_FILE = path.resolve('src/data/generated/imageMeta.ts');
-const MAX_BYTES = 200 * 1024;
-const FULL_EDGE = 1920;
-const MEDIUM_EDGE = 1280;
-const SMALL_EDGE = 800;
-/** Per-tier quality ceilings: the smaller the tier, the less a lower quality shows on a phone. */
-const TIER_QUALITY = { full: 82, medium: 76, small: 70 };
-const BRAND_SMALL_EDGE = 240;
 const FORCE = process.argv.includes('--force');
+const REBUILD = process.argv.includes('--rebuild');
 const TIER = (process.argv.find((a) => a.startsWith('--tier=')) ?? '').slice('--tier='.length) || null;
 if (TIER && !['full', 'medium', 'small'].includes(TIER)) throw new Error(`--tier must be full, medium or small (got "${TIER}")`);
-const IMAGE_RE = /\.(jpe?g|png|webp|tiff?|heic)$/i;
-
-const slugify = (s) =>
-  s
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .replace(/\.[a-z0-9]+$/, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 40);
 
 const listImages = async (dir) =>
   (await readdir(dir)).filter((f) => IMAGE_RE.test(f) && !f.startsWith('.')).sort((a, b) => a.localeCompare(b));
@@ -67,26 +70,6 @@ const isFresh = async (src, out) => {
   if (FORCE || !existsSync(out)) return false;
   const [s, o] = await Promise.all([stat(src), stat(out)]);
   return o.mtimeMs >= s.mtimeMs && o.size > 0;
-};
-
-/** Encodes to webp under MAX_BYTES: steps quality down, then shrinks the long edge. Returns final metadata. */
-const encodePhoto = async (src, out, edge, maxQuality) => {
-  let currentEdge = edge;
-  for (let attempt = 0; attempt < 6; attempt++) {
-    const base = sharp(src)
-      .rotate()
-      .resize({ width: currentEdge, height: currentEdge, fit: 'inside', withoutEnlargement: true });
-    for (let quality = maxQuality; quality >= 34; quality -= 6) {
-      const buf = await base.clone().webp({ quality, effort: 5 }).toBuffer();
-      if (buf.length <= MAX_BYTES) {
-        await writeFile(out, buf);
-        const meta = await sharp(buf).metadata();
-        return { width: meta.width, height: meta.height, bytes: buf.length, quality };
-      }
-    }
-    currentEdge = Math.round(currentEdge * 0.85);
-  }
-  throw new Error(`could not fit ${src} under ${MAX_BYTES} bytes`);
 };
 
 const encodeBrand = async (src, out) => {
@@ -120,7 +103,7 @@ const processSlot = async (slotRel, { brand = false } = {}) => {
   const entries = [];
   let done = 0;
   for (const [i, file] of files.entries()) {
-    const name = `${String(i + 1).padStart(2, '0')}-${slugify(file)}`;
+    const name = outputName(i + 1, file);
     const src = path.join(srcDir, file);
     const full = path.join(outDir, `${name}.webp`);
     expected.add(path.basename(full));
@@ -144,8 +127,8 @@ const processSlot = async (slotRel, { brand = false } = {}) => {
       });
       continue;
     }
-    const medium = path.join(outDir, `${name}-w1280.webp`);
-    const small = path.join(outDir, `${name}-w800.webp`);
+    const medium = path.join(outDir, `${name}-w${MEDIUM_EDGE}.webp`);
+    const small = path.join(outDir, `${name}-w${SMALL_EDGE}.webp`);
     expected.add(path.basename(medium));
     expected.add(path.basename(small));
     // --tier=X re-encodes exactly that tier; otherwise a stale (or missing) output re-encodes all three.
@@ -161,8 +144,8 @@ const processSlot = async (slotRel, { brand = false } = {}) => {
     if (todo.full || todo.medium || todo.small) done++;
     entries.push({
       src: publicFull,
-      srcMedium: `/assets/${slotRel}/${name}-w1280.webp`,
-      srcSmall: `/assets/${slotRel}/${name}-w800.webp`,
+      srcMedium: `/assets/${slotRel}/${name}-w${MEDIUM_EDGE}.webp`,
+      srcSmall: `/assets/${slotRel}/${name}-w${SMALL_EDGE}.webp`,
       width: m.width,
       height: m.height,
     });
@@ -175,8 +158,51 @@ const processSlot = async (slotRel, { brand = false } = {}) => {
   return entries;
 };
 
+/**
+ * What a rebuild would lose: for every slot of the committed manifest, the photos that assets-src/
+ * would not reproduce under the same name and in the same order. Empty = safe to run.
+ */
+const rebuildLosses = async () => {
+  if (!existsSync(META_FILE)) return [];
+  const meta = parseImageMeta(await readFile(META_FILE, 'utf8'));
+  const slots = [
+    ['brand', meta.brand],
+    ['hero', meta.hero],
+    ['about', meta.about],
+    ...Object.entries(meta.gallery).map(([id, list]) => [`gallery/${id}`, list]),
+    ...Object.entries(meta.rental).map(([id, list]) => [`rental/${id}`, list]),
+  ];
+  const losses = [];
+  for (const [slotRel, entries] of slots) {
+    if (entries.length === 0) continue;
+    const have = entries.map((e) => path.basename(e.src, '.webp'));
+    const srcDir = path.join(SRC_ROOT, slotRel);
+    if (!existsSync(srcDir)) {
+      losses.push(`${slotRel}: ${have.length} photo(s) in the manifest, no originals folder assets-src/${slotRel}/`);
+      continue;
+    }
+    const plan = (await listImages(srcDir)).map((file, i) => outputName(i + 1, file));
+    const kept = plan.filter((name) => have.includes(name));
+    const missing = have.filter((name) => !plan.includes(name));
+    if (missing.length) losses.push(`${slotRel}: ${missing.length} of ${have.length} photo(s) would be deleted or renamed (first: ${missing[0]})`);
+    else if (kept.join('|') !== have.join('|')) losses.push(`${slotRel}: the photo order chosen by a content operation would be reset to file-name order`);
+  }
+  return losses;
+};
+
 const main = async () => {
   if (!existsSync(SRC_ROOT)) throw new Error(`missing ${SRC_ROOT} — run: npm run archive:legacy -- --seed-assets`);
+  const losses = REBUILD ? [] : await rebuildLosses();
+  if (losses.length) {
+    console.error('optimize-images: REFUSED — nothing was written. A rebuild from assets-src/ would change photos the site shows today:');
+    for (const line of losses) console.error(`  - ${line}`);
+    console.error(
+      'The originals are complete on one machine only, and slots changed through `npm run content` keep their own order.\n' +
+        'To add or change photos of one album or item use `npm run content -- <operation>` (.agent/skills/cms-coordinator).\n' +
+        'To rebuild everything from assets-src/ anyway: npm run optimize:assets -- --rebuild'
+    );
+    process.exit(2);
+  }
   const meta = { hero: [], about: [], brand: [], gallery: {}, rental: {} };
   meta.brand = await processSlot('brand', { brand: true });
   meta.hero = await processSlot('hero');
@@ -185,12 +211,7 @@ const main = async () => {
   for (const item of await listDirs(path.join(SRC_ROOT, 'rental'))) meta.rental[item] = await processSlot(`rental/${item}`);
 
   await mkdir(path.dirname(META_FILE), { recursive: true });
-  const header = `// GENERATED by scripts/optimize-images.js — do not edit. Re-run: npm run optimize:assets\n`;
-  const body =
-    `export interface ImageAsset {\n  src: string;\n  srcMedium: string;\n  srcSmall: string;\n  width: number;\n  height: number;\n}\n\n` +
-    `export interface ImageMeta {\n  hero: ImageAsset[];\n  about: ImageAsset[];\n  brand: ImageAsset[];\n  gallery: Record<string, ImageAsset[]>;\n  rental: Record<string, ImageAsset[]>;\n}\n\n` +
-    `export const IMAGE_META: ImageMeta = ${JSON.stringify(meta, null, 2)};\n`;
-  await writeFile(META_FILE, header + body);
+  await writeFile(META_FILE, renderImageMeta(meta));
   const total = Object.values(meta.gallery).flat().length + Object.values(meta.rental).flat().length + meta.hero.length + meta.about.length;
   console.log(`✓ wrote ${path.relative(process.cwd(), META_FILE)} (${total} photos)`);
 };

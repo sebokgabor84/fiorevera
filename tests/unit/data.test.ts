@@ -26,8 +26,9 @@ const expectKeyEverywhere = (key: string) => {
 describe('data contracts (MASTER-PLAN 1.3)', () => {
   it('albums validate, have unique ids and a cover inside their image list', () => {
     const parsed = validateAlbums(albums);
-    expect(parsed).toHaveLength(15);
-    expect(new Set(parsed.map((a) => a.id)).size).toBe(15);
+    // Counts are derived, never pinned: albums, photos, items and testimonials are content the
+    // owner changes through `npm run content` (docs/vera-agent/PRD.md, R1).
+    expect(new Set(parsed.map((a) => a.id)).size).toBe(parsed.length);
     for (const a of parsed) {
       const images = IMAGE_META.gallery[a.id];
       expect(images, `no generated images for album ${a.id}`).toBeDefined();
@@ -38,21 +39,20 @@ describe('data contracts (MASTER-PLAN 1.3)', () => {
     for (const id of featuredAlbumIds) expect(parsed.some((a) => a.id === id)).toBe(true);
   });
 
-  it('gallery holds the 169 archived legacy images', () => {
-    const total = Object.values(IMAGE_META.gallery).reduce((n, imgs) => n + imgs.length, 0);
-    expect(total).toBe(169);
+  it('every photo folder of the gallery belongs to an album', () => {
+    const ids = new Set(albums.map((a) => a.id));
+    expect(Object.keys(IMAGE_META.gallery).filter((slot) => !ids.has(slot))).toEqual([]);
   });
 
   it('rental items validate and every key + image slot exists', () => {
     const parsed = validateRentalItems(rentalItems);
-    expect(parsed).toHaveLength(7);
+    expect(new Set(parsed.map((i) => i.id)).size).toBe(parsed.length);
     for (const item of parsed) {
       expectKeyEverywhere(item.nameKey);
       expectKeyEverywhere(item.descriptionKey);
       if (item.notesKey) expectKeyEverywhere(item.notesKey);
       expect(IMAGE_META.rental[item.id]?.length, `no image slot for rental/${item.id}`).toBeGreaterThan(0);
     }
-    expect(parsed.find((i) => i.id === 'wedding-mirror')?.depositHuf).toBe(20000);
   });
 
   it('services, testimonials, areas and contact validate', () => {
@@ -68,7 +68,7 @@ describe('data contracts (MASTER-PLAN 1.3)', () => {
     }
     expect(services.find((s) => s.id === 'full')?.checklistKeys).toHaveLength(12);
     for (const tst of validateTestimonials(testimonials)) expectKeyEverywhere(tst.quoteKey);
-    expect(testimonials).toHaveLength(4);
+    expect(new Set(testimonials.map((t) => t.id)).size).toBe(testimonials.length);
     ServiceAreasSchema.parse(serviceAreas);
     ContactSchema.parse(contact);
   });

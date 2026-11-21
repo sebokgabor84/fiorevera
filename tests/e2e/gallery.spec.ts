@@ -1,24 +1,28 @@
 import type { Locator, Page } from '@playwright/test';
 import { test, expect } from './fixtures';
 import { albums } from '../../src/data/albums';
+import { IMAGE_META } from '../../src/data/generated/imageMeta';
+
+/** Derived, never pinned: albums and photos are content the owner changes (docs/vera-agent/PRD.md, R1). */
+const galleryPhotoCount = Object.values(IMAGE_META.gallery).reduce((n, photos) => n + photos.length, 0);
 
 test.describe('gallery (PRD D-6/D-7)', () => {
   // The language toast is covered by locale.spec; here it would only sit over the carousel arrows on phones.
   test.beforeEach(({ page }) => page.addInitScript(() => localStorage.setItem('fv-lang-toast-dismissed', '1')));
 
-  test('renders 15 album sections and only loads above-the-fold images', async ({ page }) => {
+  test('renders one section per album and only loads above-the-fold images', async ({ page }) => {
     const imageRequests: string[] = [];
     page.on('request', (req) => {
       if (req.url().includes('/assets/gallery/')) imageRequests.push(req.url());
     });
     await page.goto('/munkaim/');
     await page.waitForLoadState('networkidle');
-    expect(await page.locator('main section[id]').count()).toBe(15);
+    expect(await page.locator('main section[id]').count()).toBe(albums.length);
     for (const a of albums) await expect(page.locator(`#${a.id}`)).toBeAttached();
-    expect(imageRequests.length, 'all gallery images requested on load').toBeLessThan(169 / 4);
+    expect(imageRequests.length, 'all gallery images requested on load').toBeLessThan(galleryPhotoCount / 4);
     // Slides mount once a section is near the viewport: first album has all its slides, the last only its cover.
     await expect(page.locator(`#${albums[0].id} ul img`)).toHaveCount(albums[0].coverIndex >= 0 ? await page.locator(`#${albums[0].id} ul li`).count() : 0);
-    expect(await page.locator(`#${albums[14].id} ul img`).count()).toBe(1);
+    expect(await page.locator(`#${albums[albums.length - 1].id} ul img`).count()).toBe(1);
   });
 
   test('every album is a carousel with always-visible arrows; arrows and keys navigate', async ({ page }) => {

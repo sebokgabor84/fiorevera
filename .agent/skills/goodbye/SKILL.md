@@ -4,7 +4,7 @@ description: >-
   Session-close ritual and self-learning engine for the Fiore Vera project. Use
   when the user says /goodbye, "goodbye", "closing the session", "wrap up",
   "we pause", "let's pause", "stop here for today", or before ending or pausing
-  any working session in this repo. Runs Vera's session-close checklist, checks
+  any working session in this repo. Runs the Project Coordinator's session-close checklist, checks
   the handover for staleness, harvests the side sessions, extracts session
   learnings, syncs memory & BACKLOG.md, audits git state (branches, worktrees,
   pull requests), and reports the handover so the next session can pick up
@@ -16,6 +16,8 @@ description: >-
 Close the working session cleanly, extract session learnings, update project memory, and leave the repository in a deterministic, fully recoverable state.
 
 **A pause is a session end.** "We pause", "let's continue tomorrow", "stop here" trigger this ritual exactly like "goodbye". In the week of 2026-11-09 the sessions ended on "we pause" without it, and `.agent/last-session-handover.md` described a state that was seven days and a launch out of date.
+
+**In a content session the close is short.** When today's person has the role `content` (the `goodmorning` routine recorded it; `npm run release:operator` shows `today`), `/goodbye` and "mára ennyi" do NOT run the checklist below: it writes tracked files, and those reach `main` only through the technical owner. Instead, in the person's language and in at most five lines: what was published today (from `docs/vera-agent/changelog.md`), what is still open (continue tomorrow, or drop it with `--abandon`), what waits for Gabor, and that the public site is in the state they approved. Then stop. Rules and wording: `.agent/skills/cms-coordinator/SKILL.md`.
 
 ---
 
@@ -51,7 +53,8 @@ Run these steps in order, then report the results as a table (see below).
    - rtk proxy git branch --merged origin/main    → merged-but-undeleted local branches
    - rtk proxy git branch -r --merged origin/main → merged-but-undeleted remote branches
    - rtk proxy git worktree list                  → leftover worktrees
-   - curl -s "https://api.github.com/repos/sebokgabor84/fiorevera/pulls?state=open"   → open pull requests (no gh CLI; keep the quotes in zsh)
+   - rtk proxy gh pr list --state open              → open pull requests (`gh` is on Gabor's Mac since 2026-11-21;
+     without it: curl -s "https://api.github.com/repos/sebokgabor84/fiorevera/pulls?state=open", keep the quotes in zsh)
    - If dirty: ask the user whether to commit on the branch or leave as-is. Never stash: the stash is
      shared by every worktree and session
    - List merged branches, leftover worktrees and open pull requests in the report; delete nothing

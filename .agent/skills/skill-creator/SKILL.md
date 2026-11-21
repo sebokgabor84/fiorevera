@@ -78,7 +78,7 @@ Use this mode when asked to: extend a skill, fix domain drift (e.g. GaborPortfol
 | **Preserve intent** | When domain-shifting (e.g. Steampunk → floral), rewrite the *content* but keep the *structure* |
 | **No silent deletions** | If a rule is removed, note why in the review brief |
 | **Update handshakes** | If a skill's triggers change, check if other skills' "Implicit Loading" sections need updating |
-| **Update Vera's registry** | After reshaping, update the Skill Registry in `AGENTS.md` and mark `Domain-Aligned` = ✅ |
+| **Update the skill registry** | After reshaping, update the Skill Registry in `AGENTS.md` and mark `Domain-Aligned` = ✅ |
 | **The code wins** | Verify every statement against the files it names (`package.json` scripts, `tests/`, `src/`, `scripts/`, configs) before writing it; if a skill contradicts the code, fix the skill in the same change |
 | **Numbers are measured** | Test, key and file counts come from the command that produces them (`npm test -- --run`, `./node_modules/.bin/playwright test --list`, `ls`), never from memory or a session note; where a number drifts often, point to the file that holds it instead |
 | **Rule, reason, file** | A learning enters a skill as the rule, the reason in one clause, and the file it points to — never as a pasted session note. Detail goes to `resources/` |

@@ -27,7 +27,7 @@ npm run test:visual:update -- --approved-by="<owner's name>" --note="<what chang
    - **Claude with the Artifact tool** (desktop app, claude.ai): publish `.visual-review/index.html` with
      `root: ".visual-review"` and `files:` the array in `.visual-review/files.json`. In a later round of the same
      review, publish to the same artifact (`url`), so the owner keeps one link. The artifact is private to its owner.
-   - **No Artifact tool:** serve the folder and open `/local.html` —
+   - **No Artifact tool:** serve the folder and open `/local.html` (in the Claude app: the launch entry `visual-review-page` in `.claude/launch.json` does exactly this) —
      `./node_modules/.bin/vite preview --outDir .visual-review --port 4175`. A `file://` page does not load its pictures
      in the app's browser pane.
    - Then give the link, say in two lines what changed, and **end the turn**. Do not re-record, do not commit.
@@ -52,6 +52,8 @@ npm run test:visual:update -- --approved-by="<owner's name>" --note="<what chang
 | `approved` | Snapshot ids that still differ from the baseline but were marked OK in an earlier round **and have not changed since**: listed, not asked again |
 | `decisions` | Taste or copy choices: `{ id, title, text, options: [{ id, label, images: ["path.png"], recommended }] }`. Pictures are paths from the repo root; produce them by rendering the option, never by describing it |
 | `ownerSteps` | Things only the owner can do (a test mail, a dashboard click) |
+| `lang` | `"en"` (default) or `"hu"`: the page's own wording. In Hungarian the screens are marked *Rendben* / *Javítandó* and the two closing questions read "Megfelel így az új megjelenés?" and "Elmenthetem a változtatást?". The pasted answer format is identical in both languages, so `--answers` reads either |
+| `goLive` | `true` for a content release of the CMS Coordinator: the second closing question means "publish to the website" ("Közzétehetem az oldalon?") and its GO is what `npm run release:publish-content` requires. Default `false` (commit and push the branch) |
 
 The page always ends with the same two questions, `BASELINES` (YES / NO) and `COMMIT` (GO / WAIT). They are part of
 the answer format; do not rename them.

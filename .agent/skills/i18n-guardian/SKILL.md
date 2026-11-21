@@ -108,8 +108,19 @@ D-12 says informal first-person (HU *te*, DE *du*, EN *you*). What the owner dec
 | Services eyebrow, hero buttons on phones | **Decided 2026-11-18:** the eyebrow is the pillar's position ("1 / 3", rendered in code, no copy key); both hero buttons are full width and stacked on phones, labels unchanged |
 | Field labels in the delivered inquiry mail | **Decided and built:** Hungarian (`INQUIRY_MAIL_LABELS` in `src/lib/submitInquiry.ts`), confirmed by a delivered mail on 2026-11-18. Subject and sender name ("Fiore Vera weboldal") stay HU-only by design |
 | Copy sign-off per locale (R-1), Vera's phone check of the three locales | **Open** (MASTER-PLAN 2.3/2.4, 4.2) |
+| Who approves German and English | **Decided 2026-11-18:** Vera, herself; she is fluent in Hungarian, German and English. In a content change (`cms-coordinator`) she writes the Hungarian, the agent drafts DE and EN under this skill's rules, she corrects and approves all three on the review step. Her corrections are applied verbatim |
 
 Testimonials are verbatim (typo fixes only).
+
+### Language standard (owner's instruction, 2026-11-21)
+
+Every text a person reads in Hungarian, German or English reads as written by an educated native speaker: idiomatic, grammatically exact, precise in its terms. This holds for the locale files and for everything around them: the owner's guide, the agent's dialogue, dialogs, the review page, published pages for the owners.
+
+- **Compose in the target language.** Do not translate sentence by sentence, neither from English into Hungarian nor from Hungarian into German and English. Reread each sentence; if it only works when translated back, rephrase it.
+- **No IT slang and no developer jargon** in any of the three languages (German: not "deployen", "live gehen"; English: not "push live", "ship it").
+- **Hungarian** has its register, orthography, vocabulary and the table of rejected words in `.agent/skills/cms-coordinator/resources/dialogue-hu.md`. `tests/unit/language.test.ts` reads that table and fails when a rejected word appears in the site copy or in a text the owners read. A new rejection by the owner is a new row of the table.
+- **German and English have no automated check.** The gate there is this skill's veto and Vera's reading of all three versions on the review step.
+- The standard is about your words. Text the owner dictates and testimonials stay as they are.
 
 ## 8. Typography and formatting per locale
 
@@ -145,6 +156,7 @@ Then in the browser, per locale: 404 page title/h1/CTA, form states (empty submi
 - **Veto hardcoded strings** in JSX — visible text, `aria-label`, `title`, `alt`, `placeholder`, JSON-LD names, form error messages, noscript. Everything goes through `t()` or a prerender replacement.
 - **Veto keys added to one or two locales**, placeholder renames in one locale, or a HU value pasted into DE/EN "for now". The gate is red for a reason; fix the copy, not the whitelist.
 - **Veto machine-translation artefacts**: literal idioms ("I was completely on fire", "costs running away"), German-isms in EN ("references"), HU word order in DE, wrong capitalisation ("Zala county"), untranslated conjunctions in proper-noun joins. Ask the owner for the practitioner's term instead of guessing (zero-guessing, `AGENTS.md`).
+- **Veto a calque, IT slang or a loose term** in Hungarian, German or English, in site copy and in every text the owners read (language standard, section 7). A rejected Hungarian word is never whitelisted to get the test green; the sentence is rewritten.
 - **Veto register decisions without the owner** (HU *te* / *ti* and DE *ihr* are decided, see the table above) and any "normalisation" sweep before the BACKLOG decision lands.
 - **Veto a copy edit made without reading the consumer**: name the key and the component that reads it in the Review Brief.
 - **Veto locale from browser/storage during render**, redirects on language, and any use of `i18next-browser-languagedetector`.
