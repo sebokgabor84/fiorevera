@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { CLOSING, buildFingerprint, judgeAnswers, parseAnswers, renderPage, type ReviewData } from '../../scripts/visual-review-page';
+import { CLOSING, UI, buildFingerprint, closingFor, judgeAnswers, parseAnswers, renderPage, type ReviewData } from '../../scripts/visual-review-page';
 
 const review: ReviewData = {
   title: 'Site polish',
@@ -91,5 +91,46 @@ describe('visual review page', () => {
     const html = renderPage({ ...review, title: 'A <b> & "c"', intro: '<script>alert(1)</script>' });
     expect(html).toContain('<title>A &lt;b&gt; &amp; &quot;c&quot;</title>');
     expect(html).not.toContain('<script>alert(1)</script>');
+  });
+});
+
+describe('visual review page in Hungarian (CMS Coordinator, docs/vera-agent/PRD.md R4)', () => {
+  it('asks the same two questions in plain Hungarian and keeps the answer grammar', () => {
+    for (const goLive of [false, true]) {
+      const hu = closingFor('hu', goLive);
+      expect(hu.map((q) => q.id)).toEqual(CLOSING.map((q) => q.id));
+      expect(hu.map((q) => q.options.map((o) => o.id))).toEqual(CLOSING.map((q) => q.options.map((o) => o.id)));
+    }
+    expect(closingFor('hu', true)[1].title).toBe('Mehet élesbe?');
+    expect(closingFor('hu', false)[1].title).not.toBe('Mehet élesbe?');
+    expect(closingFor('en', false)).toBe(CLOSING);
+    expect(closingFor('en', true)[1].title).toMatch(/live/);
+  });
+
+  it('has every piece of wording in both languages', () => {
+    expect(Object.keys(UI.hu).sort()).toEqual(Object.keys(UI.en).sort());
+    for (const [key, value] of Object.entries(UI.hu)) if (typeof value === 'string') expect(value, key).not.toBe(UI.en[key as keyof typeof UI.en]);
+    // In Hungarian the owner sees plain answers; the ids (YES, GO, BASELINES …) stay out of sight and in the pasted text.
+    expect(UI.hu.closingIds).toBe(false);
+    expect(UI.en.closingIds).toBe(true);
+  });
+
+  it('renders the Hungarian page without English wording, and the English page as before', () => {
+    const hu = renderPage({ ...review, lang: 'hu', goLive: true });
+    for (const text of ['Rendben', 'Nem jó', 'Előtte', 'Válaszok másolása', 'Mehet élesbe?', 'Jó így az új kinézet?']) expect(hu, text).toContain(text);
+    for (const text of ['Copy answers', 'Go-ahead', 'still open', 'Re-record the visual baselines']) expect(hu, text).not.toContain(text);
+    expect(hu).toContain('1. rész');
+    expect(hu).toContain('"closingIds":false');
+    const en = renderPage(review);
+    for (const text of ['Copy answers', 'Decisions and go-ahead', 'Re-record the visual baselines under your name', '{n} of {of} still open']) expect(en, text).toContain(text);
+    expect(en).not.toContain('Rendben');
+  });
+
+  it('answers pasted from the Hungarian page are judged by the same rules', () => {
+    // The page stores and pastes OK / Issue and the question ids whatever the wording on screen is.
+    const text = pasted('  home-375: OK\n  rental-1280: OK', '  D1 (Hero buttons): B\n  BASELINES (Jó így az új kinézet?): YES\n  COMMIT (Mehet élesbe?): GO');
+    expect(judgeAnswers(parseAnswers(text), review)).toMatchObject({ mayRecord: true, mayCommit: true });
+    const wait = pasted('  home-375: OK\n  rental-1280: OK', '  BASELINES (Jó így az új kinézet?): YES\n  COMMIT (Mehet élesbe?): WAIT');
+    expect(judgeAnswers(parseAnswers(wait), review)).toMatchObject({ mayRecord: true, mayCommit: false });
   });
 });
