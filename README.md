@@ -124,7 +124,7 @@ npm run optimize:assets                   # BULK rebuild: assets-src/<slot>/ →
 | [`docs/template/README.md`](docs/template/README.md) | What is framework and what is this site, for the template work | inventory |
 | [`docs/PRD.md`](docs/PRD.md), [`docs/launch/`](docs/launch/), `docs/qa/2026-*.md`, [`docs/history/`](docs/history/project-plan-2026.md), `.agent/harvest/` | The product decisions, the launch, QA sessions, the original plan, session notes | records |
 
-A unit test (`tests/unit/docs.test.ts`) fails when a living document names a command, a content operation or a file that does not exist.
+A unit test (`tests/unit/docs.test.ts`) fails when a living document names a command, a content operation or a file that does not exist. A second one (`tests/unit/language.test.ts`) fails when a Hungarian word the owner rejected returns to the site copy or to a text the owners read.
 
 ## Ecosystem Vision
 

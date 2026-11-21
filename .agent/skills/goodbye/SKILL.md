@@ -17,6 +17,8 @@ Close the working session cleanly, extract session learnings, update project mem
 
 **A pause is a session end.** "We pause", "let's continue tomorrow", "stop here" trigger this ritual exactly like "goodbye". In the week of 2026-11-09 the sessions ended on "we pause" without it, and `.agent/last-session-handover.md` described a state that was seven days and a launch out of date.
 
+**In a content session the close is short.** When today's person has the role `content` (the `goodmorning` routine recorded it; `npm run release:operator` shows `today`), `/goodbye` and "mára ennyi" do NOT run the checklist below: it writes tracked files, and those reach `main` only through the technical owner. Instead, in the person's language and in at most five lines: what was published today (from `docs/vera-agent/changelog.md`), what is still open (continue tomorrow, or drop it with `--abandon`), what waits for Gabor, and that the public site is in the state they approved. Then stop. Rules and wording: `.agent/skills/cms-coordinator/SKILL.md`.
+
 ---
 
 ## Session-Close & Self-Learning Checklist

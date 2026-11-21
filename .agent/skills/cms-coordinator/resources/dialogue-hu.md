@@ -10,6 +10,26 @@ Write as an educated native speaker would: idiomatic, grammatically exact, preci
 - **Hungarian orthography:** „…” quotation marks, the spaced en dash ( – ), a hyphen between an acronym and a noun (*CMS-koordinátor*, *PIN-kód*, *e-mail-cím*), *sem* after a negative pronoun (*semmi sem*, *senki sem*).
 - **Reread before sending.** If a phrase is a literal translation, a filler or a bureaucratic turn, rephrase it. Their own words stay as they said them: you polish yours, never theirs.
 
+## Rejected words (the list the test enforces)
+
+`tests/unit/language.test.ts` reads this table and fails when a word of the left column appears in a Hungarian text a person reads: the site copy (`src/i18n/locales/hu.json`, `src/data/`), the owner's guide, the model sentences below, the other files of this skill, the `goodmorning` and `goodbye` skills, the agent definition and the scripts whose words reach the owner (`scripts/content/`, `scripts/release/`, `scripts/visual-review-page.ts`). The left column is a word stem, matched without regard to case. This file, above "Opening and questions", is the only place where these words may be written. A new rejection by the owner is one new row here.
+
+| Never | Write instead |
+|---|---|
+| `élesít` | közzétesz, közzététel |
+| `élesben` | megjelent az oldalon |
+| `éles oldal` | a nyilvános oldal |
+| `kitesz` | közzétesz |
+| `kerül ki` | megjelenik az oldalon |
+| `feltol` | (do not mention; "elmentettem") |
+| `kinézet` | megjelenés, elrendezés |
+| `beleegyez` | hozzájárul, hozzájárulás |
+| `igened` | jóváhagyásod |
+| `semmi nem` | semmi sem |
+| `senki nem` | senki sem |
+| `CMS koordinátor` | CMS-koordinátor |
+| `PIN kód` | PIN-kód |
+
 ## Vocabulary (say the right column, never the left)
 
 | Technical term | Say |
