@@ -14,6 +14,28 @@ Egyszerre egy dolgot kérj. Ha valami félbemaradt legutóbb, a segítő megkér
 
 A nap végén elég annyit írnod: „Mára ennyi, köszönöm." A segítő ilyenkor lezárja a napot.
 
+## Egy nap a gyakorlatban
+
+Így néz ki egy átlagos hétfő, egy szombati esküvő után. A beszélgetés a Claude alkalmazásban zajlik; amit te írsz, az dőlt betűs.
+
+**8:10 — Jó reggelt.** Megnyitod az alkalmazást. A segítő megkérdezi: „Jó reggelt! Ki ül most a gépnél: Vera vagy Gábor?" *„Vera."* Pár sorban válaszol: az oldal rendben működik, a legutóbbi változtatás a múlt heti árfrissítés volt, félbemaradt munka nincs. „Miben segíthetek ma?"
+
+**8:15 — Új esküvő.** *„Feltenném Zsófi és Bence esküvőjét, a képeket most küldtem át a telefonomról a Letöltésekbe."* A segítő megszámolja a képeket (24 darab), és egyenként kérdez: hol volt az esküvő? *„Kehida Kapuja, Kehidakustány."* Beleegyezett a pár, hogy a képek és a keresztnevük felkerüljenek? *„Igen."* Szól, hogy két kép túl kicsi, azokat kihagyja. Aztán megmutatja az összes képet megszámozva: melyik legyen a borító? *„A hetes."*
+
+**8:25 — Ellenőrzés.** A segítő elkészíti az albumot, és lefuttatja az ellenőrzéseket. Ez pár perc: jut idő egy kávéra. Az éles oldalon közben semmi nem változik.
+
+**8:30 — Megnézed.** Kapsz egy oldalt: a galéria „Előtte" és „Utána", telefonon és számítógépen. Az egyik képernyőnél bejelölöd: **Nem jó**, és odaírod: *„a borító legyen inkább a hármas, azon látszik a főasztal."* Beilleszted a válaszokat. A segítő kicseréli a borítót, és újra megmutatja. Most minden **Rendben**. A végén két kérdés: „Jó így az új kinézet?" *Igen.* „Mehet élesbe?" *Igen.* Megnyomod a **Válaszok másolása** gombot, és beilleszted a beszélgetésbe.
+
+**8:40 — A PIN-kódod.** A segítő még egyszer lefuttat minden ellenőrzést, aztán megjelenik egy kis ablak a gépen: „Élesítés a fiorevera.hu oldalra: Új album: Zsófi és Bence." Beírod a négyjegyű PIN-kódodat. Ez az utolsó lépés: enélkül semmi nem kerül ki. Egy perc múlva: „Élesben van", a galéria linkjével. Megnézed a telefonodon.
+
+**14:05 — Egy ár.** *„A fa boldogságkapu ára 21 990 Ft lett."* Ugyanaz az út, csak rövidebb: a segítő megmutatja a kellékbérlés oldalt az új árral, te rábólintasz, beírod a PIN-kódodat, kint van.
+
+**15:00 — Valami, amihez Gábor kell.** *„Legyen nagyobb a logó a fejlécben."* Ez már az oldal kinézete, nem tartalom. A segítő megmondja, hogy ezt Gábornak kell megnéznie, és megírja helyetted az üzenetet, amit csak el kell küldened neki. A munkád nem vész el, az oldal változatlan.
+
+**17:30 — Mégsem.** Kiderül, hogy az új ár csak jövő hónaptól él. *„Vond vissza az utolsó változtatást."* A segítő megmondja, mit von vissza (a fa boldogságkapu árát), lefuttatja az ellenőrzéseket, kéri a PIN-kódodat, és az ár újra a régi.
+
+**17:35 — Mára ennyi.** *„Mára ennyi, köszönöm."* A segítő összefoglalja: ma kikerült Zsófi és Bence albuma; az árváltoztatást visszavontad; a logó Gáborra vár.
+
 ## Mit kérhetsz
 
 | Ezt szeretnéd | Így kérheted |
