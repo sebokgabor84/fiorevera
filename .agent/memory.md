@@ -113,9 +113,11 @@
 
 ### Tooling
 
+- **Token cost is driven by context size × turns, not by shell output or prose length.** A session here boots at ≈ 32k tokens (≈ 21k from `CLAUDE.md` + the three files it says to read first, ≈ 7k from the Vercel plugin); the repo now compacts at 200k (`.claude/settings.json`, pull request 23). RTK, Caveman and code-review-graph were measured against independent benchmarks and rejected. Report: https://claude.ai/artifact/A7GytLxavEwxbS1txC1AsD — 2026-11-23. [tooling]
+- **`rtk git push` prints nothing of the pre-push gate output;** prove the gates ran from their side effects (a fresh `dist/`, `test-results/.last-run.json` = passed) or push through `rtk proxy git push`. 2026-11-24, pull request 23. [tooling]
 - **The rtk hook rewrites commands and reformats output: for anything used as evidence or that decides a delete, merge or push use `rtk proxy git …`, `./node_modules/.bin/<bin>` (not `npx`), `/usr/bin/grep`, `/bin/ls`; verify a push with `git fetch` + `git rev-parse origin/<branch>`** — on 2026-11-16 `git log`/`rev-parse` showed a stale `origin/main` tip, `git push` printed only `ok <branch>`, `git diff --stat` printed blank lines. [main-build], [contact-form], [firefox-e2e], [gdpr], [seo-webvitals], [baseline-review]. [tooling]
 - **The auto-mode classifier rejects batched calls after the rtk hook rewrote one of them** — issue one command per call when the hook will rewrite it (web calls too), or re-issue verbatim once. [domain-move], [seo-webvitals], [firefox-e2e]. [tooling]
-- **No `gh` CLI: push, hand over the compare link + a drafted body; list open pull requests with `curl -s "https://api.github.com/repos/sebokgabor84/fiorevera/pulls?state=open"`** (public repo; quote the URL in zsh). [main-build], [contact-form]. [tooling]
+- **`gh` is installed on Gabor's Mac since 2026-11-21: `gh pr create` / `gh pr list` work (run through `rtk proxy gh …`); the merge stays the owner's click (GO 2).** Without `gh` (Vera's Mac until set up): push, hand over the compare link + a drafted body, list open pull requests with `curl -s "https://api.github.com/repos/sebokgabor84/fiorevera/pulls?state=open"`. [main-build], [contact-form], 2026-11-24. [tooling]
 - **A piped `| tail` hides the exit code of a test run, and zsh has no `PIPESTATUS`** (use `set -o pipefail`, `pipestatus`, or run unpiped `cmd; echo $?`) — always compare the passed total with the expected one: on 2026-11-16 a run "exited 0" with 210 passed instead of 280. [contact-form], [favicon], [domain-move]. [tooling]
 - **The pre-push hook runs the full gate (lint → unit → build → visual, several minutes) even when the push only deletes a branch** — `.githooks/pre-push` has no deletion check. [main-build], [firefox-e2e]. [tooling]
 - **A commit with `src/`, `index.html`, `public/fonts/` or `tests/visual/` staged runs build + visual in the pre-commit hook for minutes — run it in the background** — `.githooks/pre-commit`. [contact-form]. [tooling]
@@ -202,6 +204,7 @@
 
 Gabor's and Vera's stated tastes and rules. Quotes are the owner's words as recorded in the harvest notes.
 
+- **Shared by default: "if we do changes which can benefit other people who are contributing to this repository, then bake them into code, make them always reusable"** — committed config, scripts and skills over personal settings; `AGENTS.md` Working Principles. 2026-11-24, pull request 23. [owner-preference] [workflow]
 - **"Sub chat" means a real side session (`start_session`), not an inline answer.** [main-build]. [owner-preference]
 - **Every fix on its own feature branch — "make sure this is a separate feature branch" — and no commit or push without an explicit GO.** 2026-11-16, [firefox-e2e] §3, `AGENTS.md` Release Protocol. [owner-preference]
 - **Wants a small and a large option, then picks the small one** ("Minimum only" for validation, "Prefilled fallback" for mailto); wants plain-English explanations and numbered step-by-step setup guidance. 2026-11-09/10, [contact-form]. [owner-preference]
@@ -251,3 +254,9 @@ The three proposals of 2026-09-26 all shipped (`scripts/optimize-images.js`, `sc
 7. **The first content release is a supervised pilot with a written record** — the lane's git and GitHub steps have never run; run it on one rental price with the owner at the keyboard, and write what happened into `docs/vera-agent/` before Vera uses it alone.
 8. **Owner-facing pages are generated, not hand-built** — the guide page for Vera exists only as a published page; a script that builds it from `docs/vera-agent/utmutato.md` keeps text and page from drifting (the same idea as `npm run visual:page`).
 9. **The GO is asked for with the list of what it covers** — before every commit state the files and the push target in one line, so a GO cannot be stretched to a later change.
+
+**Status 2026-11-24:** 4–9 unchanged. The next three, from the token review of 2026-11-23:
+
+10. **Boot under 3k tokens** — `CLAUDE.md` core ≤ 50 lines plus path-scoped `.claude/rules/`, a ≤ 30-line handover, no "read four files first"; measure before and after with `/context all`.
+11. **Committed token defaults** — Vercel plugin off for this project, a Haiku `explore` agent, a test-output tail hook, `disable-model-invocation` on the day-frame skills; all in `.claude/`, so Vera gets them with a `git pull`.
+12. **A token check in the morning routine** — `content:morning` (or `release:status`) warns when `CLAUDE.md` or the handover grows past its line budget, the same way it warns about a stale backlog.
