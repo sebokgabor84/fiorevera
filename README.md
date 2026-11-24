@@ -38,7 +38,7 @@ The website of **Fiore Vera**, a wedding decoration, floristry and prop-rental b
 
 ```
 AGENTS.md            the operating contract: principles, release protocol, skill routing
-CLAUDE.md            build-level facts for agents: commands, conventions, architecture
+CLAUDE.md            the short boot file for agents; detail in .claude/rules/ (path-scoped)
 MASTER-PLAN.md       the frozen build scope (34 items) · BACKLOG.md: everything that is open
 src/                 the site: components, pages, data + contracts, locales, styles
 public/assets/       shipped photos (WebP, three sizes) · tests/visual/__screenshots__/: pixel baselines
@@ -94,7 +94,7 @@ npm run visual:size      # weight of the pixel baselines against their budgets
 npm run verify:live      # read-only health check of the live site
 ```
 
-The complete command list with what each one enforces is in `CLAUDE.md`.
+The complete command list with what each one enforces is in `.claude/rules/commands.md`.
 
 ### Legacy archive & replaceable assets (MASTER-PLAN 0.1 / 0.2)
 
@@ -112,7 +112,7 @@ npm run optimize:assets                   # BULK rebuild: assets-src/<slot>/ →
 
 | Read this | For | Kind |
 |---|---|---|
-| [`AGENTS.md`](AGENTS.md), [`CLAUDE.md`](CLAUDE.md) | How agents work here; commands and conventions | living |
+| [`AGENTS.md`](AGENTS.md), [`CLAUDE.md`](CLAUDE.md), [`.claude/rules/`](.claude/rules) | How agents work here; commands and conventions, loaded by path | living |
 | [`BACKLOG.md`](BACKLOG.md), [`MASTER-PLAN.md`](MASTER-PLAN.md) | What is open; the frozen build scope | living |
 | [`docs/vera-agent/utmutato.md`](docs/vera-agent/utmutato.md) | The owner's one-page guide to changing content (Hungarian) | living |
 | [`docs/vera-agent/PRD.md`](docs/vera-agent/PRD.md) | Concept and decisions of the CMS Coordinator | decided; the code wins where they differ |

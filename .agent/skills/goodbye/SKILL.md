@@ -28,13 +28,13 @@ Run these steps in order, then report the results as a table (see below).
 ```
 0. Stale-handover check (first, before anything is rewritten):
    - /usr/bin/grep -m1 "Last Updated" .agent/last-session-handover.md
-   - rtk proxy git log -1 --format='%cs %h %s'                                  → last commit on this branch
-   - rtk proxy git log -1 --format='%cs %h' origin/main                         → last commit on main
+   - git log -1 --format='%cs %h %s'                                  → last commit on this branch
+   - git log -1 --format='%cs %h' origin/main                         → last commit on main
    - Compare the dates and SAY SO: "handover dated <date>, last commit <date> → fresh / N days stale"
    - If stale: do not trust its "next actions"; rebuild the picture from git log, BACKLOG.md
      and .agent/harvest/ before writing the new note
 
-1. DoD pipeline — the same list as CLAUDE.md "Definition of Done", in this order, stop on first failure:
+1. DoD pipeline — the same list as the "Done =" line in CLAUDE.md, in this order, stop on first failure:
    - npm run lint        → must be 0 errors AND 0 warnings
    - npm test -- --run   → must be all green
    - npm run test:e2e    → must all pass (4 browsers; specs import from tests/e2e/fixtures.ts)
@@ -45,15 +45,15 @@ Run these steps in order, then report the results as a table (see below).
    totals with the last recorded ones. Fix the code, not the test; never re-baseline to get green.
    A step that is not run is reported as "skipped — <reason>", never left out.
 
-2. Git state audit — always through `rtk proxy git …` (the rtk hook reformats and truncates git output):
-   - rtk proxy git fetch --prune origin
-   - rtk proxy git status -sb                     → clean / dirty / staged, ahead / behind
-   - rtk proxy git log --oneline origin/main..HEAD → what a push of this branch would carry
-   - rtk proxy git branch -vv                     → every local branch and its upstream
-   - rtk proxy git branch --merged origin/main    → merged-but-undeleted local branches
-   - rtk proxy git branch -r --merged origin/main → merged-but-undeleted remote branches
-   - rtk proxy git worktree list                  → leftover worktrees
-   - rtk proxy gh pr list --state open              → open pull requests (`gh` is on Gabor's Mac since 2026-11-21;
+2. Git state audit — read the raw output; never decide from a summarised or truncated one:
+   - git fetch --prune origin
+   - git status -sb                     → clean / dirty / staged, ahead / behind
+   - git log --oneline origin/main..HEAD → what a push of this branch would carry
+   - git branch -vv                     → every local branch and its upstream
+   - git branch --merged origin/main    → merged-but-undeleted local branches
+   - git branch -r --merged origin/main → merged-but-undeleted remote branches
+   - git worktree list                  → leftover worktrees
+   - gh pr list --state open              → open pull requests (`gh` is on Gabor's Mac since 2026-11-21;
      without it: curl -s "https://api.github.com/repos/sebokgabor84/fiorevera/pulls?state=open", keep the quotes in zsh)
    - If dirty: ask the user whether to commit on the branch or leave as-is. Never stash: the stash is
      shared by every worktree and session
@@ -66,7 +66,7 @@ Run these steps in order, then report the results as a table (see below).
    - Every sub chat writes .agent/harvest/<name>.md in the format of .agent/harvest/README.md
      BEFORE it is archived or deleted (its notes otherwise live outside the repo and die with the chat)
    - The coordinating session consolidates the notes: learnings → .agent/memory.md, skill gaps → the
-     skills, open work → BACKLOG.md, facts marked "Missing?" → CLAUDE.md / README.md / AGENTS.md / docs/
+     skills, open work → BACKLOG.md, facts marked "Missing?" → the matching `.claude/rules/*.md` / README.md / AGENTS.md / docs/ (never CLAUDE.md, it has a budget)
    - Only then remove the finished chats, their worktrees and their merged branches (owner's yes);
      the harvest files stay in the repo as the raw record
    - Kept sub chats are listed in the handover with branch, worktree and scope
@@ -74,7 +74,7 @@ Run these steps in order, then report the results as a table (see below).
 4. BACKLOG.md sync — MANDATORY at every close and every pause, never "skipped" (owner, 2026-11-20):
    - npm run release:status                     → its BACKLOG.md lines are the drift report: pull requests
      merged since the file last changed on main, and "In flight" rows whose branch is gone or merged
-   - For every pull request merged since the last close (rtk proxy git log --first-parent --merges
+   - For every pull request merged since the last close (git log --first-parent --merges
      origin/main): find the lines it closes and mark them [x] with the date and the pull request number.
      Close the twin too: an item under "Harvest" often has a second line under "Owner decisions"
    - Rewrite the "In flight" table from `git worktree list` and the open pull requests, with today's
@@ -89,7 +89,7 @@ Run these steps in order, then report the results as a table (see below).
 5. README.md & AGENTS.md freshness:
    - Confirm "Current iteration" matches actual state
    - Resolve open questions in AGENTS.md if answered this session
-   - CLAUDE.md "Project state", test counts and command list match the code
+   - `.claude/rules/*.md` (deploy facts, test counts, command list) match the code; `npm test -- --run` checks the boot budget
 
 6. Extract Session Learnings & Self-Learning Memory (.agent/memory.md):
    - Identify key takeaways: workflow corrections, architectural rules established, user preferences, or reusable patterns discovered
@@ -101,11 +101,13 @@ Run these steps in order, then report the results as a table (see below).
    - Propose 1–3 concrete engineering or workflow improvements for the next working session based on session friction or insights
 
 8. Handover note:
-   - Write a detailed context summary, learnings, open questions, and next unblocked step to .agent/last-session-handover.md
+   - Rewrite .agent/last-session-handover.md: where things stand, in flight, next unblocked steps, not verified
+   - At most 30 lines and 3,000 characters (`tests/unit/bootBudget.test.ts`): the session-start hook prints its first
+     30 lines into every session. Learnings go to .agent/memory.md, open work to BACKLOG.md, never into the note
    - Set "Last Updated" to today's date; name every in-flight branch, worktree and sub chat and the intended merge order
 
 9. Close commit — never on main:
-   - rtk proxy git branch --show-current → if it says main, create a branch first (chore/<short-desc>)
+   - git branch --show-current → if it says main, create a branch first (chore/<short-desc>)
    - Commit only after the owner's GO; the close commit goes on that branch and through a pull request
      (push, compare link + drafted body, merge after the second GO) — main deploys production on every push
    - State what the push will carry (step 2) before asking GO; a branch must be up to date with main
@@ -143,5 +145,5 @@ Run these steps in order, then report the results as a table (see below).
 - **Never commit on `main`** — `main` deploys production. The close commit goes on a branch and through a pull request.
 - **The backlog is part of every goodbye** — step 4 runs at every close and pause and is checked by code (`npm run release:status`, and the session-start report prints the same warning). On 2026-11-20 the "In flight" table still named three branches that had been merged and deleted two days earlier, and two owner decisions were listed as open although their work had shipped.
 - **Harvest before delete** — no sub chat is archived or deleted before its `.agent/harvest/<name>.md` exists and has been consolidated.
-- **Git facts through `rtk proxy`** — anything that decides a delete, a merge or a push is read with `rtk proxy git …`, never from rtk-reformatted output.
-- **Memory Persistence** — always update `.agent/memory.md` with session learnings and write `.agent/last-session-handover.md` so Vera's next session boot inherits the latest intelligence (`.agent/hooks.json` injects the note in the Antigravity IDE only; in Claude Code the boot sequence reads it by hand).
+- **Git facts from raw output** — anything that decides a delete, a merge or a push is read from plain `git …` output, never from a summary or a reformatting shell hook.
+- **Memory Persistence** — always update `.agent/memory.md` with session learnings and write `.agent/last-session-handover.md` so Vera's next session boot inherits the latest intelligence (the session-start hook prints it in Claude Code; `.agent/hooks.json` injects it in the Antigravity IDE).

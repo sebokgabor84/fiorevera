@@ -1,6 +1,6 @@
 # Debugging a red gate — Fiore Vera
 
-Everything here runs from the repo root. Call Playwright and Vitest through `./node_modules/.bin/<bin>`; the RTK shell hook rewrites `npx <bin>` to `npm run <bin>`, which only works for scripts in `package.json`.
+Everything here runs from the repo root. Call Playwright and Vitest through `./node_modules/.bin/<bin>`: it works the same with or without a shell hook that rewrites `npx`.
 
 ## Where things land
 
@@ -80,13 +80,11 @@ CFFIXED_USER_HOME=<existing empty dir> $FF -no-remote -headless -profile <dir> -
 
 Tested 2026-11-16: a missing `CFFIXED_USER_HOME` folder fails, `HOME=<dir>` alone fails. Not tested: a newer Playwright/Firefox build, Linux/CI (the variable is inert outside macOS by design).
 
-## Shell and tool traps (rtk hook, zsh, browser pane)
+## Shell and tool traps (shell hooks, zsh, browser pane)
 
 | Trap | Use instead |
 |---|---|
-| `npx <bin>` is rewritten to `npm run <bin>` | `./node_modules/.bin/<bin>` |
-| `git push` / `git diff --stat` / `git status` / `git log` output is compressed or reformatted; a script parsing it gets `---` and `Changes` tokens | `rtk proxy git …` for anything parsed or used as evidence |
-| `grep`, `ls` output rewritten into a summary | `/usr/bin/grep`, `/bin/ls`, or `rtk proxy` |
+| A personal shell hook (RTK was one, removed from this repo's workflow on 2026-11-24) rewrites `npx`, `git`, `grep` or `ls` and summarises their output | `./node_modules/.bin/<bin>`, `/usr/bin/grep`, `/bin/ls`; read git facts from plain `git …` output |
 | zsh: unquoted globs fail (`--include=*.tsx`), `g` is an alias, there is no `PIPESTATUS` | quote the pattern; `cmd; echo $?` or `pipestatus` |
 | `cd` inside a command changes the cwd for the rest of the session | absolute paths |
 | Filtering a diff with `grep -v "^[-+][-+]"` hides every `BACKLOG.md` line (they start with `- [`) | print diff lines with python or `grep -E "^(@@\|\+- \|-- \[)"` |
