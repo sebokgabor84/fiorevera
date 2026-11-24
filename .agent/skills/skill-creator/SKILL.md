@@ -47,7 +47,7 @@ description: [Third-person trigger description — what it does and when to use 
 - [ ] YAML frontmatter present with `name` + `description`
 - [ ] `description` written in third person
 - [ ] Scope is focused — if "do everything", split into two skills
-- [ ] **Registry drift gate passed** — a new or renamed skill touches three places in one change: the directory with `SKILL.md`, the `SKILL_NAMES` union in `src/types/skills.ts`, and a backticked mention in the `AGENTS.md` routing table; `tests/unit/skills.test.ts` is red otherwise (an orphan directory fails it too). Then update the skill count in `CLAUDE.md`
+- [ ] **Registry drift gate passed** — a new or renamed skill touches three places in one change: the directory with `SKILL.md`, the `SKILL_NAMES` union in `src/types/skills.ts`, and a backticked mention in the `AGENTS.md` routing table; `tests/unit/skills.test.ts` is red otherwise (an orphan directory fails it too). Then update the skill count in `.claude/rules/skills.md`
 - [ ] Owner GO on the new skill — a missing route is proposed, not silently filled
 
 **Proposed, not created:** `launch-ops` (hosting, DNS, domain, Vercel, cutover, uptime). `AGENTS.md` has no routing trigger for these words, so the missing-skill fallback fires today. Until the owner decides, the facts live in `docs/launch/domain-and-hosting-plan.md`, `docs/operations/runbook.md`, `seo-expert` §3a and `qa-specialist` §3; a code-first `scripts/verify-live.ts` (dig, certificates, legacy-URL sweep, 404 and redirect checks) is the suggested companion script.

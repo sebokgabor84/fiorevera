@@ -28,7 +28,9 @@ export default defineConfig({
     forbidOnly: !!process.env.CI,
     retries: process.env.CI ? 2 : 0,
     workers: process.env.CI ? 1 : undefined,
-    reporter: 'list',
+    // Inside Claude Code (CLAUDECODE=1) the dot reporter keeps 400+ passing tests to one line of dots and
+    // prints every failure in full, so the run fits the agent's context; people keep the list reporter.
+    reporter: process.env.CLAUDECODE ? 'dot' : 'list',
     globalSetup: './tests/support/globalSetup.ts',
     metadata: { fvServer: { origin, mode: 'dev' } },
     use: {

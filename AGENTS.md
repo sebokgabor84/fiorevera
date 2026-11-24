@@ -51,8 +51,11 @@ findings **before** taking on any new task:
 0. Once a day per machine: the `goodmorning` routine — ask who is at the keyboard, run
    `npm run content:morning -- --as <id>`; with Vera the session is a content session
    (`cms-coordinator`) and the steps below are not hers to see
-1. Read AGENTS.md + README.md (current iteration checkpoint)
-2. Read .agent/last-session-handover.md (if present) to catch up seamlessly
+1. Read the session-start hook output: release state, who is at the keyboard and the
+   handover note (at most 30 lines, printed in full). Do not open other files to boot
+   (token review 2026-11-23: reading four files first cost ≈ 21k tokens per session)
+2. Open AGENTS.md, README.md, BACKLOG.md or a skill only when the task needs it;
+   detail lives in path-scoped `.claude/rules/` that load with matching files
 3. Run drift scan:
    - Does README.md "Current iteration" match actual src/ state?
    - Does BACKLOG.md exist?

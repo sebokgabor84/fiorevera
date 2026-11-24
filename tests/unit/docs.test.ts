@@ -28,6 +28,7 @@ const LIVING_DOCS = [
   ...walk('.agent/skills').filter((file) => file.endsWith('.md')),
   ...walk('.claude/skills').filter((file) => file.endsWith('.md')),
   ...walk('.claude/agents').filter((file) => file.endsWith('.md')),
+  ...walk('.claude/rules').filter((file) => file.endsWith('.md')),
   ...walk('docs/decisions'),
   'docs/vera-agent/utmutato.md',
   'docs/qa/visual-review-process.md',
@@ -73,7 +74,7 @@ describe('documentation names things that exist', () => {
     const NOT_YET: Record<string, string> = {
       'docs/vera-agent/changelog.md': 'written by the release script at the first content release',
     };
-    const files = LIVING_DOCS.filter((file) => /cms-coordinator|tech-lead|goodmorning|docs\/decisions|utmutato|docs\/template/.test(file));
+    const files = LIVING_DOCS.filter((file) => /cms-coordinator|tech-lead|goodmorning|docs\/decisions|utmutato|docs\/template|\.claude\/rules|\.claude\/agents\/explore|^CLAUDE\.md$/.test(file));
     expect(files.length).toBeGreaterThan(8);
     const missing: string[] = [];
     for (const file of files) {

@@ -30,7 +30,7 @@ Each specialist guards one area (`design-system-expert`, `seo-expert`, `accessib
 |---|---|---|
 | Static site, no backend, no database, no login | `docs/PRD.md` D-14, D-18 | A feature that needs a server is a different product: say so first |
 | Prerendered and hydration-safe: nothing reads `window`, `Date`, `Intl` or storage while rendering | D-18, `tests/unit/render.test.tsx` | Time-dependent content (an announcement that expires) is decided at build time or in an effect |
-| One source per fact: routes in `src/data/routes.ts`, contracts in `src/data/types.ts`, copy in three locale files, photos in the generated manifest | `CLAUDE.md` | A new kind of content = a schema, data, three-locale copy, a component, tests, and a catalogue entry in `cms-coordinator` |
+| One source per fact: routes in `src/data/routes.ts`, contracts in `src/data/types.ts`, copy in three locale files, photos in the generated manifest | `.claude/rules/src.md` | A new kind of content = a schema, data, three-locale copy, a component, tests, and a catalogue entry in `cms-coordinator` |
 | Content is changed through `npm run content`; whatever is not in its allowlist is not content | `scripts/content/lib/classify.ts` | A new data file or key must be added to the classifier on purpose, or it stays owner-only |
 | Hosting on Vercel Hobby: no commercial guarantee, no DPA, deploys from `main` on every push | owner decision D1, `docs/operations/runbook.md` | No feature may depend on paid platform features without the owner knowing the price |
 | No cookies, no banner, every data sink declared | `gdpr-guardian`, `docs/gdpr/data-register.json` | Embeds, analytics and third-party scripts start with `gdpr-guardian`, not with code |

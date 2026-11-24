@@ -36,7 +36,7 @@ These work for any site in principle and carry Fiore Vera's facts in the code to
 | `.claude/hooks/guard-bash.sh`, `.claude/hooks/session-start.sh`, `.claude/hooks/stop-reminder.sh`, `.githooks/pre-push`, `.githooks/pre-commit`, `.githooks/pre-merge-commit` | The `FV_SKIP_HOOKS` switch, messages that name the hosting and the site |
 | `.agent/skills/gdpr-guardian/scripts/audit-personal-data.ts`, `scripts/visual-contact-sheet.mjs`, `playwright.config.ts` | One or two mentions each |
 | `.agent/skills/release-manager/`, `.agent/skills/qa-specialist/`, `.agent/skills/seo-expert/`, `.agent/skills/i18n-guardian/`, `.agent/skills/gdpr-guardian/`, `.agent/skills/design-system-expert/` | The method is general; the numbers, file names, languages, tokens and incidents are this site's |
-| `AGENTS.md`, `CLAUDE.md` | The contract's structure is general; the page map, the brand tokens and the project state are this site's |
+| `AGENTS.md`, `CLAUDE.md`, `.claude/rules/` | The contract's structure and the short boot file are general; the page map, the brand tokens and the deploy facts are this site's |
 
 ## 3. This site only
 
